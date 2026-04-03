@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>ZYA Dashboard — Ecosistema</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --bg2: #1e293b;
+      --bg3: #253047;
+      --border: #334155;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --green: #5EAC24;
+      --green-dim: #3d7018;
+      --green-glow: rgba(94,172,36,0.12);
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --blue: #38bdf8;
+      --mono: 'Cascadia Code', 'Fira Mono', 'Consolas', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    header h1 span {
+      color: var(--green);
+    }
+
+    .header-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ── Stats globales ──────────────────────────────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--green);
+    }
+
+    .stat-card .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-card .stat-value {
+      font-size: 36px;
+      font-weight: 800;
+      font-family: var(--mono);
+      color: var(--green);
+      line-height: 1;
+    }
+
+    .stat-card .stat-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ── Secciones ───────────────────────────────────────────────────────── */
+    section {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg3);
+    }
+
+    .section-header h2 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .section-header .badge {
+      background: var(--green-dim);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-family: var(--mono);
+    }
+
+    /* ── Tabla ───────────────────────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      background: var(--bg3);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      text-align: left;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover { background: var(--green-glow); }
+
+    tbody td {
+      padding: 10px 14px;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    .td-proyecto {
+      font-weight: 600;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .td-dominio a {
+      color: var(--blue);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .td-dominio a:hover { text-decoration: underline; }
+
+    .td-null {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 12px;
+    }
+
+    .td-numero {
+      font-family: var(--mono);
+      text-align: right;
+      color: var(--text);
+    }
+
+    .td-commit {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .td-commit .hash {
+      color: var(--green);
+      margin-right: 4px;
+    }
+
+    .td-rama {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge-tipo {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .badge-nas     { background: #1e3a5f; color: var(--blue); }
+    .badge-local   { background: #1a2e10; color: var(--green); }
+    .badge-modulo  { background: #2d1a4a; color: #a78bfa; }
+    .badge-herramienta { background: #2a1a00; color: var(--yellow); }
+
+    /* ── Git sync ────────────────────────────────────────────────────────── */
+    .sync-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .sync-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sync-card .sync-name {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .sync-indicators {
+      display: flex;
+      gap: 8px;
+    }
+
+    .sync-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+    }
+
+    .sync-pill.ok  { background: #1a2e10; color: var(--green); border-color: var(--green-dim); }
+    .sync-pill.fail { background: #2e1010; color: var(--red); border-color: #7f1d1d; }
+
+    .sync-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .ok .sync-dot  { background: var(--green); }
+    .fail .sync-dot { background: var(--red); }
+
+    /* ── Pendientes ──────────────────────────────────────────────────────── */
+    .pendientes-list {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pendiente-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .pendiente-tipo {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .tipo-manual        { background: #1e3a5f; color: var(--blue); }
+    .tipo-codigo        { background: #1a2e10; color: var(--green); }
+    .tipo-espera-cliente { background: #2d1a00; color: var(--yellow); }
+
+    .pendiente-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .pendiente-desc {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .pendiente-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-family: var(--mono);
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      main { padding: 12px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .stat-card .stat-value { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-dot"></div>
+    <h1>ZYA <span>Dashboard</span> — Ecosistema</h1>
+  </div>
+  <div class="header-meta" id="header-meta">Cargando...</div>
+</header>
+
+<main>
+
+  <!-- Stats globales -->
+  <div class="stats-grid" id="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total proyectos</div>
+      <div class="stat-value" id="stat-proyectos">—</div>
+      <div class="stat-sub">repositorios + módulos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Líneas de código</div>
+      <div class="stat-value" id="stat-lineas">—</div>
+      <div class="stat-sub">en todos los proyectos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total archivos</div>
+      <div class="stat-value" id="stat-archivos">—</div>
+      <div class="stat-sub">sumados todos los repos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Servicios activos</div>
+      <div class="stat-value" id="stat-servicios">—</div>
+      <div class="stat-sub">con dominio público</div>
+    </div>
+  </div>
+
+  <!-- Tabla principal -->
+  <section>
+    <div class="section-header">
+      <h2>Proyectos del ecosistema</h2>
+      <span class="badge" id="badge-count">—</span>
+    </div>
+    <div class="table-wrap">
+      <table id="tabla-proyectos">
+        <thead>
+          <tr>
+            <th>Proyecto</th>
+            <th>Dominio</th>
+            <th>Puerto</th>
+            <th>Tipo</th>
+            <th>Líneas</th>
+            <th>Archivos</th>
+            <th>JS</th>
+            <th>TS</th>
+            <th>JSX</th>
+            <th>TSX</th>
+            <th>Último commit</th>
+            <th>Rama</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-proyectos"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Estado git sync -->
+  <section>
+    <div class="section-header">
+      <h2>Estado git — Sincronización</h2>
+      <span class="badge">PC ↔ NAS ↔ GitHub</span>
+    </div>
+    <div class="sync-grid" id="sync-grid"></div>
+  </section>
+
+  <!-- Pendientes -->
+  <section>
+    <div class="section-header">
+      <h2>Pendientes reales</h2>
+      <span class="badge" id="badge-pendientes">—</span>
+    </div>
+    <div class="pendientes-list" id="pendientes-list"></div>
+  </section>
+
+</main>
+
+<script>
+(async () => {
+  const fmt = n => n.toLocaleString('es-MX');
+
+  function badgeTipo(tipo) {
+    const map = { NAS: 'badge-nas', local: 'badge-local', modulo: 'badge-modulo', herramienta: 'badge-herramienta' };
+    return `<span class="badge-tipo ${map[tipo] || 'badge-local'}">${tipo}</span>`;
+  }
+
+  function commitHtml(c) {
+    if (c === 'sin-git') return `<span class="td-null">sin-git</span>`;
+    const [hash, ...rest] = c.split(' ');
+    return `<span class="hash">${hash}</span>${rest.join(' ')}`;
+  }
+
+  try {
+    const res = await fetch('/api/stats');
+    const data = await res.json();
+    const { resumen, proyectos, git_sync, pendientes } = data;
+
+    // Header meta
+    document.getElementById('header-meta').textContent =
+      `Actualizado: ${resumen.actualizado} · v1.0.0`;
+
+    // Stats cards
+    document.getElementById('stat-proyectos').textContent = resumen.total_proyectos;
+    document.getElementById('stat-lineas').textContent = fmt(resumen.total_lineas);
+    document.getElementById('stat-archivos').textContent = fmt(resumen.total_archivos);
+    document.getElementById('stat-servicios').textContent = resumen.servicios_activos;
+    document.getElementById('badge-count').textContent = proyectos.length;
+
+    // Tabla proyectos
+    const tbody = document.getElementById('tbody-proyectos');
+    tbody.innerHTML = proyectos.map(p => `
+      <tr>
+        <td class="td-proyecto">${p.nombre}</td>
+        <td class="td-dominio">
+          ${p.dominio
+            ? `<a href="https://${p.dominio}" target="_blank" rel="noopener">${p.dominio}</a>`
+            : `<span class="td-null">—</span>`}
+        </td>
+        <td class="td-numero">${p.puerto !== null ? p.puerto : '<span class="td-null">—</span>'}</td>
+        <td>${badgeTipo(p.tipo)}</td>
+        <td class="td-numero">${fmt(p.lineas)}</td>
+        <td class="td-numero">${fmt(p.total_archivos)}</td>
+        <td class="td-numero">${p.js}</td>
+        <td class="td-numero">${p.ts}</td>
+        <td class="td-numero">${p.jsx}</td>
+        <td class="td-numero">${p.tsx}</td>
+        <td class="td-commit">${commitHtml(p.ultimo_commit)}</td>
+        <td class="td-rama">${p.rama}</td>
+      </tr>
+    `).join('');
+
+    // Git sync
+    const syncGrid = document.getElementById('sync-grid');
+    syncGrid.innerHTML = git_sync.map(s => `
+      <div class="sync-card">
+        <div class="sync-name">${s.proyecto}</div>
+        <div class="sync-indicators">
+          <div class="sync-pill ${s.pc ? 'ok' : 'fail'}">
+            <div class="sync-dot"></div> PC
+          </div>
+          <div class="sync-pill ${s.nas ? 'ok' : 'fail'}">
+            <div class="sync-dot"></div> NAS
+          </div>
+          <div class="sync-pill ${s.github ? 'ok' : 'fail'}">
+            <div class="sync-dot"></div> GitHub
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // Pendientes
+    document.getElementById('badge-pendientes').textContent = pendientes.length;
+    const tipoLabel = { manual: 'Manual', codigo: 'Código', 'espera-cliente': 'Espera cliente' };
+    const pendientesList = document.getElementById('pendientes-list');
+    pendientesList.innerHTML = pendientes.map(p => `
+      <div class="pendiente-item">
+        <div class="pendiente-tipo tipo-${p.tipo}">${tipoLabel[p.tipo] || p.tipo}</div>
+        <div class="pendiente-info">
+          <div class="pendiente-desc">${p.descripcion}</div>
+          <div class="pendiente-meta">${p.proyecto} · ${p.responsable}</div>
+        </div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    console.error('Error cargando stats:', err);
+    document.getElementById('header-meta').textContent = 'Error al cargar datos';
+  }
+})();
+</script>
+
+<script src="/zya-about.js"></script>
+</body>
+</html>

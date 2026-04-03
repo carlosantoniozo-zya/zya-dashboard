@@ -1,0 +1,12 @@
+{
+  "name": "zya-dashboard",
+  "version": "1.0.0",
+  "description": "Dashboard de estadísticas del ecosistema ZYA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
