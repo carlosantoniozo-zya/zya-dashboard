@@ -302,6 +302,7 @@ app.get('/api/health', (req, res) => {
     uptime: Math.floor((Date.now() - START_TIME) / 1000)
   });
 });
+app.get('/health', (req, res) => res.redirect('/api/health'));
 
 app.get('/api/stats', (req, res) => {
   const totalLineas = PROYECTOS.reduce((s, p) => s + p.lineas, 0);
