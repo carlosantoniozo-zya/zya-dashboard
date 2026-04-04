@@ -260,6 +260,17 @@ const PROYECTOS = [
     total_archivos: 4, lineas: 533,
     ultimo_commit: 'sin-git',
     rama: 'N/A'
+  },
+  {
+    nombre: 'zya-soporte',
+    dominio: 'soporte.zyaeti.mx',
+    puerto: 5439,
+    tipo: 'local',
+    stack: 'React+Express+SQLite',
+    js: 10, ts: 0, jsx: 7, tsx: 0, css: 0, md: 4,
+    total_archivos: 30, lineas: 2100,
+    ultimo_commit: 'f1cfc14 feat: cifrado AES-256-GCM',
+    rama: 'master'
   }
 ];
 
