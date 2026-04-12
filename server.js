@@ -141,17 +141,6 @@ const PROYECTOS = [
     rama: 'main'
   },
   {
-    nombre: 'mardur',
-    dominio: 'mardur.zyaeti.mx',
-    puerto: 4500,
-    tipo: 'local',
-    stack: 'Node+Express',
-    js: 58, ts: 5, jsx: 0, tsx: 0, css: 2, md: 4,
-    total_archivos: 1568, lineas: 2539,
-    ultimo_commit: 'abf5e35 feat: SEO',
-    rama: 'master'
-  },
-  {
     nombre: 'psicpatriciaoliver',
     dominio: 'psicpatriciaoliver.zyaeti.mx',
     puerto: 4005,
@@ -271,6 +260,28 @@ const PROYECTOS = [
     total_archivos: 30, lineas: 2100,
     ultimo_commit: 'f1cfc14 feat: cifrado AES-256-GCM',
     rama: 'master'
+  },
+  {
+    nombre: 'coimprit-b2b',
+    dominio: 'coimprit.zyaeti.mx',
+    puerto: 5440,
+    tipo: 'local',
+    stack: 'React+Express+SQLite',
+    js: 18, ts: 0, jsx: 26, tsx: 0, css: 1, md: 4,
+    total_archivos: 63, lineas: 15215,
+    ultimo_commit: '9e31f4d fix: COIMPRIT nombre correcto del cliente',
+    rama: 'main'
+  },
+  {
+    nombre: 'optica-cha',
+    dominio: 'opticacha.zyaeti.mx',
+    puerto: 5441,
+    tipo: 'local',
+    stack: 'Node+Express',
+    js: 0, ts: 0, jsx: 0, tsx: 0, css: 0, md: 0,
+    total_archivos: 0, lineas: 0,
+    ultimo_commit: 'nuevo proyecto',
+    rama: 'main'
   }
 ];
 
@@ -287,7 +298,6 @@ const PENDIENTES = [
   { descripcion: 'Integrar canvas snapshot al PDF (USG)', tipo: 'código', responsable: 'CC', proyecto: 'usg-solano' },
   { descripcion: 'Sesiona: WebSockets chat + SERVER_ENCRYPTION_KEY', tipo: 'código', responsable: 'CC', proyecto: 'sesiona' },
   { descripcion: 'Byrsa: comparación digital inventario (escaneo vs Factusol)', tipo: 'código', responsable: 'CC', proyecto: 'byrsa' },
-  { descripcion: 'Mardur: SMTP credenciales + WhatsApp', tipo: 'espera-cliente', responsable: 'cliente', proyecto: 'mardur' }
 ];
 
 // ── Middleware ────────────────────────────────────────────────────────────────

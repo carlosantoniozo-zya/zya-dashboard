@@ -1,5 +1,10 @@
 # CHANGELOG — dashboard
 
+## [2026-04-12] — Baja Mardur del ecosistema
+**Motivo:** Cliente contrató otro proveedor para su sitio web.
+**Cambios:** `server.js` — eliminada entrada mardur de PROYECTOS y de PENDIENTES.
+**Impacto:** Mardur ya no aparece en estadísticas ni pendientes del dashboard.
+
 ## [2026-04-04] — Agregar zya-soporte al ecosistema
 **Motivo:** Nuevo proyecto zya-soporte incorporado al ecosistema ZYA.
 **Cambios:** `server.js` — entrada zya-soporte (soporte.zyaeti.mx, puerto 5439, React+Express+SQLite) en array PROYECTOS.
