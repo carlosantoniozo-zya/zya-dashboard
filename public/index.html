@@ -678,6 +678,81 @@
     .doc-viewer-content .md-check-ok  { color: var(--green); }
     .doc-viewer-content .md-check-no  { color: var(--yellow); }
 
+    /* ── Vista integrada (iframes) ──────────────────────────────────────── */
+    .vista-grid {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 1024px) {
+      .vista-grid { grid-template-columns: 1fr; }
+    }
+
+    .vista-panel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vista-panel-header {
+      padding: 9px 14px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .vista-panel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    .vista-panel-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      font-family: var(--mono);
+    }
+
+    .vista-panel-link {
+      font-size: 11px;
+      color: var(--blue);
+      text-decoration: none;
+      font-family: var(--mono);
+    }
+
+    .vista-panel-link:hover { text-decoration: underline; }
+
+    .vista-reload-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 5px;
+      padding: 3px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .vista-reload-btn:hover { color: var(--green); border-color: var(--green-dim); }
+
+    .vista-frame {
+      width: 100%;
+      height: 580px;
+      border: none;
+      background: #fff;
+    }
+
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 768px) {
       header { flex-direction: column; align-items: flex-start; }
@@ -843,6 +918,40 @@
     </div>
   </section>
 
+  <!-- Vista integrada -->
+  <section>
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Vista integrada</h2>
+      <span class="badge">Monitor · Cambios</span>
+      <span class="section-chevron collapsed">▾</span>
+    </div>
+    <div class="section-body collapsed">
+      <div class="vista-grid">
+
+        <div class="vista-panel">
+          <div class="vista-panel-header">
+            <div class="vista-panel-dot" style="background:#f97316"></div>
+            <span class="vista-panel-title">ZYA Monitor</span>
+            <a class="vista-panel-link" href="https://monitor.zyaeti.mx" target="_blank" rel="noopener">↗ abrir</a>
+            <button class="vista-reload-btn" onclick="reloadFrame('frame-monitor')">↺ reload</button>
+          </div>
+          <iframe id="frame-monitor" class="vista-frame" src="about:blank" data-src="https://monitor.zyaeti.mx" loading="lazy" title="ZYA Monitor"></iframe>
+        </div>
+
+        <div class="vista-panel">
+          <div class="vista-panel-header">
+            <div class="vista-panel-dot" style="background:#8b5cf6"></div>
+            <span class="vista-panel-title">ZYA Changelog</span>
+            <a class="vista-panel-link" href="https://cambios.zyaeti.mx" target="_blank" rel="noopener">↗ abrir</a>
+            <button class="vista-reload-btn" onclick="reloadFrame('frame-changelog')">↺ reload</button>
+          </div>
+          <iframe id="frame-changelog" class="vista-frame" src="about:blank" data-src="https://cambios.zyaeti.mx" loading="lazy" title="ZYA Changelog"></iframe>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <script>
@@ -867,6 +976,23 @@ function toggleSection(header) {
   const isCollapsed = body.classList.contains('collapsed');
   body.classList.toggle('collapsed', !isCollapsed);
   chevron.classList.toggle('collapsed', !isCollapsed);
+
+  // Lazy-load iframes al abrir la sección Vista integrada
+  if (!isCollapsed) return; // se está colapsando, no hacer nada
+  body.querySelectorAll('iframe[data-src]').forEach(fr => {
+    if (!fr.src || fr.src === 'about:blank' || fr.src === window.location.href) {
+      fr.src = fr.dataset.src;
+    }
+  });
+}
+
+// ── Reload iframe ─────────────────────────────────────────────────────────────
+function reloadFrame(id) {
+  const fr = document.getElementById(id);
+  if (!fr) return;
+  const src = fr.dataset.src || fr.src;
+  fr.src = 'about:blank';
+  setTimeout(() => { fr.src = src; }, 80);
 }
 
 // ── Toggle checkbox pendiente/hilo ────────────────────────────────────────────

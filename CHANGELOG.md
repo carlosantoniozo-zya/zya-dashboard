@@ -1,5 +1,14 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14d] — feat: vista integrada con iframes (Monitor + Changelog)
+**Motivo:** Carlos quiere ver dashboard, monitor y cambios en una sola pantalla sin cambiar de pestaña.
+**Cambios:**
+- `public/index.html` — Nueva sección colapsable "Vista integrada" con grid 2 columnas (1 col en tablet/móvil)
+- `public/index.html` — Iframe Monitor (naranja) + Iframe Changelog (violeta), cada uno con link "↗ abrir" y botón "↺ reload"
+- `public/index.html` — Lazy-load: los iframes cargan solo cuando se expande la sección (no desperdicia recursos si está colapsada)
+- No fue necesario modificar monitor ni changelog — ninguno tiene `X-Frame-Options: DENY`
+**Impacto:** Una sola pantalla para gestión completa del ecosistema.
+
 ## [2026-04-14c] — feat: dashboard como guía total + auto-refresh + documentación viva
 **Motivo:** Dashboard debe ser la única pantalla de referencia — todos los pendientes, backlog, hilos y documentación viva en un solo lugar. Sesiones múltiples en paralelo requieren auto-actualización.
 **Cambios:**
