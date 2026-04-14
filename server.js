@@ -388,7 +388,7 @@ function parseHilosAbiertos() {
     }
   }
   if (hiloActual) hilos.push(hiloActual);
-  return hilos.filter(h => h.id); // solo entradas válidas
+  return hilos.filter(h => h.id && !h.estado.toUpperCase().startsWith('CERRADO'));
 }
 
 app.get('/api/hilos', (req, res) => {

@@ -1,5 +1,10 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14b] — fix: ocultar hilos CERRADO del dashboard
+**Motivo:** HI-06 seguía visible después de cerrarlo en hilos-abiertos.md — el parser devolvía todos los hilos sin importar el estado.
+**Cambios:**
+- `server.js` `parseHilosAbiertos()`: filtro adicional excluye hilos cuyo estado empiece con "CERRADO".
+
 ## [2026-04-14] — Checkboxes colaborativos con tiempo real (SSE)
 **Motivo:** Carlos necesitaba poder marcar tareas completadas desde cualquier dispositivo (PC, tablet, celular) con actualización inmediata en todos ellos.
 **Cambios:**
