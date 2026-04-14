@@ -1,5 +1,14 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14] — Hilos abiertos + Backlog de tareas
+**Motivo:** Carlos necesitaba visibilidad de trabajos en proceso que no tienen cierre formal y del estado del backlog por categoría.
+**Cambios:**
+- `server.js` — función `parseHilosAbiertos()` + endpoint `/api/hilos` (parsea `deseimp/hilos-abiertos.md` en tiempo real)
+- `server.js` — función `parseTareas()` + `clasificarEstado()` + endpoint `/api/tareas` (parsea `deseimp/backlog.md` en tiempo real)
+- `public/index.html` — sección "Hilos abiertos" como primera sección (tarjetas con color por estado, al inicio del dashboard)
+- `public/index.html` — sección "Backlog de tareas" con resumen numérico (5 contadores) + grupos colapsables (Abiertas/En espera/Completadas/Canceladas) con pills por tarea
+**Impacto:** Dashboard ahora es panel de control operativo. Ambas secciones leen archivos MD en tiempo real — se actualizan solas al editar `hilos-abiertos.md` y `backlog.md`.
+
 ## [2026-04-12] — Baja Mardur del ecosistema
 **Motivo:** Cliente contrató otro proveedor para su sitio web.
 **Cambios:** `server.js` — eliminada entrada mardur de PROYECTOS y de PENDIENTES.

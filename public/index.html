@@ -380,6 +380,233 @@
       font-family: var(--mono);
     }
 
+    /* ── Hilos abiertos ─────────────────────────────────────────────────── */
+    .hilos-grid {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 12px;
+    }
+
+    .hilo-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-left: 3px solid var(--border);
+    }
+
+    .hilo-card.estado-en-proceso   { border-left-color: var(--yellow); }
+    .hilo-card.estado-pendiente    { border-left-color: var(--blue); }
+    .hilo-card.estado-esperando    { border-left-color: #fb923c; }
+    .hilo-card.estado-nuevo        { border-left-color: var(--green); }
+    .hilo-card.estado-analisis     { border-left-color: #a78bfa; }
+    .hilo-card.estado-diseno       { border-left-color: #fb923c; }
+    .hilo-card.estado-datos        { border-left-color: #6ee7b7; }
+
+    .hilo-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hilo-id {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .hilo-titulo {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hilo-estado {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .estado-en-proceso .hilo-estado  { background: #422006; color: var(--yellow); }
+    .estado-pendiente .hilo-estado   { background: #0c2a4a; color: var(--blue); }
+    .estado-esperando .hilo-estado   { background: #431407; color: #fb923c; }
+    .estado-nuevo .hilo-estado       { background: #1a2e10; color: var(--green); }
+    .estado-analisis .hilo-estado    { background: #2d1a4a; color: #a78bfa; }
+    .estado-diseno .hilo-estado      { background: #431407; color: #fb923c; }
+    .estado-datos .hilo-estado       { background: #0f2e22; color: #6ee7b7; }
+
+    .hilo-proyecto {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-muted);
+    }
+
+    .hilo-proximo {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+
+    .hilo-proximo strong {
+      color: var(--text);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    /* ── Tareas backlog ─────────────────────────────────────────────────── */
+    .tareas-resumen {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tarea-stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      text-align: center;
+    }
+
+    .tarea-stat .ts-num {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .tarea-stat .ts-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .ts-completadas .ts-num { color: var(--green); }
+    .ts-abiertas    .ts-num { color: var(--yellow); }
+    .ts-espera      .ts-num { color: var(--blue); }
+    .ts-canceladas  .ts-num { color: var(--text-muted); }
+    .ts-total       .ts-num { color: var(--text); }
+
+    .tareas-grupos {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .tareas-grupo {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tareas-grupo:last-child { border-bottom: none; }
+
+    .tareas-grupo-header {
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      background: var(--bg3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .tareas-grupo-header:hover { background: var(--bg2); }
+
+    .grupo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .grupo-abiertas   .grupo-dot { background: var(--yellow); }
+    .grupo-completadas .grupo-dot { background: var(--green); }
+    .grupo-espera     .grupo-dot { background: var(--blue); }
+    .grupo-canceladas .grupo-dot { background: var(--text-muted); }
+
+    .grupo-count {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .grupo-chevron {
+      font-size: 10px;
+      transition: transform 0.2s;
+    }
+
+    .grupo-chevron.collapsed { transform: rotate(-90deg); }
+
+    .tareas-pills {
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tarea-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 12px;
+      cursor: default;
+      transition: border-color 0.15s;
+    }
+
+    .tarea-pill:hover { border-color: var(--green-dim); }
+
+    .tarea-pill .pill-id {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .tarea-pill .pill-titulo {
+      color: var(--text);
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tarea-pill.clase-en-proceso  { border-left: 3px solid var(--yellow); }
+    .tarea-pill.clase-pendiente   { border-left: 3px solid var(--blue); }
+    .tarea-pill.clase-planificada { border-left: 3px solid #a78bfa; }
+    .tarea-pill.clase-completada  { border-left: 3px solid var(--green); opacity: 0.55; }
+    .tarea-pill.clase-espera      { border-left: 3px solid var(--blue); opacity: 0.7; }
+    .tarea-pill.clase-cancelada   { border-left: 3px solid var(--text-muted); opacity: 0.4; }
+
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 768px) {
       header { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -424,6 +651,25 @@
       <div class="stat-sub">con dominio público</div>
     </div>
   </div>
+
+  <!-- Hilos abiertos -->
+  <section>
+    <div class="section-header">
+      <h2>Hilos abiertos</h2>
+      <span class="badge" id="badge-hilos">—</span>
+    </div>
+    <div class="hilos-grid" id="hilos-grid"></div>
+  </section>
+
+  <!-- Tareas backlog -->
+  <section>
+    <div class="section-header">
+      <h2>Backlog de tareas</h2>
+      <span class="badge" id="badge-tareas">—</span>
+    </div>
+    <div class="tareas-resumen" id="tareas-resumen"></div>
+    <div class="tareas-grupos" id="tareas-grupos"></div>
+  </section>
 
   <!-- Tabla principal -->
   <section>
@@ -471,6 +717,7 @@
     </div>
     <div class="pendientes-list" id="pendientes-list"></div>
   </section>
+
 
 </main>
 
@@ -561,11 +808,97 @@
       </div>
     `).join('');
 
+    // Tareas backlog
+    const tareasRes = await fetch('/api/tareas');
+    const tareasData = await tareasRes.json();
+    const { tareas, resumen: tr } = tareasData;
+
+    document.getElementById('badge-tareas').textContent = tr.total;
+    document.getElementById('tareas-resumen').innerHTML = `
+      <div class="tarea-stat ts-total"><div class="ts-num">${tr.total}</div><div class="ts-label">Total</div></div>
+      <div class="tarea-stat ts-completadas"><div class="ts-num">${tr.completadas}</div><div class="ts-label">Completadas</div></div>
+      <div class="tarea-stat ts-abiertas"><div class="ts-num">${tr.abiertas}</div><div class="ts-label">Abiertas</div></div>
+      <div class="tarea-stat ts-espera"><div class="ts-num">${tr.espera}</div><div class="ts-label">En espera</div></div>
+      <div class="tarea-stat ts-canceladas"><div class="ts-num">${tr.canceladas}</div><div class="ts-label">Canceladas</div></div>
+    `;
+
+    const grupos = [
+      { key: 'abiertas',    label: 'Abiertas',    clases: ['en-proceso','pendiente','planificada'], clase: 'grupo-abiertas',    abierto: true  },
+      { key: 'espera',      label: 'En espera',   clases: ['espera'],                               clase: 'grupo-espera',      abierto: true  },
+      { key: 'completadas', label: 'Completadas', clases: ['completada'],                           clase: 'grupo-completadas', abierto: false },
+      { key: 'canceladas',  label: 'Canceladas',  clases: ['cancelada'],                            clase: 'grupo-canceladas',  abierto: false },
+    ];
+
+    document.getElementById('tareas-grupos').innerHTML = grupos.map(g => {
+      const items = tareas.filter(t => g.clases.includes(t.clase));
+      if (!items.length) return '';
+      const pills = items.map(t => `
+        <div class="tarea-pill clase-${t.clase}" title="${t.estado}">
+          <span class="pill-id">${t.id}</span>
+          <span class="pill-titulo">${t.titulo}</span>
+        </div>
+      `).join('');
+      return `
+        <div class="tareas-grupo">
+          <div class="tareas-grupo-header ${g.clase}" onclick="toggleGrupo(this)">
+            <div class="grupo-dot"></div>
+            ${g.label}
+            <span class="grupo-count">${items.length}</span>
+            <span class="grupo-chevron ${g.abierto ? '' : 'collapsed'}">▾</span>
+          </div>
+          <div class="tareas-pills" style="display:${g.abierto ? 'flex' : 'none'}">${pills}</div>
+        </div>
+      `;
+    }).join('');
+
+    // Hilos abiertos
+    const hilosRes = await fetch('/api/hilos');
+    const hilosData = await hilosRes.json();
+    const hilos = hilosData.hilos || [];
+    document.getElementById('badge-hilos').textContent = hilos.length;
+
+    function estadoClass(estado) {
+      const e = estado.toLowerCase();
+      if (e.includes('en proceso'))   return 'estado-en-proceso';
+      if (e.includes('esperando'))    return 'estado-esperando';
+      if (e.includes('nuevo'))        return 'estado-nuevo';
+      if (e.includes('análisis') || e.includes('analisis')) return 'estado-analisis';
+      if (e.includes('diseño') || e.includes('diseno'))     return 'estado-diseno';
+      if (e.includes('datos listos')) return 'estado-datos';
+      return 'estado-pendiente';
+    }
+
+    function estadoLabel(estado) {
+      // Tomar solo la primera parte antes de " —"
+      return estado.split(' —')[0].split(' (')[0].trim();
+    }
+
+    const hilosGrid = document.getElementById('hilos-grid');
+    hilosGrid.innerHTML = hilos.map(h => `
+      <div class="hilo-card ${estadoClass(h.estado)}">
+        <div class="hilo-top">
+          <span class="hilo-id">${h.id}</span>
+          <span class="hilo-titulo">${h.titulo}</span>
+          <span class="hilo-estado">${estadoLabel(h.estado)}</span>
+        </div>
+        <div class="hilo-proyecto">${h.proyecto}</div>
+        ${h.proximo ? `<div class="hilo-proximo"><strong>Próximo paso</strong>${h.proximo}</div>` : ''}
+      </div>
+    `).join('');
+
   } catch (err) {
     console.error('Error cargando stats:', err);
     document.getElementById('header-meta').textContent = 'Error al cargar datos';
   }
 })();
+
+function toggleGrupo(header) {
+  const pills = header.nextElementSibling;
+  const chevron = header.querySelector('.grupo-chevron');
+  const abierto = pills.style.display !== 'none';
+  pills.style.display = abierto ? 'none' : 'flex';
+  chevron.classList.toggle('collapsed', abierto);
+}
 </script>
 
 <script src="/zya-about.js"></script>

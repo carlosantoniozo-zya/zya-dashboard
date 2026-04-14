@@ -344,6 +344,81 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
+// ── Hilos abiertos (parsea deseimp/hilos-abiertos.md) ───────────────────────
+function parseHilosAbiertos() {
+  const hilosPath = 'C:/Proyectos/deseimp/hilos-abiertos.md';
+  if (!fs.existsSync(hilosPath)) return [];
+  const content = fs.readFileSync(hilosPath, 'utf8');
+  const hilos = [];
+  let proyectoActual = 'General';
+  let hiloActual = null;
+  for (const line of content.split('\n')) {
+    if (line.startsWith('## ') && !line.startsWith('### ')) {
+      proyectoActual = line.replace('## ', '').trim();
+    } else if (line.startsWith('### ')) {
+      if (hiloActual) hilos.push(hiloActual);
+      const m = line.match(/### (HI-\d+) — (.+)/);
+      if (m) hiloActual = { id: m[1], titulo: m[2], proyecto: proyectoActual, estado: '', proximo: '' };
+    } else if (hiloActual) {
+      const est = line.match(/\*\*Estado:\*\* (.+)/);
+      if (est) hiloActual.estado = est[1];
+      const prox = line.match(/\*\*Próximo paso:\*\* (.+)/);
+      if (prox) hiloActual.proximo = prox[1];
+    }
+  }
+  if (hiloActual) hilos.push(hiloActual);
+  return hilos.filter(h => h.id); // solo entradas válidas
+}
+
+app.get('/api/hilos', (req, res) => {
+  res.json({ hilos: parseHilosAbiertos() });
+});
+
+// ── Tareas backlog (parsea deseimp/backlog.md) ───────────────────────────────
+function parseTareas() {
+  const backlogPath = 'C:/Proyectos/deseimp/backlog.md';
+  if (!fs.existsSync(backlogPath)) return [];
+  const content = fs.readFileSync(backlogPath, 'utf8');
+  const tareas = [];
+  let tareaActual = null;
+  for (const line of content.split('\n')) {
+    const encabezado = line.match(/^## (T\d+) — (.+)/);
+    if (encabezado) {
+      if (tareaActual) tareas.push(tareaActual);
+      tareaActual = { id: encabezado[1], titulo: encabezado[2], estado: '', proyecto: '' };
+    } else if (tareaActual) {
+      const est = line.match(/\*\*Estado:\*\* (.+)/);
+      if (est) tareaActual.estado = est[1];
+      const proy = line.match(/\*\*Proyecto:\*\* (.+)/);
+      if (proy) tareaActual.proyecto = proy[1].replace(/\s*\(.*\)/, '').trim();
+    }
+  }
+  if (tareaActual) tareas.push(tareaActual);
+  return tareas.filter(t => t.id);
+}
+
+function clasificarEstado(estado) {
+  const e = estado.toLowerCase();
+  if (e.includes('completada') || e.includes('completo')) return 'completada';
+  if (e.includes('cancelad'))                              return 'cancelada';
+  if (e.includes('en espera') || e.includes('bloqueado')) return 'espera';
+  if (e.includes('en proceso'))                           return 'en-proceso';
+  if (e.includes('planificada'))                          return 'planificada';
+  return 'pendiente';
+}
+
+app.get('/api/tareas', (req, res) => {
+  const tareas = parseTareas().map(t => ({ ...t, clase: clasificarEstado(t.estado) }));
+  const resumen = {
+    total: tareas.length,
+    completadas: tareas.filter(t => t.clase === 'completada').length,
+    abiertas: tareas.filter(t => ['en-proceso','pendiente','planificada'].includes(t.clase)).length,
+    espera: tareas.filter(t => t.clase === 'espera').length,
+    canceladas: tareas.filter(t => t.clase === 'cancelada').length,
+  };
+  res.json({ tareas, resumen });
+});
+
 app.get('/zya-about.js', (req, res) => {
   const aboutPath = path.join('C:/Proyectos/_zya-about/about.js');
   if (fs.existsSync(aboutPath)) {
