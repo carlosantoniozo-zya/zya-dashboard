@@ -1,6 +1,6 @@
 # ESTADO — dashboard
 
-## Estado actual: v1.0.0 — OPERATIVO
+## Estado actual: v2.0.0 — OPERATIVO
 
 **Dominio:** dashboard.zyaeti.mx
 **Puerto:** 4600
@@ -8,14 +8,29 @@
 **Stack:** Node.js + Express + HTML/CSS/JS vanilla
 
 ## Sync CC — Cambios recientes
-- 2026-04-03: Creación del proyecto. Stats iniciales cargadas. (PC)
+- 2026-04-14: v2.0.0 — dashboard guía total del ecosistema. Secciones colapsables, auto-refresh, documentación viva, vista integrada iframes, PENDIENTES actualizados. (PC)
+- 2026-04-14: v1.1.0 — checkboxes colaborativos SSE, hilos abiertos/cerrados. (PC)
+- 2026-04-03: v1.0.0 — creación del proyecto, stats iniciales. (PC)
 
-## Funcionalidades
-- Dashboard estadísticas ecosistema ZYA (23 proyectos)
-- Stats por proyecto: líneas, archivos, commits
-- Estado sincronización git (PC vs NAS vs GitHub)
-- Pendientes reales del ecosistema
+## Funcionalidades (v2.0.0)
+- Stats ecosistema: 25 proyectos, líneas, archivos, servicios activos
+- **Hilos abiertos** — parsea `deseimp/hilos-abiertos.md` en tiempo real
+- **Backlog de tareas** — parsea `deseimp/backlog.md` en tiempo real
+- **Pendientes reales** — 8 acciones puntuales con checkbox colaborativo (SSE, quien/cuando)
+- **Documentación viva** — 9 archivos .md del ecosistema con visor inline markdown coloreado
+- **Auto-refresh** — OFF/30s/1min/5min, countdown visual, por defecto 1 min
+- **Vista integrada** — iframes Monitor + Changelog (lazy-load). Responsive: desktop 2col, tablet 1col, móvil tarjetas con links
+- Tabla proyectos del ecosistema
+- Estado git sync (PC ↔ NAS ↔ GitHub)
+- Todas las secciones colapsables
 
-## Pendientes
-- Conectar a git API real para stats dinámicas (futuro)
-- Auto-refresh cada 5 minutos (futuro)
+## Endpoints
+- `GET /` — dashboard principal
+- `GET /api/health` — health check
+- `GET /api/stats` — stats + proyectos + git_sync + pendientes
+- `GET /api/tareas` — parseo dinámico backlog.md
+- `GET /api/hilos` — parseo dinámico hilos-abiertos.md
+- `GET /api/docs` — índice 9 archivos .md
+- `GET /api/docs/:id` — contenido de un .md específico
+- `GET /api/events` — SSE para estado de checkboxes en tiempo real
+- `POST /api/toggle` — marcar/desmarcar pendiente o hilo
