@@ -1,5 +1,12 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14e] — fix: vista integrada responsive para tablet y móvil
+**Motivo:** S10 FE y S25 Ultra necesitan experiencia adecuada a su pantalla.
+**Cambios:**
+- Tablet (768-1024px): iframe se reduce a 420px de alto, columna única
+- Móvil (<768px): iframes ocultos — se muestran tarjetas con botón "Abrir ↗" en nueva pestaña
+- CSS limpiado: breakpoint `@media (max-width:1024px)` movido fuera del bloque de iframes
+
 ## [2026-04-14d] — feat: vista integrada con iframes (Monitor + Changelog)
 **Motivo:** Carlos quiere ver dashboard, monitor y cambios en una sola pantalla sin cambiar de pestaña.
 **Cambios:**

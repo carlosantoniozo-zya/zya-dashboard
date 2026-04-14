@@ -753,12 +753,59 @@
       background: #fff;
     }
 
+    /* Tarjetas móvil — reemplazan iframes en pantallas pequeñas */
+    .vista-mobile-card {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px;
+    }
+
+    .vista-mobile-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .vista-mobile-info { flex: 1; }
+    .vista-mobile-nombre { font-weight: 700; font-size: 14px; color: var(--text); }
+    .vista-mobile-url { font-size: 11px; color: var(--text-muted); font-family: var(--mono); margin-top: 2px; }
+
+    .vista-mobile-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid var(--green-dim);
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .vista-mobile-btn:hover { background: #2d5010; }
+
     /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .vista-frame { height: 420px; }
+    }
+
     @media (max-width: 768px) {
       header { flex-direction: column; align-items: flex-start; }
       main { padding: 12px; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
       .stat-card .stat-value { font-size: 26px; }
+      /* En móvil: ocultar iframes, mostrar tarjetas */
+      .vista-grid { display: none; }
+      .vista-mobile-card { display: flex; }
     }
   </style>
 </head>
@@ -926,8 +973,9 @@
       <span class="section-chevron collapsed">▾</span>
     </div>
     <div class="section-body collapsed">
-      <div class="vista-grid">
 
+      <!-- Desktop / Tablet: iframes -->
+      <div class="vista-grid">
         <div class="vista-panel">
           <div class="vista-panel-header">
             <div class="vista-panel-dot" style="background:#f97316"></div>
@@ -947,8 +995,28 @@
           </div>
           <iframe id="frame-changelog" class="vista-frame" src="about:blank" data-src="https://cambios.zyaeti.mx" loading="lazy" title="ZYA Changelog"></iframe>
         </div>
-
       </div>
+
+      <!-- Móvil: tarjetas con links directos -->
+      <div class="vista-mobile-card">
+        <div class="vista-mobile-item">
+          <div class="vista-mobile-dot" style="width:10px;height:10px;border-radius:50%;background:#f97316;flex-shrink:0"></div>
+          <div class="vista-mobile-info">
+            <div class="vista-mobile-nombre">ZYA Monitor</div>
+            <div class="vista-mobile-url">monitor.zyaeti.mx</div>
+          </div>
+          <a class="vista-mobile-btn" href="https://monitor.zyaeti.mx" target="_blank" rel="noopener">Abrir ↗</a>
+        </div>
+        <div class="vista-mobile-item">
+          <div class="vista-mobile-dot" style="width:10px;height:10px;border-radius:50%;background:#8b5cf6;flex-shrink:0"></div>
+          <div class="vista-mobile-info">
+            <div class="vista-mobile-nombre">ZYA Changelog</div>
+            <div class="vista-mobile-url">cambios.zyaeti.mx</div>
+          </div>
+          <a class="vista-mobile-btn" href="https://cambios.zyaeti.mx" target="_blank" rel="noopener">Abrir ↗</a>
+        </div>
+      </div>
+
     </div>
   </section>
 
