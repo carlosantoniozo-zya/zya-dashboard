@@ -406,6 +406,7 @@
     .hilo-card.estado-analisis     { border-left-color: #a78bfa; }
     .hilo-card.estado-diseno       { border-left-color: #fb923c; }
     .hilo-card.estado-datos        { border-left-color: #6ee7b7; }
+    .hilo-card.estado-cerrado      { border-left-color: #3a3a3a; }
 
     .hilo-top {
       display: flex;
@@ -445,6 +446,7 @@
     .estado-analisis .hilo-estado    { background: #2d1a4a; color: #a78bfa; }
     .estado-diseno .hilo-estado      { background: #431407; color: #fb923c; }
     .estado-datos .hilo-estado       { background: #0f2e22; color: #6ee7b7; }
+    .estado-cerrado .hilo-estado     { background: #1e1e1e; color: #555; }
 
     .hilo-proyecto {
       font-size: 11px;
@@ -726,6 +728,13 @@
       <span class="badge" id="badge-hilos">—</span>
     </div>
     <div class="hilos-grid" id="hilos-grid"></div>
+    <details id="hilos-cerrados-wrap" style="margin-top:16px;display:none">
+      <summary style="cursor:pointer;font-size:12px;color:var(--muted);font-family:monospace;letter-spacing:.05em;padding:6px 0;list-style:none;display:flex;align-items:center;gap:8px">
+        <span id="hilos-cerrados-arrow" style="font-size:10px">▶</span>
+        CERRADOS <span class="badge" id="badge-hilos-cerrados" style="background:#1a2a1a;color:#4a7a4a">—</span>
+      </summary>
+      <div class="hilos-grid" id="hilos-cerrados-grid" style="margin-top:10px;opacity:.65"></div>
+    </details>
   </section>
 
   <!-- Tareas backlog -->
@@ -852,23 +861,15 @@ function renderPendientes() {
 function renderHilos() {
   const state = tasksState.hilos || {};
 
-  // Ordenar: no completados primero, completados al final
-  const sorted = [...hilosData].sort((a, b) => {
-    const ac = state[a.id]?.completado ? 1 : 0;
-    const bc = state[b.id]?.completado ? 1 : 0;
-    return ac - bc;
-  });
-
-  document.getElementById('badge-hilos').textContent = hilosData.length;
-
   function estadoClass(estado) {
     const e = estado.toLowerCase();
-    if (e.includes('en proceso'))   return 'estado-en-proceso';
-    if (e.includes('esperando'))    return 'estado-esperando';
-    if (e.includes('nuevo'))        return 'estado-nuevo';
+    if (e.startsWith('cerrado'))     return 'estado-cerrado';
+    if (e.includes('en proceso'))    return 'estado-en-proceso';
+    if (e.includes('esperando'))     return 'estado-esperando';
+    if (e.includes('nuevo'))         return 'estado-nuevo';
     if (e.includes('análisis') || e.includes('analisis')) return 'estado-analisis';
     if (e.includes('diseño') || e.includes('diseno'))     return 'estado-diseno';
-    if (e.includes('datos listos')) return 'estado-datos';
+    if (e.includes('datos listos'))  return 'estado-datos';
     return 'estado-pendiente';
   }
 
@@ -876,8 +877,7 @@ function renderHilos() {
     return estado.split(' —')[0].split(' (')[0].trim();
   }
 
-  const hilosGrid = document.getElementById('hilos-grid');
-  hilosGrid.innerHTML = sorted.map(h => {
+  function renderCard(h) {
     const s = state[h.id] || {};
     const completado = !!s.completado;
     const quienClass = s.quien === 'Carlos' ? 'badge-carlos' : 'badge-cc';
@@ -898,7 +898,33 @@ function renderHilos() {
         ${h.proximo ? `<div class="hilo-proximo"><strong>Próximo paso</strong>${h.proximo}</div>` : ''}
       </div>
     `;
-  }).join('');
+  }
+
+  const abiertos  = hilosData.filter(h => !h.estado.toLowerCase().startsWith('cerrado'));
+  const cerrados  = hilosData.filter(h =>  h.estado.toLowerCase().startsWith('cerrado'));
+
+  // Abiertos: no-completados primero
+  const sortedAbiertos = [...abiertos].sort((a, b) => {
+    const ac = state[a.id]?.completado ? 1 : 0;
+    const bc = state[b.id]?.completado ? 1 : 0;
+    return ac - bc;
+  });
+
+  document.getElementById('badge-hilos').textContent = abiertos.length;
+  document.getElementById('hilos-grid').innerHTML = sortedAbiertos.map(renderCard).join('');
+
+  // Cerrados: bloque colapsable
+  const wrap = document.getElementById('hilos-cerrados-wrap');
+  if (cerrados.length > 0) {
+    wrap.style.display = '';
+    document.getElementById('badge-hilos-cerrados').textContent = cerrados.length;
+    document.getElementById('hilos-cerrados-grid').innerHTML = cerrados.map(renderCard).join('');
+    wrap.addEventListener('toggle', () => {
+      document.getElementById('hilos-cerrados-arrow').textContent = wrap.open ? '▼' : '▶';
+    }, { once: false });
+  } else {
+    wrap.style.display = 'none';
+  }
 }
 
 // ── Quién marca ───────────────────────────────────────────────────────────────
