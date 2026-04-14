@@ -1,5 +1,16 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14i] — feat: modal de detalle en pills del Backlog
+**Motivo:** Las pills del Backlog solo mostraban ID y título truncado — no había forma de ver el contenido completo de una tarea sin abrir el .md.
+**Cambios:**
+- `server.js` — `parseTareas()` extiende cada tarea con campo `cuerpo` (texto completo entre encabezados `## TXX`)
+- `public/index.html` — `.tarea-pill` cambia `cursor: default` → `cursor: pointer`
+- `public/index.html` — variable global `_tareasCache` almacena las tareas al renderizar
+- `public/index.html` — cada pill tiene `onclick="abrirTareaModal(id)"`
+- `public/index.html` — modal overlay con header (ID + título), cuerpo scrollable con `renderMarkdown` coloreado
+- `public/index.html` — cierre por ✕, click en fondo, o `Escape`
+**Impacto:** Click en cualquier pill abre tarjeta con texto completo de la tarea. Sin dependencias externas.
+
 ## [2026-04-14h] — feat: vista integrada responsive + secciones colapsables + auto-refresh
 **Motivo:** Carlos quiere dashboard como pantalla central sin cambiar de pestaña.
 **Cambios:**
