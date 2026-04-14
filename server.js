@@ -107,7 +107,7 @@ function contarArchivosTotal(dir) {
 function getUltimoCommit(dir) {
   if (!fs.existsSync(dir)) return 'sin-git';
   try {
-    const result = execSync('git log --oneline -1', { cwd: dir, timeout: 3000, encoding: 'utf8', stdio: ['pipe','pipe','pipe'] });
+    const result = execSync('git log --oneline -1', { cwd: dir, timeout: 3000, encoding: 'utf8', stdio: ['pipe','pipe','pipe'], windowsHide: true });
     return result.trim() || 'sin commits';
   } catch {
     return 'sin-git';
@@ -117,7 +117,7 @@ function getUltimoCommit(dir) {
 function getRama(dir) {
   if (!fs.existsSync(dir)) return 'N/A';
   try {
-    const result = execSync('git rev-parse --abbrev-ref HEAD', { cwd: dir, timeout: 3000, encoding: 'utf8', stdio: ['pipe','pipe','pipe'] });
+    const result = execSync('git rev-parse --abbrev-ref HEAD', { cwd: dir, timeout: 3000, encoding: 'utf8', stdio: ['pipe','pipe','pipe'], windowsHide: true });
     return result.trim() || 'N/A';
   } catch {
     return 'N/A';

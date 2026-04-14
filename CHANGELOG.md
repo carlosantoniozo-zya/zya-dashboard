@@ -1,5 +1,12 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14j] — fix: ventanas de cmd al recargar dashboard (windowsHide)
+**Motivo:** Al recargar con Ctrl+Shift+R (caché expirado), `calcularProyectos()` ejecutaba 25 proyectos × 2 `execSync` (git log + git rev-parse) = hasta 50 ventanas de cmd que parpadeaban en pantalla. En Windows, `execSync` sin `windowsHide: true` crea una ventana de consola visible por cada proceso hijo.
+**Cambios:**
+- `server.js:110` — `getUltimoCommit()`: agregado `windowsHide: true` al `execSync`
+- `server.js:121` — `getRama()`: agregado `windowsHide: true` al `execSync`
+**Impacto:** Cero ventanas de terminal al recargar el dashboard. Sin cambios de comportamiento.
+
 ## [2026-04-14i] — feat: modal de detalle en pills del Backlog
 **Motivo:** Las pills del Backlog solo mostraban ID y título truncado — no había forma de ver el contenido completo de una tarea sin abrir el .md.
 **Cambios:**
