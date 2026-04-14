@@ -1,5 +1,15 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14k] — feat: sección verificaciones flotilla SANYOS OPS
+
+**Motivo:** Visualizar el estado de verificaciones vehiculares de la flotilla directamente en el dashboard con semáforo por días restantes.
+
+**Cambios:**
+- `server.js`: proxy GET `/api/ops/verificaciones` → `https://ops.zyaeti.mx/api/verificaciones-flotilla-alerta`
+- `public/index.html`: nueva sección "Verificaciones flotilla — SANYOS OPS" (colapsable, antes de Hilos abiertos). Chips resumen (vencida/crítica/próxima/texto/al día) + tabla semáforo. Se recarga en auto-refresh.
+
+---
+
 ## [2026-04-14j] — fix: ventanas de cmd al recargar dashboard (windowsHide)
 **Motivo:** Al recargar con Ctrl+Shift+R (caché expirado), `calcularProyectos()` ejecutaba 25 proyectos × 2 `execSync` (git log + git rev-parse) = hasta 50 ventanas de cmd que parpadeaban en pantalla. En Windows, `execSync` sin `windowsHide: true` crea una ventana de consola visible por cada proceso hijo.
 **Cambios:**

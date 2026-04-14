@@ -401,6 +401,18 @@ app.get('/api/tasks-state', (req, res) => {
   res.json(loadTasksState());
 });
 
+// ── Proxy: verificaciones flotilla SANYOS-OPS ────────────────────────────────
+app.get('/api/ops/verificaciones', async (req, res) => {
+  try {
+    const r = await fetch('https://ops.zyaeti.mx/api/verificaciones-flotilla-alerta');
+    if (!r.ok) return res.status(502).json({ ok: false, error: `ops responde ${r.status}` });
+    const data = await r.json();
+    res.json(data);
+  } catch (e) {
+    res.status(502).json({ ok: false, error: e.message });
+  }
+});
+
 app.get('/zya-about.js', (req, res) => {
   const aboutPath = path.join('C:/Proyectos/_zya-about/about.js');
   if (fs.existsSync(aboutPath)) {
