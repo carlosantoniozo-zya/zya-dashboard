@@ -1,5 +1,17 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14] — Checkboxes colaborativos con tiempo real (SSE)
+**Motivo:** Carlos necesitaba poder marcar tareas completadas desde cualquier dispositivo (PC, tablet, celular) con actualización inmediata en todos ellos.
+**Cambios:**
+- `server.js` — `tasks-state.json` para persistencia, SSE en `/api/events`, toggle en `POST /api/toggle`, estado en `GET /api/tasks-state`
+- `server.js` — campo `id` en cada item de `PENDIENTES` para identificación estable
+- `public/index.html` — checkboxes en Pendientes e Hilos abiertos con badge de quién marcó (Carlos/CC) + fecha/hora
+- `public/index.html` — dialog inline "¿Quién completa esto?" al hacer click
+- `public/index.html` — items completados: texto tachado + bajan al final + badge con nombre y timestamp
+- `public/index.html` — re-render en tiempo real via SSE (sin polling, sin refresh)
+**CC puede marcar desde terminal:** `curl -X POST http://localhost:4600/api/toggle -H "Content-Type: application/json" -d '{"tipo":"pendientes","id":"<id>","quien":"CC"}'`
+**Impacto:** Dashboard es ahora colaborativo y reactivo entre todos los dispositivos de Carlos.
+
 ## [2026-04-14] — Hilos abiertos + Backlog de tareas
 **Motivo:** Carlos necesitaba visibilidad de trabajos en proceso que no tienen cierre formal y del estado del backlog por categoría.
 **Cambios:**

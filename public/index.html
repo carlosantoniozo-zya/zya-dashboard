@@ -607,6 +607,73 @@
     .tarea-pill.clase-espera      { border-left: 3px solid var(--blue); opacity: 0.7; }
     .tarea-pill.clase-cancelada   { border-left: 3px solid var(--text-muted); opacity: 0.4; }
 
+    /* ── Checkboxes ──────────────────────────────────────────────────────── */
+    .cb-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .cb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .cb:hover { border-color: var(--green); }
+
+    .cb.checked {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .cb.checked::after {
+      content: '✓';
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .badge-quien {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .badge-quien.visible { opacity: 1; }
+
+    .badge-carlos { background: #1e3a5f; color: var(--blue); }
+    .badge-cc     { background: #1a2e10; color: var(--green); }
+    .badge-cuando {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .badge-cuando.visible { opacity: 1; }
+
+    .item-completado .pendiente-desc,
+    .item-completado .hilo-titulo {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 768px) {
       header { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -722,8 +789,187 @@
 </main>
 
 <script>
+// ── Estado global ─────────────────────────────────────────────────────────────
+let tasksState = { pendientes: {}, hilos: {} };
+let pendientesData = [];
+let hilosData = [];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const fmt = n => n.toLocaleString('es-MX');
+
+function fmtCuando(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleString('es-MX', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+async function toggle(tipo, id, quien) {
+  await fetch('/api/toggle', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tipo, id, quien })
+  });
+  // El SSE actualizará el estado en todos los clientes
+}
+
+// ── Render pendientes ─────────────────────────────────────────────────────────
+function renderPendientes() {
+  const tipoLabel = { manual: 'Manual', codigo: 'Código', 'espera-cliente': 'Espera cliente' };
+  const state = tasksState.pendientes || {};
+
+  // Ordenar: no completados primero, completados al final
+  const sorted = [...pendientesData].sort((a, b) => {
+    const ac = state[a.id]?.completado ? 1 : 0;
+    const bc = state[b.id]?.completado ? 1 : 0;
+    return ac - bc;
+  });
+
+  document.getElementById('badge-pendientes').textContent = pendientesData.length;
+  document.getElementById('pendientes-list').innerHTML = sorted.map(p => {
+    const s = state[p.id] || {};
+    const completado = !!s.completado;
+    const quienClass = s.quien === 'Carlos' ? 'badge-carlos' : 'badge-cc';
+    const quienLower = (s.quien || '').toLowerCase();
+    return `
+      <div class="pendiente-item ${completado ? 'item-completado' : ''}" data-id="${p.id}">
+        <div class="cb-wrap">
+          <div class="cb ${completado ? 'checked' : ''}" title="Marcar como completado"
+            onclick="promptToggle('pendientes','${p.id}')"></div>
+          <span class="badge-quien ${quienClass} ${completado ? 'visible' : ''}">${s.quien || ''}</span>
+          <span class="badge-cuando ${completado ? 'visible' : ''}">${fmtCuando(s.cuando)}</span>
+        </div>
+        <div class="pendiente-tipo tipo-${p.tipo}">${tipoLabel[p.tipo] || p.tipo}</div>
+        <div class="pendiente-info">
+          <div class="pendiente-desc">${p.descripcion}</div>
+          <div class="pendiente-meta">${p.proyecto} · ${p.responsable}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Render hilos ──────────────────────────────────────────────────────────────
+function renderHilos() {
+  const state = tasksState.hilos || {};
+
+  // Ordenar: no completados primero, completados al final
+  const sorted = [...hilosData].sort((a, b) => {
+    const ac = state[a.id]?.completado ? 1 : 0;
+    const bc = state[b.id]?.completado ? 1 : 0;
+    return ac - bc;
+  });
+
+  document.getElementById('badge-hilos').textContent = hilosData.length;
+
+  function estadoClass(estado) {
+    const e = estado.toLowerCase();
+    if (e.includes('en proceso'))   return 'estado-en-proceso';
+    if (e.includes('esperando'))    return 'estado-esperando';
+    if (e.includes('nuevo'))        return 'estado-nuevo';
+    if (e.includes('análisis') || e.includes('analisis')) return 'estado-analisis';
+    if (e.includes('diseño') || e.includes('diseno'))     return 'estado-diseno';
+    if (e.includes('datos listos')) return 'estado-datos';
+    return 'estado-pendiente';
+  }
+
+  function estadoLabel(estado) {
+    return estado.split(' —')[0].split(' (')[0].trim();
+  }
+
+  const hilosGrid = document.getElementById('hilos-grid');
+  hilosGrid.innerHTML = sorted.map(h => {
+    const s = state[h.id] || {};
+    const completado = !!s.completado;
+    const quienClass = s.quien === 'Carlos' ? 'badge-carlos' : 'badge-cc';
+    return `
+      <div class="hilo-card ${estadoClass(h.estado)} ${completado ? 'item-completado' : ''}">
+        <div class="hilo-top">
+          <div class="cb-wrap">
+            <div class="cb ${completado ? 'checked' : ''}" title="Marcar como completado"
+              onclick="promptToggle('hilos','${h.id}')"></div>
+            <span class="badge-quien ${quienClass} ${completado ? 'visible' : ''}">${s.quien || ''}</span>
+            <span class="badge-cuando ${completado ? 'visible' : ''}">${fmtCuando(s.cuando)}</span>
+          </div>
+          <span class="hilo-id">${h.id}</span>
+          <span class="hilo-titulo">${h.titulo}</span>
+          <span class="hilo-estado">${estadoLabel(h.estado)}</span>
+        </div>
+        <div class="hilo-proyecto">${h.proyecto}</div>
+        ${h.proximo ? `<div class="hilo-proximo"><strong>Próximo paso</strong>${h.proximo}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Quién marca ───────────────────────────────────────────────────────────────
+function promptToggle(tipo, id) {
+  // Si ya está completado, desmarcar sin preguntar
+  const current = tasksState[tipo]?.[id];
+  if (current?.completado) {
+    toggle(tipo, id, current.quien);
+    return;
+  }
+  // Si no está completado, preguntar quién marca
+  showQuienDialog(tipo, id);
+}
+
+function showQuienDialog(tipo, id) {
+  // Mini dialog inline — si ya existe, lo cerramos
+  const existing = document.getElementById('quien-dialog');
+  if (existing) existing.remove();
+
+  const d = document.createElement('div');
+  d.id = 'quien-dialog';
+  d.style.cssText = `
+    position:fixed; bottom:32px; left:50%; transform:translateX(-50%);
+    background:#1e293b; border:1px solid #334155; border-radius:12px;
+    padding:16px 20px; z-index:9999; display:flex; align-items:center; gap:12px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.5); font-size:13px; color:#e2e8f0;
+  `;
+  d.innerHTML = `
+    <span style="color:#94a3b8">¿Quién completa esto?</span>
+    <button onclick="doToggle('${tipo}','${id}','Carlos')"
+      style="background:#1e3a5f;color:#38bdf8;border:1px solid #1d4a7a;border-radius:6px;padding:6px 14px;cursor:pointer;font-weight:700;font-size:12px">
+      Carlos
+    </button>
+    <button onclick="doToggle('${tipo}','${id}','CC')"
+      style="background:#1a2e10;color:#5EAC24;border:1px solid #3d7018;border-radius:6px;padding:6px 14px;cursor:pointer;font-weight:700;font-size:12px">
+      CC
+    </button>
+    <button onclick="document.getElementById('quien-dialog').remove()"
+      style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:0 4px">✕</button>
+  `;
+  document.body.appendChild(d);
+
+  // Auto-cerrar a los 10s
+  setTimeout(() => d.remove(), 10000);
+}
+
+function doToggle(tipo, id, quien) {
+  const d = document.getElementById('quien-dialog');
+  if (d) d.remove();
+  toggle(tipo, id, quien);
+}
+
+// ── SSE ───────────────────────────────────────────────────────────────────────
+function connectSSE() {
+  const es = new EventSource('/api/events');
+  es.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === 'init' || msg.type === 'update') {
+      tasksState = msg.state;
+      renderPendientes();
+      renderHilos();
+    }
+  };
+  es.onerror = () => {
+    // Reconectar en 3s si falla
+    es.close();
+    setTimeout(connectSSE, 3000);
+  };
+}
+
 (async () => {
-  const fmt = n => n.toLocaleString('es-MX');
 
   function badgeTipo(tipo) {
     const map = { NAS: 'badge-nas', local: 'badge-local', modulo: 'badge-modulo', herramienta: 'badge-herramienta' };
@@ -795,18 +1041,8 @@
     `).join('');
 
     // Pendientes
-    document.getElementById('badge-pendientes').textContent = pendientes.length;
-    const tipoLabel = { manual: 'Manual', codigo: 'Código', 'espera-cliente': 'Espera cliente' };
-    const pendientesList = document.getElementById('pendientes-list');
-    pendientesList.innerHTML = pendientes.map(p => `
-      <div class="pendiente-item">
-        <div class="pendiente-tipo tipo-${p.tipo}">${tipoLabel[p.tipo] || p.tipo}</div>
-        <div class="pendiente-info">
-          <div class="pendiente-desc">${p.descripcion}</div>
-          <div class="pendiente-meta">${p.proyecto} · ${p.responsable}</div>
-        </div>
-      </div>
-    `).join('');
+    pendientesData = pendientes;
+    renderPendientes();
 
     // Tareas backlog
     const tareasRes = await fetch('/api/tareas');
@@ -853,44 +1089,18 @@
 
     // Hilos abiertos
     const hilosRes = await fetch('/api/hilos');
-    const hilosData = await hilosRes.json();
-    const hilos = hilosData.hilos || [];
-    document.getElementById('badge-hilos').textContent = hilos.length;
-
-    function estadoClass(estado) {
-      const e = estado.toLowerCase();
-      if (e.includes('en proceso'))   return 'estado-en-proceso';
-      if (e.includes('esperando'))    return 'estado-esperando';
-      if (e.includes('nuevo'))        return 'estado-nuevo';
-      if (e.includes('análisis') || e.includes('analisis')) return 'estado-analisis';
-      if (e.includes('diseño') || e.includes('diseno'))     return 'estado-diseno';
-      if (e.includes('datos listos')) return 'estado-datos';
-      return 'estado-pendiente';
-    }
-
-    function estadoLabel(estado) {
-      // Tomar solo la primera parte antes de " —"
-      return estado.split(' —')[0].split(' (')[0].trim();
-    }
-
-    const hilosGrid = document.getElementById('hilos-grid');
-    hilosGrid.innerHTML = hilos.map(h => `
-      <div class="hilo-card ${estadoClass(h.estado)}">
-        <div class="hilo-top">
-          <span class="hilo-id">${h.id}</span>
-          <span class="hilo-titulo">${h.titulo}</span>
-          <span class="hilo-estado">${estadoLabel(h.estado)}</span>
-        </div>
-        <div class="hilo-proyecto">${h.proyecto}</div>
-        ${h.proximo ? `<div class="hilo-proximo"><strong>Próximo paso</strong>${h.proximo}</div>` : ''}
-      </div>
-    `).join('');
+    const hilosDataRaw = await hilosRes.json();
+    hilosData = hilosDataRaw.hilos || [];
+    renderHilos();
 
   } catch (err) {
     console.error('Error cargando stats:', err);
     document.getElementById('header-meta').textContent = 'Error al cargar datos';
   }
 })();
+
+// Iniciar SSE al cargar
+connectSSE();
 
 function toggleGrupo(header) {
   const pills = header.nextElementSibling;

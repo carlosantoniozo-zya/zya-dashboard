@@ -293,12 +293,33 @@ const GIT_SYNC = [
 ];
 
 const PENDIENTES = [
-  { descripcion: 'Activar toggle recordatorios en sesiona.zyaeti.mx/configuracion', tipo: 'manual', responsable: 'Carlos', proyecto: 'sesiona' },
-  { descripcion: 'Llenar cédula/teléfono/dirección Dr. Solano en usg.zyaeti.mx/admin', tipo: 'manual', responsable: 'Carlos', proyecto: 'usg-solano' },
-  { descripcion: 'Integrar canvas snapshot al PDF (USG)', tipo: 'código', responsable: 'CC', proyecto: 'usg-solano' },
-  { descripcion: 'Sesiona: WebSockets chat + SERVER_ENCRYPTION_KEY', tipo: 'código', responsable: 'CC', proyecto: 'sesiona' },
-  { descripcion: 'Byrsa: comparación digital inventario (escaneo vs Factusol)', tipo: 'código', responsable: 'CC', proyecto: 'byrsa' },
+  { id: 'sesiona-toggle', descripcion: 'Activar toggle recordatorios en sesiona.zyaeti.mx/configuracion', tipo: 'manual', responsable: 'Carlos', proyecto: 'sesiona' },
+  { id: 'usg-datos-solano', descripcion: 'Llenar cédula/teléfono/dirección Dr. Solano en usg.zyaeti.mx/admin', tipo: 'manual', responsable: 'Carlos', proyecto: 'usg-solano' },
+  { id: 'usg-canvas-pdf', descripcion: 'Integrar canvas snapshot al PDF (USG)', tipo: 'código', responsable: 'CC', proyecto: 'usg-solano' },
+  { id: 'sesiona-websockets', descripcion: 'Sesiona: WebSockets chat + SERVER_ENCRYPTION_KEY', tipo: 'código', responsable: 'CC', proyecto: 'sesiona' },
+  { id: 'byrsa-comparacion', descripcion: 'Byrsa: comparación digital inventario (escaneo vs Factusol)', tipo: 'código', responsable: 'CC', proyecto: 'byrsa' },
 ];
+
+// ── Tasks state (checkboxes) ──────────────────────────────────────────────────
+const STATE_PATH = path.join(__dirname, 'tasks-state.json');
+
+function loadTasksState() {
+  if (!fs.existsSync(STATE_PATH)) return { pendientes: {}, hilos: {} };
+  try { return JSON.parse(fs.readFileSync(STATE_PATH, 'utf8')); }
+  catch { return { pendientes: {}, hilos: {} }; }
+}
+
+function saveTasksState(state) {
+  fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2), 'utf8');
+}
+
+// SSE — lista de clientes conectados
+const sseClients = [];
+
+function broadcastState(state) {
+  const msg = `data: ${JSON.stringify({ type: 'update', state })}\n\n`;
+  sseClients.forEach(c => c.write(msg));
+}
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(express.json());
@@ -417,6 +438,50 @@ app.get('/api/tareas', (req, res) => {
     canceladas: tareas.filter(t => t.clase === 'cancelada').length,
   };
   res.json({ tareas, resumen });
+});
+
+// ── SSE ───────────────────────────────────────────────────────────────────────
+app.get('/api/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const state = loadTasksState();
+  res.write(`data: ${JSON.stringify({ type: 'init', state })}\n\n`);
+
+  sseClients.push(res);
+  req.on('close', () => {
+    const i = sseClients.indexOf(res);
+    if (i > -1) sseClients.splice(i, 1);
+  });
+});
+
+// ── Toggle checkbox ───────────────────────────────────────────────────────────
+// body: { tipo: 'pendientes'|'hilos', id: string, quien: 'Carlos'|'CC' }
+app.post('/api/toggle', (req, res) => {
+  const { tipo, id, quien } = req.body;
+  if (!tipo || !id || !quien) return res.status(400).json({ error: 'Faltan parámetros' });
+  if (!['pendientes', 'hilos'].includes(tipo)) return res.status(400).json({ error: 'tipo inválido' });
+
+  const state = loadTasksState();
+  if (!state[tipo]) state[tipo] = {};
+
+  const actual = state[tipo][id];
+  if (actual && actual.completado) {
+    state[tipo][id] = { completado: false, quien: null, cuando: null };
+  } else {
+    state[tipo][id] = { completado: true, quien, cuando: new Date().toISOString() };
+  }
+
+  saveTasksState(state);
+  broadcastState(state);
+  res.json({ ok: true, item: state[tipo][id] });
+});
+
+// ── Estado actual de tasks ────────────────────────────────────────────────────
+app.get('/api/tasks-state', (req, res) => {
+  res.json(loadTasksState());
 });
 
 app.get('/zya-about.js', (req, res) => {
