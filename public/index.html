@@ -39,13 +39,15 @@
     header {
       background: var(--bg2);
       border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 100;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .header-left {
@@ -75,14 +77,55 @@
       color: var(--text);
     }
 
-    header h1 span {
-      color: var(--green);
+    header h1 span { color: var(--green); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
 
     .header-meta {
       font-size: 12px;
       color: var(--text-muted);
       font-family: var(--mono);
+    }
+
+    /* Auto-refresh control */
+    .refresh-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .refresh-control select {
+      background: var(--bg3);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-family: var(--mono);
+      cursor: pointer;
+    }
+
+    .refresh-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: background 0.3s;
+    }
+
+    .refresh-indicator.active { background: var(--green); animation: pulse 1.5s infinite; }
+
+    .refresh-countdown {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
+      min-width: 28px;
     }
 
     /* ── Layout ──────────────────────────────────────────────────────────── */
@@ -92,7 +135,7 @@
       padding: 24px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 14px;
     }
 
     /* ── Stats globales ──────────────────────────────────────────────────── */
@@ -142,7 +185,7 @@
       margin-top: 6px;
     }
 
-    /* ── Secciones ───────────────────────────────────────────────────────── */
+    /* ── Secciones colapsables ───────────────────────────────────────────── */
     section {
       background: var(--bg2);
       border: 1px solid var(--border);
@@ -151,13 +194,18 @@
     }
 
     .section-header {
-      padding: 14px 20px;
+      padding: 12px 20px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 10px;
       background: var(--bg3);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
     }
+
+    .section-header:hover { background: #2d3a52; }
 
     .section-header h2 {
       font-size: 13px;
@@ -165,6 +213,7 @@
       letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--text);
+      flex: 1;
     }
 
     .section-header .badge {
@@ -177,10 +226,19 @@
       font-family: var(--mono);
     }
 
-    /* ── Tabla ───────────────────────────────────────────────────────────── */
-    .table-wrap {
-      overflow-x: auto;
+    .section-chevron {
+      font-size: 11px;
+      color: var(--text-muted);
+      transition: transform 0.2s;
     }
+
+    .section-chevron.collapsed { transform: rotate(-90deg); }
+
+    .section-body { display: block; }
+    .section-body.collapsed { display: none; }
+
+    /* ── Tabla ───────────────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
 
     table {
       width: 100%;
@@ -207,7 +265,6 @@
     }
 
     tbody tr:last-child { border-bottom: none; }
-
     tbody tr:hover { background: var(--green-glow); }
 
     tbody td {
@@ -216,65 +273,19 @@
       vertical-align: middle;
     }
 
-    .td-proyecto {
-      font-weight: 600;
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--text);
-    }
-
-    .td-dominio a {
-      color: var(--blue);
-      text-decoration: none;
-      font-family: var(--mono);
-      font-size: 12px;
-    }
-
+    .td-proyecto { font-weight: 600; font-family: var(--mono); font-size: 12px; color: var(--text); }
+    .td-dominio a { color: var(--blue); text-decoration: none; font-family: var(--mono); font-size: 12px; }
     .td-dominio a:hover { text-decoration: underline; }
+    .td-null { color: var(--text-muted); font-style: italic; font-size: 12px; }
+    .td-numero { font-family: var(--mono); text-align: right; color: var(--text); }
+    .td-commit { font-family: var(--mono); font-size: 11px; color: var(--text-muted); max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
+    .td-commit .hash { color: var(--green); margin-right: 4px; }
+    .td-rama { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
 
-    .td-null {
-      color: var(--text-muted);
-      font-style: italic;
-      font-size: 12px;
-    }
-
-    .td-numero {
-      font-family: var(--mono);
-      text-align: right;
-      color: var(--text);
-    }
-
-    .td-commit {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      max-width: 240px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .td-commit .hash {
-      color: var(--green);
-      margin-right: 4px;
-    }
-
-    .td-rama {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .badge-tipo {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
-      display: inline-block;
-    }
-
-    .badge-nas     { background: #1e3a5f; color: var(--blue); }
-    .badge-local   { background: #1a2e10; color: var(--green); }
-    .badge-modulo  { background: #2d1a4a; color: #a78bfa; }
+    .badge-tipo { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; display: inline-block; }
+    .badge-nas         { background: #1e3a5f; color: var(--blue); }
+    .badge-local       { background: #1a2e10; color: var(--green); }
+    .badge-modulo      { background: #2d1a4a; color: #a78bfa; }
     .badge-herramienta { background: #2a1a00; color: var(--yellow); }
 
     /* ── Git sync ────────────────────────────────────────────────────────── */
@@ -295,17 +306,9 @@
       gap: 10px;
     }
 
-    .sync-card .sync-name {
-      font-family: var(--mono);
-      font-weight: 700;
-      font-size: 13px;
-      color: var(--text);
-    }
+    .sync-card .sync-name { font-family: var(--mono); font-weight: 700; font-size: 13px; color: var(--text); }
 
-    .sync-indicators {
-      display: flex;
-      gap: 8px;
-    }
+    .sync-indicators { display: flex; gap: 8px; }
 
     .sync-pill {
       display: flex;
@@ -318,16 +321,11 @@
       border: 1px solid var(--border);
     }
 
-    .sync-pill.ok  { background: #1a2e10; color: var(--green); border-color: var(--green-dim); }
-    .sync-pill.fail { background: #2e1010; color: var(--red); border-color: #7f1d1d; }
+    .sync-pill.ok   { background: #1a2e10; color: var(--green); border-color: var(--green-dim); }
+    .sync-pill.fail { background: #2e1010; color: var(--red);   border-color: #7f1d1d; }
 
-    .sync-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-    }
-
-    .ok .sync-dot  { background: var(--green); }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .ok .sync-dot   { background: var(--green); }
     .fail .sync-dot { background: var(--red); }
 
     /* ── Pendientes ──────────────────────────────────────────────────────── */
@@ -358,27 +356,13 @@
       margin-top: 1px;
     }
 
-    .tipo-manual        { background: #1e3a5f; color: var(--blue); }
-    .tipo-codigo        { background: #1a2e10; color: var(--green); }
+    .tipo-manual         { background: #1e3a5f; color: var(--blue); }
+    .tipo-codigo         { background: #1a2e10; color: var(--green); }
     .tipo-espera-cliente { background: #2d1a00; color: var(--yellow); }
 
-    .pendiente-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .pendiente-desc {
-      font-size: 13px;
-      color: var(--text);
-      line-height: 1.4;
-    }
-
-    .pendiente-meta {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 3px;
-      font-family: var(--mono);
-    }
+    .pendiente-info { flex: 1; min-width: 0; }
+    .pendiente-desc { font-size: 13px; color: var(--text); line-height: 1.4; }
+    .pendiente-meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; font-family: var(--mono); }
 
     /* ── Hilos abiertos ─────────────────────────────────────────────────── */
     .hilos-grid {
@@ -399,36 +383,18 @@
       border-left: 3px solid var(--border);
     }
 
-    .hilo-card.estado-en-proceso   { border-left-color: var(--yellow); }
-    .hilo-card.estado-pendiente    { border-left-color: var(--blue); }
-    .hilo-card.estado-esperando    { border-left-color: #fb923c; }
-    .hilo-card.estado-nuevo        { border-left-color: var(--green); }
-    .hilo-card.estado-analisis     { border-left-color: #a78bfa; }
-    .hilo-card.estado-diseno       { border-left-color: #fb923c; }
-    .hilo-card.estado-datos        { border-left-color: #6ee7b7; }
-    .hilo-card.estado-cerrado      { border-left-color: #3a3a3a; }
+    .hilo-card.estado-en-proceso  { border-left-color: var(--yellow); }
+    .hilo-card.estado-pendiente   { border-left-color: var(--blue); }
+    .hilo-card.estado-esperando   { border-left-color: #fb923c; }
+    .hilo-card.estado-nuevo       { border-left-color: var(--green); }
+    .hilo-card.estado-analisis    { border-left-color: #a78bfa; }
+    .hilo-card.estado-diseno      { border-left-color: #fb923c; }
+    .hilo-card.estado-datos       { border-left-color: #6ee7b7; }
+    .hilo-card.estado-cerrado     { border-left-color: #3a3a3a; }
 
-    .hilo-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .hilo-id {
-      font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-muted);
-      flex-shrink: 0;
-    }
-
-    .hilo-titulo {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-      flex: 1;
-      min-width: 0;
-    }
+    .hilo-top { display: flex; align-items: center; gap: 8px; }
+    .hilo-id  { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--text-muted); flex-shrink: 0; }
+    .hilo-titulo { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; min-width: 0; }
 
     .hilo-estado {
       font-size: 10px;
@@ -448,11 +414,7 @@
     .estado-datos .hilo-estado       { background: #0f2e22; color: #6ee7b7; }
     .estado-cerrado .hilo-estado     { background: #1e1e1e; color: #555; }
 
-    .hilo-proyecto {
-      font-size: 11px;
-      font-family: var(--mono);
-      color: var(--text-muted);
-    }
+    .hilo-proyecto { font-size: 11px; font-family: var(--mono); color: var(--text-muted); }
 
     .hilo-proximo {
       font-size: 12px;
@@ -488,21 +450,8 @@
       text-align: center;
     }
 
-    .tarea-stat .ts-num {
-      font-family: var(--mono);
-      font-size: 28px;
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .tarea-stat .ts-label {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--text-muted);
-      margin-top: 5px;
-    }
+    .tarea-stat .ts-num { font-family: var(--mono); font-size: 28px; font-weight: 800; line-height: 1; }
+    .tarea-stat .ts-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-top: 5px; }
 
     .ts-completadas .ts-num { color: var(--green); }
     .ts-abiertas    .ts-num { color: var(--yellow); }
@@ -510,16 +459,8 @@
     .ts-canceladas  .ts-num { color: var(--text-muted); }
     .ts-total       .ts-num { color: var(--text); }
 
-    .tareas-grupos {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .tareas-grupo {
-      border-bottom: 1px solid var(--border);
-    }
-
+    .tareas-grupos { display: flex; flex-direction: column; gap: 0; }
+    .tareas-grupo  { border-bottom: 1px solid var(--border); }
     .tareas-grupo:last-child { border-bottom: none; }
 
     .tareas-grupo-header {
@@ -539,38 +480,17 @@
 
     .tareas-grupo-header:hover { background: var(--bg2); }
 
-    .grupo-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
+    .grupo-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .grupo-abiertas   .grupo-dot { background: var(--yellow); }
     .grupo-completadas .grupo-dot { background: var(--green); }
     .grupo-espera     .grupo-dot { background: var(--blue); }
     .grupo-canceladas .grupo-dot { background: var(--text-muted); }
 
-    .grupo-count {
-      margin-left: auto;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .grupo-chevron {
-      font-size: 10px;
-      transition: transform 0.2s;
-    }
-
+    .grupo-count { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+    .grupo-chevron { font-size: 10px; transition: transform 0.2s; }
     .grupo-chevron.collapsed { transform: rotate(-90deg); }
 
-    .tareas-pills {
-      padding: 12px 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .tareas-pills { padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px; }
 
     .tarea-pill {
       display: flex;
@@ -586,21 +506,8 @@
     }
 
     .tarea-pill:hover { border-color: var(--green-dim); }
-
-    .tarea-pill .pill-id {
-      font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    .tarea-pill .pill-titulo {
-      color: var(--text);
-      max-width: 220px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    .tarea-pill .pill-id    { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--text-muted); }
+    .tarea-pill .pill-titulo { color: var(--text); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     .tarea-pill.clase-en-proceso  { border-left: 3px solid var(--yellow); }
     .tarea-pill.clase-pendiente   { border-left: 3px solid var(--blue); }
@@ -610,12 +517,7 @@
     .tarea-pill.clase-cancelada   { border-left: 3px solid var(--text-muted); opacity: 0.4; }
 
     /* ── Checkboxes ──────────────────────────────────────────────────────── */
-    .cb-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
+    .cb-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
     .cb {
       width: 20px;
@@ -632,19 +534,8 @@
     }
 
     .cb:hover { border-color: var(--green); }
-
-    .cb.checked {
-      background: var(--green);
-      border-color: var(--green);
-    }
-
-    .cb.checked::after {
-      content: '✓';
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
-      line-height: 1;
-    }
+    .cb.checked { background: var(--green); border-color: var(--green); }
+    .cb.checked::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 800; line-height: 1; }
 
     .badge-quien {
       font-size: 10px;
@@ -657,9 +548,9 @@
     }
 
     .badge-quien.visible { opacity: 1; }
-
     .badge-carlos { background: #1e3a5f; color: var(--blue); }
     .badge-cc     { background: #1a2e10; color: var(--green); }
+
     .badge-cuando {
       font-size: 10px;
       color: var(--text-muted);
@@ -668,17 +559,128 @@
       opacity: 0;
       transition: opacity 0.2s;
     }
+
     .badge-cuando.visible { opacity: 1; }
 
     .item-completado .pendiente-desc,
-    .item-completado .hilo-titulo {
-      text-decoration: line-through;
-      opacity: 0.5;
+    .item-completado .hilo-titulo { text-decoration: line-through; opacity: 0.5; }
+
+    /* ── Documentación viva ─────────────────────────────────────────────── */
+    .docs-categorias {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
+    .doc-categoria-titulo {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0 2px 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 4px;
+    }
+
+    .docs-fila {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .doc-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .doc-btn:hover { border-color: var(--green-dim); background: var(--green-glow); }
+    .doc-btn.active { border-color: var(--green); background: var(--green-glow); color: var(--green); }
+
+    .doc-btn .doc-icon { font-size: 14px; }
+
+    /* Visor de doc */
+    .doc-viewer {
+      margin: 0 16px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .doc-viewer.visible { display: block; }
+
+    .doc-viewer-header {
+      padding: 10px 16px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .doc-viewer-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      font-family: var(--mono);
+    }
+
+    .doc-viewer-close {
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 16px;
+      background: none;
+      border: none;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+
+    .doc-viewer-close:hover { color: var(--text); }
+
+    .doc-viewer-content {
+      padding: 16px;
+      max-height: 520px;
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .doc-viewer-content pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Markdown lite coloreado */
+    .doc-viewer-content .md-h1 { color: var(--green); font-size: 15px; font-weight: 800; margin: 12px 0 4px; display: block; }
+    .doc-viewer-content .md-h2 { color: var(--blue); font-size: 13px; font-weight: 700; margin: 10px 0 3px; display: block; }
+    .doc-viewer-content .md-h3 { color: var(--yellow); font-size: 12px; font-weight: 700; margin: 8px 0 2px; display: block; }
+    .doc-viewer-content .md-bold { color: var(--text); font-weight: 700; }
+    .doc-viewer-content .md-code { background: var(--bg3); border-radius: 3px; padding: 1px 5px; font-family: var(--mono); font-size: 11px; color: #a78bfa; }
+    .doc-viewer-content .md-check-ok  { color: var(--green); }
+    .doc-viewer-content .md-check-no  { color: var(--yellow); }
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 768px) {
-      header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      header { flex-direction: column; align-items: flex-start; }
       main { padding: 12px; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
       .stat-card .stat-value { font-size: 26px; }
@@ -692,7 +694,20 @@
     <div class="logo-dot"></div>
     <h1>ZYA <span>Dashboard</span> — Ecosistema</h1>
   </div>
-  <div class="header-meta" id="header-meta">Cargando...</div>
+  <div class="header-right">
+    <div class="refresh-control">
+      <div class="refresh-indicator" id="refresh-indicator"></div>
+      <span>Auto-refresh:</span>
+      <select id="refresh-select" onchange="setRefresh(this.value)">
+        <option value="0">OFF</option>
+        <option value="30">30s</option>
+        <option value="60" selected>1 min</option>
+        <option value="300">5 min</option>
+      </select>
+      <span class="refresh-countdown" id="refresh-countdown"></span>
+    </div>
+    <div class="header-meta" id="header-meta">Cargando...</div>
+  </div>
 </header>
 
 <main>
@@ -723,77 +738,110 @@
 
   <!-- Hilos abiertos -->
   <section>
-    <div class="section-header">
+    <div class="section-header" onclick="toggleSection(this)">
       <h2>Hilos abiertos</h2>
       <span class="badge" id="badge-hilos">—</span>
+      <span class="section-chevron">▾</span>
     </div>
-    <div class="hilos-grid" id="hilos-grid"></div>
-    <details id="hilos-cerrados-wrap" style="margin-top:16px;display:none">
-      <summary style="cursor:pointer;font-size:12px;color:var(--muted);font-family:monospace;letter-spacing:.05em;padding:6px 0;list-style:none;display:flex;align-items:center;gap:8px">
-        <span id="hilos-cerrados-arrow" style="font-size:10px">▶</span>
-        CERRADOS <span class="badge" id="badge-hilos-cerrados" style="background:#1a2a1a;color:#4a7a4a">—</span>
-      </summary>
-      <div class="hilos-grid" id="hilos-cerrados-grid" style="margin-top:10px;opacity:.65"></div>
-    </details>
+    <div class="section-body">
+      <div class="hilos-grid" id="hilos-grid"></div>
+      <details id="hilos-cerrados-wrap" style="margin:0 16px 16px;display:none">
+        <summary style="cursor:pointer;font-size:12px;color:var(--text-muted);font-family:monospace;letter-spacing:.05em;padding:6px 4px;list-style:none;display:flex;align-items:center;gap:8px">
+          <span id="hilos-cerrados-arrow" style="font-size:10px">▶</span>
+          CERRADOS <span class="badge" id="badge-hilos-cerrados" style="background:#1a2a1a;color:#4a7a4a">—</span>
+        </summary>
+        <div class="hilos-grid" id="hilos-cerrados-grid" style="margin-top:10px;opacity:.65;padding-top:0"></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- Pendientes reales -->
+  <section>
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Pendientes reales</h2>
+      <span class="badge" id="badge-pendientes">—</span>
+      <span class="section-chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="pendientes-list" id="pendientes-list"></div>
+    </div>
   </section>
 
   <!-- Tareas backlog -->
   <section>
-    <div class="section-header">
+    <div class="section-header" onclick="toggleSection(this)">
       <h2>Backlog de tareas</h2>
       <span class="badge" id="badge-tareas">—</span>
+      <span class="section-chevron">▾</span>
     </div>
-    <div class="tareas-resumen" id="tareas-resumen"></div>
-    <div class="tareas-grupos" id="tareas-grupos"></div>
+    <div class="section-body">
+      <div class="tareas-resumen" id="tareas-resumen"></div>
+      <div class="tareas-grupos" id="tareas-grupos"></div>
+    </div>
   </section>
 
-  <!-- Tabla principal -->
+  <!-- Documentación viva -->
   <section>
-    <div class="section-header">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Documentación viva</h2>
+      <span class="badge">9 archivos</span>
+      <span class="section-chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="docs-categorias" id="docs-categorias"></div>
+      <div class="doc-viewer" id="doc-viewer">
+        <div class="doc-viewer-header">
+          <span class="doc-viewer-title" id="doc-viewer-title">—</span>
+          <button class="doc-viewer-close" onclick="cerrarDoc()">✕</button>
+        </div>
+        <div class="doc-viewer-content" id="doc-viewer-content"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Proyectos del ecosistema -->
+  <section>
+    <div class="section-header" onclick="toggleSection(this)">
       <h2>Proyectos del ecosistema</h2>
       <span class="badge" id="badge-count">—</span>
+      <span class="section-chevron collapsed">▾</span>
     </div>
-    <div class="table-wrap">
-      <table id="tabla-proyectos">
-        <thead>
-          <tr>
-            <th>Proyecto</th>
-            <th>Dominio</th>
-            <th>Puerto</th>
-            <th>Tipo</th>
-            <th>Líneas</th>
-            <th>Archivos</th>
-            <th>JS</th>
-            <th>TS</th>
-            <th>JSX</th>
-            <th>TSX</th>
-            <th>Último commit</th>
-            <th>Rama</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-proyectos"></tbody>
-      </table>
+    <div class="section-body collapsed">
+      <div class="table-wrap">
+        <table id="tabla-proyectos">
+          <thead>
+            <tr>
+              <th>Proyecto</th>
+              <th>Dominio</th>
+              <th>Puerto</th>
+              <th>Tipo</th>
+              <th>Líneas</th>
+              <th>Archivos</th>
+              <th>JS</th>
+              <th>TS</th>
+              <th>JSX</th>
+              <th>TSX</th>
+              <th>Último commit</th>
+              <th>Rama</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-proyectos"></tbody>
+        </table>
+      </div>
     </div>
   </section>
 
   <!-- Estado git sync -->
   <section>
-    <div class="section-header">
+    <div class="section-header" onclick="toggleSection(this)">
       <h2>Estado git — Sincronización</h2>
       <span class="badge">PC ↔ NAS ↔ GitHub</span>
+      <span class="section-chevron collapsed">▾</span>
     </div>
-    <div class="sync-grid" id="sync-grid"></div>
-  </section>
-
-  <!-- Pendientes -->
-  <section>
-    <div class="section-header">
-      <h2>Pendientes reales</h2>
-      <span class="badge" id="badge-pendientes">—</span>
+    <div class="section-body collapsed">
+      <div class="sync-grid" id="sync-grid"></div>
     </div>
-    <div class="pendientes-list" id="pendientes-list"></div>
   </section>
-
 
 </main>
 
@@ -812,13 +860,22 @@ function fmtCuando(iso) {
   return d.toLocaleString('es-MX', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+// ── Toggle secciones ─────────────────────────────────────────────────────────
+function toggleSection(header) {
+  const body = header.nextElementSibling;
+  const chevron = header.querySelector('.section-chevron');
+  const isCollapsed = body.classList.contains('collapsed');
+  body.classList.toggle('collapsed', !isCollapsed);
+  chevron.classList.toggle('collapsed', !isCollapsed);
+}
+
+// ── Toggle checkbox pendiente/hilo ────────────────────────────────────────────
 async function toggle(tipo, id, quien) {
   await fetch('/api/toggle', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ tipo, id, quien })
   });
-  // El SSE actualizará el estado en todos los clientes
 }
 
 // ── Render pendientes ─────────────────────────────────────────────────────────
@@ -826,7 +883,6 @@ function renderPendientes() {
   const tipoLabel = { manual: 'Manual', codigo: 'Código', 'espera-cliente': 'Espera cliente' };
   const state = tasksState.pendientes || {};
 
-  // Ordenar: no completados primero, completados al final
   const sorted = [...pendientesData].sort((a, b) => {
     const ac = state[a.id]?.completado ? 1 : 0;
     const bc = state[b.id]?.completado ? 1 : 0;
@@ -838,7 +894,6 @@ function renderPendientes() {
     const s = state[p.id] || {};
     const completado = !!s.completado;
     const quienClass = s.quien === 'Carlos' ? 'badge-carlos' : 'badge-cc';
-    const quienLower = (s.quien || '').toLowerCase();
     return `
       <div class="pendiente-item ${completado ? 'item-completado' : ''}" data-id="${p.id}">
         <div class="cb-wrap">
@@ -863,13 +918,13 @@ function renderHilos() {
 
   function estadoClass(estado) {
     const e = estado.toLowerCase();
-    if (e.startsWith('cerrado'))     return 'estado-cerrado';
-    if (e.includes('en proceso'))    return 'estado-en-proceso';
-    if (e.includes('esperando'))     return 'estado-esperando';
-    if (e.includes('nuevo'))         return 'estado-nuevo';
-    if (e.includes('análisis') || e.includes('analisis')) return 'estado-analisis';
-    if (e.includes('diseño') || e.includes('diseno'))     return 'estado-diseno';
-    if (e.includes('datos listos'))  return 'estado-datos';
+    if (e.startsWith('cerrado'))                              return 'estado-cerrado';
+    if (e.includes('en proceso'))                             return 'estado-en-proceso';
+    if (e.includes('esperando'))                              return 'estado-esperando';
+    if (e.includes('nuevo'))                                  return 'estado-nuevo';
+    if (e.includes('análisis') || e.includes('analisis'))    return 'estado-analisis';
+    if (e.includes('diseño') || e.includes('diseno'))        return 'estado-diseno';
+    if (e.includes('datos listos'))                           return 'estado-datos';
     return 'estado-pendiente';
   }
 
@@ -900,10 +955,9 @@ function renderHilos() {
     `;
   }
 
-  const abiertos  = hilosData.filter(h => !h.estado.toLowerCase().startsWith('cerrado'));
-  const cerrados  = hilosData.filter(h =>  h.estado.toLowerCase().startsWith('cerrado'));
+  const abiertos = hilosData.filter(h => !h.estado.toLowerCase().startsWith('cerrado'));
+  const cerrados = hilosData.filter(h =>  h.estado.toLowerCase().startsWith('cerrado'));
 
-  // Abiertos: no-completados primero
   const sortedAbiertos = [...abiertos].sort((a, b) => {
     const ac = state[a.id]?.completado ? 1 : 0;
     const bc = state[b.id]?.completado ? 1 : 0;
@@ -913,7 +967,6 @@ function renderHilos() {
   document.getElementById('badge-hilos').textContent = abiertos.length;
   document.getElementById('hilos-grid').innerHTML = sortedAbiertos.map(renderCard).join('');
 
-  // Cerrados: bloque colapsable
   const wrap = document.getElementById('hilos-cerrados-wrap');
   if (cerrados.length > 0) {
     wrap.style.display = '';
@@ -929,18 +982,12 @@ function renderHilos() {
 
 // ── Quién marca ───────────────────────────────────────────────────────────────
 function promptToggle(tipo, id) {
-  // Si ya está completado, desmarcar sin preguntar
   const current = tasksState[tipo]?.[id];
-  if (current?.completado) {
-    toggle(tipo, id, current.quien);
-    return;
-  }
-  // Si no está completado, preguntar quién marca
+  if (current?.completado) { toggle(tipo, id, current.quien); return; }
   showQuienDialog(tipo, id);
 }
 
 function showQuienDialog(tipo, id) {
-  // Mini dialog inline — si ya existe, lo cerramos
   const existing = document.getElementById('quien-dialog');
   if (existing) existing.remove();
 
@@ -966,8 +1013,6 @@ function showQuienDialog(tipo, id) {
       style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:0 4px">✕</button>
   `;
   document.body.appendChild(d);
-
-  // Auto-cerrar a los 10s
   setTimeout(() => d.remove(), 10000);
 }
 
@@ -988,15 +1033,215 @@ function connectSSE() {
       renderHilos();
     }
   };
-  es.onerror = () => {
-    // Reconectar en 3s si falla
-    es.close();
-    setTimeout(connectSSE, 3000);
-  };
+  es.onerror = () => { es.close(); setTimeout(connectSSE, 3000); };
 }
 
-(async () => {
+// ── Toggle grupo tareas ────────────────────────────────────────────────────────
+function toggleGrupo(header) {
+  const pills = header.nextElementSibling;
+  const chevron = header.querySelector('.grupo-chevron');
+  const abierto = pills.style.display !== 'none';
+  pills.style.display = abierto ? 'none' : 'flex';
+  chevron.classList.toggle('collapsed', abierto);
+}
 
+// ── Documentación viva ────────────────────────────────────────────────────────
+const DOC_ICONS = {
+  operativo:    '📋',
+  memoria:      '🧠',
+  arquitectura: '🏗️',
+  historial:    '📜',
+};
+
+let docsIndex = [];
+let docActivoId = null;
+
+function renderDocs() {
+  const categorias = {};
+  docsIndex.forEach(d => {
+    if (!categorias[d.categoria]) categorias[d.categoria] = [];
+    categorias[d.categoria].push(d);
+  });
+
+  const catOrden = ['operativo', 'arquitectura', 'memoria', 'historial'];
+  const catLabel = { operativo: 'Operativo', arquitectura: 'Arquitectura', memoria: 'Memoria', historial: 'Historial' };
+
+  document.getElementById('docs-categorias').innerHTML = catOrden
+    .filter(c => categorias[c])
+    .map(c => `
+      <div>
+        <div class="doc-categoria-titulo">${DOC_ICONS[c] || '📄'} ${catLabel[c]}</div>
+        <div class="docs-fila">
+          ${categorias[c].map(d => `
+            <button class="doc-btn ${docActivoId === d.id ? 'active' : ''}" id="doc-btn-${d.id}" onclick="abrirDoc('${d.id}')">
+              <span class="doc-icon">📄</span>
+              ${d.label}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+}
+
+function renderMarkdown(text) {
+  // Mini parser markdown → HTML para lectura en el visor
+  const lines = text.split('\n');
+  return lines.map(line => {
+    // Headings
+    if (line.startsWith('# '))  return `<span class="md-h1">${escHtml(line.slice(2))}</span>`;
+    if (line.startsWith('## ')) return `<span class="md-h2">${escHtml(line.slice(3))}</span>`;
+    if (line.startsWith('### '))return `<span class="md-h3">${escHtml(line.slice(4))}</span>`;
+    // Checkboxes
+    if (line.match(/^[-*]\s+\[x\]/i)) return `<span class="md-check-ok">✅ ${escHtml(line.replace(/^[-*]\s+\[x\]\s*/i,''))}</span>`;
+    if (line.match(/^[-*]\s+\[ \]/))  return `<span class="md-check-no">⬜ ${escHtml(line.replace(/^[-*]\s+\[ \]\s*/,''))}</span>`;
+    // Línea normal — escapar y aplicar bold/code inline
+    let l = escHtml(line);
+    l = l.replace(/\*\*(.+?)\*\*/g, '<span class="md-bold">$1</span>');
+    l = l.replace(/`(.+?)`/g, '<span class="md-code">$1</span>');
+    return l;
+  }).join('\n');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function abrirDoc(id) {
+  // Toggle si es el mismo doc
+  if (docActivoId === id) { cerrarDoc(); return; }
+  docActivoId = id;
+
+  // Marcar btn activo
+  document.querySelectorAll('.doc-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('doc-btn-' + id);
+  if (btn) btn.classList.add('active');
+
+  const viewer = document.getElementById('doc-viewer');
+  const content = document.getElementById('doc-viewer-content');
+  const title = document.getElementById('doc-viewer-title');
+
+  viewer.classList.add('visible');
+  content.innerHTML = '<pre style="color:var(--text-muted)">Cargando...</pre>';
+
+  try {
+    const res = await fetch('/api/docs/' + id);
+    const data = await res.json();
+    title.textContent = data.label;
+    content.innerHTML = `<pre>${renderMarkdown(data.content)}</pre>`;
+    // Scroll al viewer
+    viewer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (e) {
+    content.innerHTML = '<pre style="color:var(--red)">Error al cargar el documento.</pre>';
+  }
+}
+
+function cerrarDoc() {
+  docActivoId = null;
+  document.querySelectorAll('.doc-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('doc-viewer').classList.remove('visible');
+}
+
+// ── Auto-refresh ──────────────────────────────────────────────────────────────
+let refreshInterval = null;
+let refreshCountdown = 0;
+let countdownTimer = null;
+
+function setRefresh(val) {
+  const secs = parseInt(val, 10);
+
+  // Limpiar timers existentes
+  if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
+  if (countdownTimer)  { clearInterval(countdownTimer);  countdownTimer  = null; }
+
+  const indicator = document.getElementById('refresh-indicator');
+  const countdown = document.getElementById('refresh-countdown');
+
+  if (secs === 0) {
+    indicator.classList.remove('active');
+    countdown.textContent = '';
+    return;
+  }
+
+  indicator.classList.add('active');
+  refreshCountdown = secs;
+  countdown.textContent = secs + 's';
+
+  countdownTimer = setInterval(() => {
+    refreshCountdown--;
+    countdown.textContent = refreshCountdown + 's';
+    if (refreshCountdown <= 0) refreshCountdown = secs;
+  }, 1000);
+
+  refreshInterval = setInterval(async () => {
+    refreshCountdown = secs;
+    await loadDynamic();
+  }, secs * 1000);
+}
+
+// ── Carga principal ───────────────────────────────────────────────────────────
+async function loadDynamic() {
+  try {
+    // Hilos
+    const hilosRes = await fetch('/api/hilos');
+    const hilosDataRaw = await hilosRes.json();
+    hilosData = hilosDataRaw.hilos || [];
+    renderHilos();
+
+    // Tareas
+    const tareasRes = await fetch('/api/tareas');
+    const tareasData = await tareasRes.json();
+    const { tareas, resumen: tr } = tareasData;
+    renderTareas(tareas, tr);
+
+    // Si hay un doc abierto, recargarlo
+    if (docActivoId) abrirDoc(docActivoId);
+  } catch (e) {
+    console.error('loadDynamic error:', e);
+  }
+}
+
+function renderTareas(tareas, tr) {
+  document.getElementById('badge-tareas').textContent = tr.total;
+  document.getElementById('tareas-resumen').innerHTML = `
+    <div class="tarea-stat ts-total"><div class="ts-num">${tr.total}</div><div class="ts-label">Total</div></div>
+    <div class="tarea-stat ts-completadas"><div class="ts-num">${tr.completadas}</div><div class="ts-label">Completadas</div></div>
+    <div class="tarea-stat ts-abiertas"><div class="ts-num">${tr.abiertas}</div><div class="ts-label">Abiertas</div></div>
+    <div class="tarea-stat ts-espera"><div class="ts-num">${tr.espera}</div><div class="ts-label">En espera</div></div>
+    <div class="tarea-stat ts-canceladas"><div class="ts-num">${tr.canceladas}</div><div class="ts-label">Canceladas</div></div>
+  `;
+
+  const grupos = [
+    { key: 'abiertas',    label: 'Abiertas',    clases: ['en-proceso','pendiente','planificada'], clase: 'grupo-abiertas',    abierto: true  },
+    { key: 'espera',      label: 'En espera',   clases: ['espera'],                               clase: 'grupo-espera',      abierto: true  },
+    { key: 'completadas', label: 'Completadas', clases: ['completada'],                           clase: 'grupo-completadas', abierto: false },
+    { key: 'canceladas',  label: 'Canceladas',  clases: ['cancelada'],                            clase: 'grupo-canceladas',  abierto: false },
+  ];
+
+  document.getElementById('tareas-grupos').innerHTML = grupos.map(g => {
+    const items = tareas.filter(t => g.clases.includes(t.clase));
+    if (!items.length) return '';
+    const pills = items.map(t => `
+      <div class="tarea-pill clase-${t.clase}" title="${t.estado}">
+        <span class="pill-id">${t.id}</span>
+        <span class="pill-titulo">${t.titulo}</span>
+      </div>
+    `).join('');
+    return `
+      <div class="tareas-grupo">
+        <div class="tareas-grupo-header ${g.clase}" onclick="toggleGrupo(this)">
+          <div class="grupo-dot"></div>
+          ${g.label}
+          <span class="grupo-count">${items.length}</span>
+          <span class="grupo-chevron ${g.abierto ? '' : 'collapsed'}">▾</span>
+        </div>
+        <div class="tareas-pills" style="display:${g.abierto ? 'flex' : 'none'}">${pills}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+(async () => {
   function badgeTipo(tipo) {
     const map = { NAS: 'badge-nas', local: 'badge-local', modulo: 'badge-modulo', herramienta: 'badge-herramienta' };
     return `<span class="badge-tipo ${map[tipo] || 'badge-local'}">${tipo}</span>`;
@@ -1013,11 +1258,9 @@ function connectSSE() {
     const data = await res.json();
     const { resumen, proyectos, git_sync, pendientes } = data;
 
-    // Header meta
     document.getElementById('header-meta').textContent =
-      `Actualizado: ${resumen.actualizado} · v1.0.0`;
+      `Actualizado: ${resumen.actualizado} · v2.0.0`;
 
-    // Stats cards
     document.getElementById('stat-proyectos').textContent = resumen.total_proyectos;
     document.getElementById('stat-lineas').textContent = fmt(resumen.total_lineas);
     document.getElementById('stat-archivos').textContent = fmt(resumen.total_archivos);
@@ -1048,20 +1291,13 @@ function connectSSE() {
     `).join('');
 
     // Git sync
-    const syncGrid = document.getElementById('sync-grid');
-    syncGrid.innerHTML = git_sync.map(s => `
+    document.getElementById('sync-grid').innerHTML = git_sync.map(s => `
       <div class="sync-card">
         <div class="sync-name">${s.proyecto}</div>
         <div class="sync-indicators">
-          <div class="sync-pill ${s.pc ? 'ok' : 'fail'}">
-            <div class="sync-dot"></div> PC
-          </div>
-          <div class="sync-pill ${s.nas ? 'ok' : 'fail'}">
-            <div class="sync-dot"></div> NAS
-          </div>
-          <div class="sync-pill ${s.github ? 'ok' : 'fail'}">
-            <div class="sync-dot"></div> GitHub
-          </div>
+          <div class="sync-pill ${s.pc ? 'ok' : 'fail'}"><div class="sync-dot"></div> PC</div>
+          <div class="sync-pill ${s.nas ? 'ok' : 'fail'}"><div class="sync-dot"></div> NAS</div>
+          <div class="sync-pill ${s.github ? 'ok' : 'fail'}"><div class="sync-dot"></div> GitHub</div>
         </div>
       </div>
     `).join('');
@@ -1070,54 +1306,16 @@ function connectSSE() {
     pendientesData = pendientes;
     renderPendientes();
 
-    // Tareas backlog
-    const tareasRes = await fetch('/api/tareas');
-    const tareasData = await tareasRes.json();
-    const { tareas, resumen: tr } = tareasData;
+    // Tareas + hilos
+    await loadDynamic();
 
-    document.getElementById('badge-tareas').textContent = tr.total;
-    document.getElementById('tareas-resumen').innerHTML = `
-      <div class="tarea-stat ts-total"><div class="ts-num">${tr.total}</div><div class="ts-label">Total</div></div>
-      <div class="tarea-stat ts-completadas"><div class="ts-num">${tr.completadas}</div><div class="ts-label">Completadas</div></div>
-      <div class="tarea-stat ts-abiertas"><div class="ts-num">${tr.abiertas}</div><div class="ts-label">Abiertas</div></div>
-      <div class="tarea-stat ts-espera"><div class="ts-num">${tr.espera}</div><div class="ts-label">En espera</div></div>
-      <div class="tarea-stat ts-canceladas"><div class="ts-num">${tr.canceladas}</div><div class="ts-label">Canceladas</div></div>
-    `;
+    // Documentación viva
+    const docsRes = await fetch('/api/docs');
+    docsIndex = await docsRes.json();
+    renderDocs();
 
-    const grupos = [
-      { key: 'abiertas',    label: 'Abiertas',    clases: ['en-proceso','pendiente','planificada'], clase: 'grupo-abiertas',    abierto: true  },
-      { key: 'espera',      label: 'En espera',   clases: ['espera'],                               clase: 'grupo-espera',      abierto: true  },
-      { key: 'completadas', label: 'Completadas', clases: ['completada'],                           clase: 'grupo-completadas', abierto: false },
-      { key: 'canceladas',  label: 'Canceladas',  clases: ['cancelada'],                            clase: 'grupo-canceladas',  abierto: false },
-    ];
-
-    document.getElementById('tareas-grupos').innerHTML = grupos.map(g => {
-      const items = tareas.filter(t => g.clases.includes(t.clase));
-      if (!items.length) return '';
-      const pills = items.map(t => `
-        <div class="tarea-pill clase-${t.clase}" title="${t.estado}">
-          <span class="pill-id">${t.id}</span>
-          <span class="pill-titulo">${t.titulo}</span>
-        </div>
-      `).join('');
-      return `
-        <div class="tareas-grupo">
-          <div class="tareas-grupo-header ${g.clase}" onclick="toggleGrupo(this)">
-            <div class="grupo-dot"></div>
-            ${g.label}
-            <span class="grupo-count">${items.length}</span>
-            <span class="grupo-chevron ${g.abierto ? '' : 'collapsed'}">▾</span>
-          </div>
-          <div class="tareas-pills" style="display:${g.abierto ? 'flex' : 'none'}">${pills}</div>
-        </div>
-      `;
-    }).join('');
-
-    // Hilos abiertos
-    const hilosRes = await fetch('/api/hilos');
-    const hilosDataRaw = await hilosRes.json();
-    hilosData = hilosDataRaw.hilos || [];
-    renderHilos();
+    // Activar auto-refresh (1 min por defecto)
+    setRefresh(60);
 
   } catch (err) {
     console.error('Error cargando stats:', err);
@@ -1125,16 +1323,7 @@ function connectSSE() {
   }
 })();
 
-// Iniciar SSE al cargar
 connectSSE();
-
-function toggleGrupo(header) {
-  const pills = header.nextElementSibling;
-  const chevron = header.querySelector('.grupo-chevron');
-  const abierto = pills.style.display !== 'none';
-  pills.style.display = abierto ? 'none' : 'flex';
-  chevron.classList.toggle('collapsed', abierto);
-}
 </script>
 
 <script src="/zya-about.js"></script>

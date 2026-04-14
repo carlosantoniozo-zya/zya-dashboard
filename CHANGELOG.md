@@ -1,5 +1,21 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14c] — feat: dashboard como guía total + auto-refresh + documentación viva
+**Motivo:** Dashboard debe ser la única pantalla de referencia — todos los pendientes, backlog, hilos y documentación viva en un solo lugar. Sesiones múltiples en paralelo requieren auto-actualización.
+**Cambios:**
+- `server.js` — Fix dominio optica-cha: `opticacha.zyaeti.mx` → `opticascha.com`
+- `server.js` — Array PENDIENTES actualizado: 5→8 items. Nuevos: RustDesk Oracle Cloud, Google Search Console (T38/HI-07), Gmail facturas.sanyos (HI-11)
+- `server.js` — Fix tipo pendientes: `'código'` → `'codigo'` (consistencia con clases CSS)
+- `server.js` — Fecha `actualizado` ahora dinámica (ISO hoy, no hardcodeada)
+- `server.js` — Nuevo endpoint `GET /api/docs` — lista 9 archivos .md del ecosistema
+- `server.js` — Nuevo endpoint `GET /api/docs/:id` — sirve contenido de un .md (conversaciones truncado a 15k chars)
+- `public/index.html` — **Todas las secciones colapsables** con chevron animado; Proyectos y Git sync colapsadas por defecto
+- `public/index.html` — **Auto-refresh** en header: OFF / 30s / 1min / 5min. Countdown visual, indicador verde pulsante. Por defecto 1 min
+- `public/index.html` — Función `loadDynamic()` separada — recarga hilos, tareas y doc abierto sin recargar la página entera
+- `public/index.html` — **Nueva sección "Documentación viva"**: 9 tarjetas por categoría (Operativo, Arquitectura, Memoria, Historial). Click abre visor inline con markdown coloreado (H1 verde, H2 azul, H3 amarillo, checkboxes, bold, code). Toggle al hacer click de nuevo.
+- `public/index.html` — Versión bumped a v2.0.0
+**Impacto:** Dashboard es ahora la guía total del ecosistema ZYA. Todas las sesiones CC ven el mismo estado actualizado.
+
 ## [2026-04-14b] — feat: sección cerrados colapsable en hilos
 **Motivo:** Hilos cerrados (ej. HI-06) deben seguir visibles pero separados de los abiertos, en un bloque colapsable.
 **Cambios:**

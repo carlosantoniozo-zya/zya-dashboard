@@ -274,7 +274,7 @@ const PROYECTOS = [
   },
   {
     nombre: 'optica-cha',
-    dominio: 'opticacha.zyaeti.mx',
+    dominio: 'opticascha.com',
     puerto: 5441,
     tipo: 'local',
     stack: 'Node+Express',
@@ -295,9 +295,12 @@ const GIT_SYNC = [
 const PENDIENTES = [
   { id: 'sesiona-toggle', descripcion: 'Activar toggle recordatorios en sesiona.zyaeti.mx/configuracion', tipo: 'manual', responsable: 'Carlos', proyecto: 'sesiona' },
   { id: 'usg-datos-solano', descripcion: 'Llenar cédula/teléfono/dirección Dr. Solano en usg.zyaeti.mx/admin', tipo: 'manual', responsable: 'Carlos', proyecto: 'usg-solano' },
-  { id: 'usg-canvas-pdf', descripcion: 'Integrar canvas snapshot al PDF (USG)', tipo: 'código', responsable: 'CC', proyecto: 'usg-solano' },
-  { id: 'sesiona-websockets', descripcion: 'Sesiona: WebSockets chat + SERVER_ENCRYPTION_KEY', tipo: 'código', responsable: 'CC', proyecto: 'sesiona' },
-  { id: 'byrsa-comparacion', descripcion: 'Byrsa: comparación digital inventario (escaneo vs Factusol)', tipo: 'código', responsable: 'CC', proyecto: 'byrsa' },
+  { id: 'usg-canvas-pdf', descripcion: 'Integrar canvas snapshot al PDF (USG)', tipo: 'codigo', responsable: 'CC', proyecto: 'usg-solano' },
+  { id: 'sesiona-websockets', descripcion: 'Sesiona: WebSockets chat + SERVER_ENCRYPTION_KEY', tipo: 'codigo', responsable: 'CC', proyecto: 'sesiona' },
+  { id: 'byrsa-comparacion', descripcion: 'Byrsa: comparación digital inventario (escaneo vs Factusol)', tipo: 'codigo', responsable: 'CC', proyecto: 'byrsa' },
+  { id: 'rustdesk-oracle', descripcion: 'RustDesk self-hosted: completar setup VM Ubuntu 22.04 + Docker en Oracle Cloud Free Tier (US East Ashburn)', tipo: 'codigo', responsable: 'CC', proyecto: 'infraestructura' },
+  { id: 'gsc-verificar', descripcion: 'Google Search Console: registrar y verificar propiedades (T38) — Carlos entra a GSC → agrega sites → verifica → CC escribe gsc-tools.js', tipo: 'manual', responsable: 'Carlos', proyecto: 'infraestructura' },
+  { id: 'sanyos-gmail-facturas', descripcion: 'Crear cuenta Gmail dedicada facturas.sanyos y configurar reenvío automático en correo de Santiago (prerequisito HI-11 conciliación CML)', tipo: 'manual', responsable: 'Carlos', proyecto: 'sanyos-ops' },
 ];
 
 // ── Tasks state (checkboxes) ──────────────────────────────────────────────────
@@ -351,13 +354,14 @@ app.get('/api/stats', (req, res) => {
   const totalArchivos = PROYECTOS.reduce((s, p) => s + p.total_archivos, 0);
   const serviciosActivos = PROYECTOS.filter(p => p.dominio !== null).length;
 
+  const hoy = new Date().toISOString().slice(0, 10);
   res.json({
     resumen: {
       total_proyectos: PROYECTOS.length,
       total_lineas: totalLineas,
       total_archivos: totalArchivos,
       servicios_activos: serviciosActivos,
-      actualizado: '2026-04-03'
+      actualizado: hoy
     },
     proyectos: PROYECTOS,
     git_sync: GIT_SYNC,
@@ -438,6 +442,35 @@ app.get('/api/tareas', (req, res) => {
     canceladas: tareas.filter(t => t.clase === 'cancelada').length,
   };
   res.json({ tareas, resumen });
+});
+
+// ── Documentación viva ────────────────────────────────────────────────────────
+const DOCS = [
+  { id: 'backlog',        label: 'Backlog',                 path: 'C:/Proyectos/deseimp/backlog.md',         categoria: 'operativo'    },
+  { id: 'hilos',         label: 'Hilos abiertos',          path: 'C:/Proyectos/deseimp/hilos-abiertos.md', categoria: 'operativo'    },
+  { id: 'conversaciones',label: 'Conversaciones',           path: 'C:/Proyectos/deseimp/conversaciones.md', categoria: 'operativo'    },
+  { id: 'preguntas',     label: 'Preguntas pendientes',    path: 'C:/Proyectos/deseimp/preguntas.md',       categoria: 'operativo'    },
+  { id: 'memory',        label: 'Memoria (MEMORY.md)',     path: 'C:/Users/Carlos Antonio/.claude/projects/C--Proyectos/memory/MEMORY.md', categoria: 'memoria' },
+  { id: 'ecosistema',    label: 'Ecosistema',              path: 'C:/Proyectos/deseimp/ECOSISTEMA.md',      categoria: 'arquitectura' },
+  { id: 'estandares',    label: 'Estándares ZYA',          path: 'C:/Proyectos/deseimp/ESTANDARES-ZYA.md', categoria: 'arquitectura' },
+  { id: 'procedimientos',label: 'Manual de procedimientos',path: 'C:/Proyectos/deseimp/manual-procedimientos.md', categoria: 'arquitectura' },
+  { id: 'decisiones',    label: 'Decisiones',              path: 'C:/Proyectos/deseimp/conversaciones/decisiones.md', categoria: 'historial' },
+];
+
+app.get('/api/docs', (req, res) => {
+  res.json(DOCS.map(d => ({ id: d.id, label: d.label, categoria: d.categoria })));
+});
+
+app.get('/api/docs/:id', (req, res) => {
+  const doc = DOCS.find(d => d.id === req.params.id);
+  if (!doc) return res.status(404).json({ error: 'doc no encontrado' });
+  if (!fs.existsSync(doc.path)) return res.status(404).json({ error: 'archivo no encontrado', path: doc.path });
+  const content = fs.readFileSync(doc.path, 'utf8');
+  // Para conversaciones, devolver solo las últimas 15000 chars (es muy largo)
+  const trimmed = doc.id === 'conversaciones' && content.length > 15000
+    ? '… (mostrando últimas entradas)\n\n' + content.slice(-15000)
+    : content;
+  res.json({ id: doc.id, label: doc.label, content: trimmed });
 });
 
 // ── SSE ───────────────────────────────────────────────────────────────────────
