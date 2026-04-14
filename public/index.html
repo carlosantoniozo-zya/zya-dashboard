@@ -501,7 +501,7 @@
       border: 1px solid var(--border);
       background: var(--bg);
       font-size: 12px;
-      cursor: default;
+      cursor: pointer;
       transition: border-color 0.15s;
     }
 
@@ -515,6 +515,81 @@
     .tarea-pill.clase-completada  { border-left: 3px solid var(--green); opacity: 0.55; }
     .tarea-pill.clase-espera      { border-left: 3px solid var(--blue); opacity: 0.7; }
     .tarea-pill.clase-cancelada   { border-left: 3px solid var(--text-muted); opacity: 0.4; }
+
+    /* ── Modal tarea ──────────────────────────────────────────────────────── */
+    .tarea-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .tarea-modal-overlay.visible { display: flex; }
+
+    .tarea-modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: min(640px, 92vw);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    }
+
+    .tarea-modal-header {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .tarea-modal-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+      padding-top: 2px;
+    }
+
+    .tarea-modal-titulo {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .tarea-modal-close {
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 18px;
+      line-height: 1;
+      padding: 0 2px;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .tarea-modal-close:hover { color: var(--text); }
+
+    .tarea-modal-body {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .tarea-modal-body pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin: 0;
+    }
 
     /* ── Checkboxes ──────────────────────────────────────────────────────── */
     .cb-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
@@ -1394,7 +1469,13 @@ async function loadDynamic() {
   }
 }
 
+let _tareasCache = {};
+
 function renderTareas(tareas, tr) {
+  // Guardar en cache para el modal
+  _tareasCache = {};
+  tareas.forEach(t => { _tareasCache[t.id] = t; });
+
   document.getElementById('badge-tareas').textContent = tr.total;
   document.getElementById('tareas-resumen').innerHTML = `
     <div class="tarea-stat ts-total"><div class="ts-num">${tr.total}</div><div class="ts-label">Total</div></div>
@@ -1415,7 +1496,7 @@ function renderTareas(tareas, tr) {
     const items = tareas.filter(t => g.clases.includes(t.clase));
     if (!items.length) return '';
     const pills = items.map(t => `
-      <div class="tarea-pill clase-${t.clase}" title="${t.estado}">
+      <div class="tarea-pill clase-${t.clase}" title="${t.estado}" onclick="abrirTareaModal('${t.id}')">
         <span class="pill-id">${t.id}</span>
         <span class="pill-titulo">${t.titulo}</span>
       </div>
@@ -1432,6 +1513,20 @@ function renderTareas(tareas, tr) {
       </div>
     `;
   }).join('');
+}
+
+function abrirTareaModal(id) {
+  const t = _tareasCache[id];
+  if (!t) return;
+  document.getElementById('tarea-modal-id').textContent = t.id;
+  document.getElementById('tarea-modal-titulo').textContent = t.titulo;
+  document.getElementById('tarea-modal-content').innerHTML = renderMarkdown(t.cuerpo || '(Sin descripción)');
+  document.getElementById('tarea-modal-overlay').classList.add('visible');
+}
+
+function cerrarTareaModal(e) {
+  if (e && e.target !== document.getElementById('tarea-modal-overlay')) return;
+  document.getElementById('tarea-modal-overlay').classList.remove('visible');
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -1518,8 +1613,28 @@ function renderTareas(tareas, tr) {
 })();
 
 connectSSE();
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('tarea-modal-overlay').classList.remove('visible');
+  }
+});
 </script>
 
 <script src="/zya-about.js"></script>
+
+<!-- Modal detalle de tarea -->
+<div class="tarea-modal-overlay" id="tarea-modal-overlay" onclick="cerrarTareaModal(event)">
+  <div class="tarea-modal">
+    <div class="tarea-modal-header">
+      <span class="tarea-modal-id" id="tarea-modal-id">—</span>
+      <span class="tarea-modal-titulo" id="tarea-modal-titulo">—</span>
+      <span class="tarea-modal-close" onclick="cerrarTareaModal()">✕</span>
+    </div>
+    <div class="tarea-modal-body">
+      <pre id="tarea-modal-content"></pre>
+    </div>
+  </div>
+</div>
 </body>
 </html>

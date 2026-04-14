@@ -1,5 +1,12 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14h] — feat: vista integrada responsive + secciones colapsables + auto-refresh
+**Motivo:** Carlos quiere dashboard como pantalla central sin cambiar de pestaña.
+**Cambios:**
+- `public/index.html` — Secciones colapsables, auto-refresh OFF/30s/1min/5min con countdown visual
+- `public/index.html` — Vista integrada con iframes Monitor+Changelog (lazy-load, botón reload)
+- `public/index.html` — Responsive: desktop 2col, tablet 1col/420px, móvil tarjetas con "Abrir ↗"
+
 ## [2026-04-14g] — feat: PENDIENTES y stats proyectos dinámicos
 **Motivo:** PENDIENTES estaban hardcodeados en server.js y se olvidaban actualizar. Stats de proyectos (líneas, commits) también hardcodeadas y desactualizadas.
 **Cambios:**
