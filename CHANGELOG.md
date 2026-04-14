@@ -1,5 +1,19 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14g] — feat: PENDIENTES y stats proyectos dinámicos
+**Motivo:** PENDIENTES estaban hardcodeados en server.js y se olvidaban actualizar. Stats de proyectos (líneas, commits) también hardcodeadas y desactualizadas.
+**Cambios:**
+- `server.js` — array PENDIENTES eliminado → reemplazado por `parsePendientes()` que lee `deseimp/pendientes.md` en cada request
+- `server.js` — array PROYECTOS estático eliminado → reemplazado por `calcularProyectos()` con caché 5min: recorre el filesystem real con `git log` + conteo de archivos por extensión + líneas
+- `server.js` — nuevo endpoint `GET /api/pendientes` dedicado
+- `deseimp/pendientes.md` — archivo fuente de verdad creado con los 7 pendientes actuales
+**Impacto:** Stats siempre reales al consultar el dashboard. Pendientes: editar solo el .md, no tocar server.js
+
+## [2026-04-14f] — fix: eliminar pendiente RustDesk (completado)
+**Motivo:** RustDesk self-hosted ya estaba COMPLETO (hbbs+hbbr corriendo en Oracle Cloud). El array PENDIENTES_HARDCODED lo seguía mostrando.
+**Cambios:**
+- `server.js` línea 301 — eliminada entrada `rustdesk-oracle` del array PENDIENTES
+
 ## [2026-04-14e] — fix: vista integrada responsive para tablet y móvil
 **Motivo:** S10 FE y S25 Ultra necesitan experiencia adecuada a su pantalla.
 **Cambios:**

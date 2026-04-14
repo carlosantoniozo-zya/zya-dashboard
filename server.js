@@ -1,289 +1,150 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
 
 const app = express();
 const PORT = 4600;
 const START_TIME = Date.now();
 
-// ── Datos del ecosistema ──────────────────────────────────────────────────────
-const PROYECTOS = [
-  {
-    nombre: 'anza-planner',
-    dominio: 'anzaplanner.zyaeti.mx',
-    puerto: 3900,
-    tipo: 'local',
-    stack: 'Next.js',
-    js: 326, ts: 63, jsx: 0, tsx: 22, css: 2, md: 6,
-    total_archivos: 1148, lineas: 33354,
-    ultimo_commit: '9e7ed23 feat: splash screen propio',
-    rama: 'main'
-  },
-  {
-    nombre: 'byrsa',
-    dominio: 'byrsa.zyaeti.mx',
-    puerto: 3001,
-    tipo: 'NAS',
-    stack: 'React+Node',
-    js: 21, ts: 0, jsx: 28, tsx: 0, css: 2, md: 7,
-    total_archivos: 86, lineas: 11468,
-    ultimo_commit: '5fe10b7 docs: screenshot referencia',
-    rama: 'main'
-  },
-  {
-    nombre: 'pricechecker',
-    dominio: 'pricechecker.zyaeti.mx',
-    puerto: 3300,
-    tipo: 'local',
-    stack: 'Node+Express+PG',
-    js: 14, ts: 0, jsx: 7, tsx: 0, css: 2, md: 5,
-    total_archivos: 47, lineas: 3062,
-    ultimo_commit: '6e7d38a fix: ruta hardcodeada',
-    rama: 'main'
-  },
-  {
-    nombre: 'sanatorio-macias',
-    dominio: 'sanatorio.zyaeti.mx',
-    puerto: 3000,
-    tipo: 'local',
-    stack: 'Next.js',
-    js: 136, ts: 131, jsx: 0, tsx: 28, css: 3, md: 6,
-    total_archivos: 517, lineas: 36021,
-    ultimo_commit: '4a3b928 docs: CLAUDE.md',
-    rama: 'main'
-  },
-  {
-    nombre: 'sesiona',
-    dominio: 'sesiona.zyaeti.mx',
-    puerto: 3400,
-    tipo: 'local',
-    stack: 'Next.js+PG',
-    js: 123, ts: 80, jsx: 0, tsx: 25, css: 2, md: 3,
-    total_archivos: 372, lineas: 16554,
-    ultimo_commit: '9fb6149 chore: gitignore',
-    rama: 'main'
-  },
-  {
-    nombre: 'stockfs',
-    dominio: 'stockfs.zyaeti.mx',
-    puerto: 3500,
-    tipo: 'local',
-    stack: 'Next.js+PG',
-    js: 110, ts: 94, jsx: 0, tsx: 17, css: 2, md: 4,
-    total_archivos: 420, lineas: 31093,
-    ultimo_commit: '94db823 chore: CLAUDE.md',
-    rama: 'main'
-  },
-  {
-    nombre: 'zya-changelog',
-    dominio: 'cambios.zyaeti.mx',
-    puerto: 3600,
-    tipo: 'local',
-    stack: 'Node',
-    js: 1, ts: 0, jsx: 0, tsx: 0, css: 0, md: 4,
-    total_archivos: 10, lineas: 304,
-    ultimo_commit: '131e8e4 chore: gitignore',
-    rama: 'main'
-  },
-  {
-    nombre: 'zya-landing',
-    dominio: 'zyaeti.mx',
-    puerto: 3800,
-    tipo: 'local',
-    stack: 'Node',
-    js: 3, ts: 0, jsx: 0, tsx: 0, css: 1, md: 4,
-    total_archivos: 39, lineas: 1495,
-    ultimo_commit: '72499f6 feat: pago.html',
-    rama: 'main'
-  },
-  {
-    nombre: 'zya-monitor',
-    dominio: 'monitor.zyaeti.mx',
-    puerto: 3700,
-    tipo: 'local',
-    stack: 'Node',
-    js: 3, ts: 0, jsx: 0, tsx: 0, css: 0, md: 4,
-    total_archivos: 15, lineas: 1158,
-    ultimo_commit: 'fa1449c chore: CLAUDE.md',
-    rama: 'main'
-  },
-  {
-    nombre: 'luminn',
-    dominio: 'luminn.zyaeti.mx',
-    puerto: 4100,
-    tipo: 'local',
-    stack: 'React+Express+PG',
-    js: 16, ts: 0, jsx: 17, tsx: 0, css: 1, md: 3,
-    total_archivos: 48, lineas: 4156,
-    ultimo_commit: '71c4fa7 chore: CLAUDE.md',
-    rama: 'main'
-  },
-  {
-    nombre: 'anonimastudio',
-    dominio: 'anonima.zyaeti.mx',
-    puerto: 4200,
-    tipo: 'local',
-    stack: 'Node+Express+SQLite',
-    js: 1, ts: 0, jsx: 0, tsx: 0, css: 0, md: 3,
-    total_archivos: 40, lineas: 647,
-    ultimo_commit: '2e724d0 chore: gitignore',
-    rama: 'master'
-  },
-  {
-    nombre: 'zyapress',
-    dominio: 'zyapress.zyaeti.mx',
-    puerto: 4300,
-    tipo: 'local',
-    stack: 'React+Express+PG',
-    js: 25, ts: 0, jsx: 23, tsx: 0, css: 1, md: 4,
-    total_archivos: 79, lineas: 6779,
-    ultimo_commit: 'cf35a60 chore: CLAUDE.md',
-    rama: 'main'
-  },
-  {
-    nombre: 'psicpatriciaoliver',
-    dominio: 'psicpatriciaoliver.zyaeti.mx',
-    puerto: 4005,
-    tipo: 'local',
-    stack: 'Node+Express',
-    js: 2, ts: 0, jsx: 0, tsx: 0, css: 0, md: 3,
-    total_archivos: 20, lineas: 121,
-    ultimo_commit: 'a205ed2 chore: CLAUDE.md',
-    rama: 'main'
-  },
-  {
-    nombre: 'zya-quieromiweb',
-    dominio: 'quieromiweb.zyaeti.mx',
-    puerto: 5438,
-    tipo: 'local',
-    stack: 'React+Express+SQLite',
-    js: 10, ts: 0, jsx: 10, tsx: 0, css: 1, md: 2,
-    total_archivos: 37, lineas: 1772,
-    ultimo_commit: 'c1d78b4 chore: gitignore',
-    rama: 'master'
-  },
-  {
-    nombre: 'zya-ecommerce',
-    dominio: 'commerce.zyaeti.mx',
-    puerto: 4000,
-    tipo: 'local',
-    stack: 'React+Express+SQLite',
-    js: 8, ts: 0, jsx: 11, tsx: 0, css: 1, md: 4,
-    total_archivos: 41, lineas: 2446,
-    ultimo_commit: 'b0aed29 docs: CLAUDE.md',
-    rama: 'main'
-  },
-  {
-    nombre: 'sanyos-app',
-    dominio: 'sanyos.zyaeti.mx',
-    puerto: 3001,
-    tipo: 'NAS',
-    stack: 'Node+Express',
-    js: 6, ts: 0, jsx: 0, tsx: 0, css: 4, md: 5,
-    total_archivos: 114, lineas: 3764,
-    ultimo_commit: 'c25bde8 feat: splash propio',
-    rama: 'main'
-  },
-  {
-    nombre: 'sanyos-ops',
-    dominio: 'ops.zyaeti.mx',
-    puerto: 3001,
-    tipo: 'NAS',
-    stack: 'React+Node',
-    js: 33, ts: 0, jsx: 44, tsx: 0, css: 6, md: 17,
-    total_archivos: 187, lineas: 22536,
-    ultimo_commit: '5d1a784 fix: FirmasOS',
-    rama: 'main'
-  },
-  {
-    nombre: 'usg-solano',
-    dominio: 'usg.zyaeti.mx',
-    puerto: 3030,
-    tipo: 'NAS',
-    stack: 'Node+Express',
-    js: 7, ts: 0, jsx: 0, tsx: 0, css: 2, md: 6,
-    total_archivos: 4842, lineas: 4336,
-    ultimo_commit: '74afcc3 fix: gitignore',
-    rama: 'main'
-  },
-  {
-    nombre: '_playwright-zya',
-    dominio: null,
-    puerto: null,
-    tipo: 'herramienta',
-    stack: 'Node',
-    js: 7, ts: 0, jsx: 0, tsx: 0, css: 0, md: 2,
-    total_archivos: 15, lineas: 1024,
-    ultimo_commit: '83e99ab docs: CLAUDE.md',
-    rama: 'master'
-  },
-  {
-    nombre: '_report-builder',
-    dominio: null,
-    puerto: null,
-    tipo: 'modulo',
-    stack: 'React+Node',
-    js: 4, ts: 0, jsx: 1, tsx: 0, css: 1, md: 1,
-    total_archivos: 11, lineas: 2096,
-    ultimo_commit: '4d6235f docs: CLAUDE.md',
-    rama: 'master'
-  },
-  {
-    nombre: '_zya-about',
-    dominio: null,
-    puerto: null,
-    tipo: 'modulo',
-    stack: 'JS vanilla',
-    js: 1, ts: 0, jsx: 0, tsx: 0, css: 0, md: 1,
-    total_archivos: 3, lineas: 87,
-    ultimo_commit: 'sin-git',
-    rama: 'N/A'
-  },
-  {
-    nombre: '_zya-theme',
-    dominio: null,
-    puerto: null,
-    tipo: 'modulo',
-    stack: 'CSS',
-    js: 2, ts: 0, jsx: 0, tsx: 0, css: 1, md: 1,
-    total_archivos: 4, lineas: 533,
-    ultimo_commit: 'sin-git',
-    rama: 'N/A'
-  },
-  {
-    nombre: 'zya-soporte',
-    dominio: 'soporte.zyaeti.mx',
-    puerto: 5439,
-    tipo: 'local',
-    stack: 'React+Express+SQLite',
-    js: 10, ts: 0, jsx: 7, tsx: 0, css: 0, md: 4,
-    total_archivos: 30, lineas: 2100,
-    ultimo_commit: 'f1cfc14 feat: cifrado AES-256-GCM',
-    rama: 'master'
-  },
-  {
-    nombre: 'coimprit-b2b',
-    dominio: 'coimprit.zyaeti.mx',
-    puerto: 5440,
-    tipo: 'local',
-    stack: 'React+Express+SQLite',
-    js: 18, ts: 0, jsx: 26, tsx: 0, css: 1, md: 4,
-    total_archivos: 63, lineas: 15215,
-    ultimo_commit: '9e31f4d fix: COIMPRIT nombre correcto del cliente',
-    rama: 'main'
-  },
-  {
-    nombre: 'optica-cha',
-    dominio: 'opticascha.com',
-    puerto: 5441,
-    tipo: 'local',
-    stack: 'Node+Express',
-    js: 0, ts: 0, jsx: 0, tsx: 0, css: 0, md: 0,
-    total_archivos: 0, lineas: 0,
-    ultimo_commit: 'nuevo proyecto',
-    rama: 'main'
-  }
+// ── Caché stats proyectos ────────────────────────────────────────────────────
+let _proyectosCache = null;
+let _proyectosCacheAt = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+
+// Definición de proyectos (metadatos estables — sin stats)
+const PROYECTOS_DEF = [
+  { nombre: 'anza-planner',       dir: 'C:/Proyectos/anza-planner',      dominio: 'anzaplanner.zyaeti.mx',          puerto: 3900,  tipo: 'local',      stack: 'Next.js' },
+  { nombre: 'byrsa',              dir: 'C:/Proyectos/byrsa',             dominio: 'byrsa.zyaeti.mx',                puerto: 3001,  tipo: 'NAS',        stack: 'React+Node' },
+  { nombre: 'pricechecker',       dir: 'C:/Proyectos/pricechecker',      dominio: 'pricechecker.zyaeti.mx',         puerto: 3300,  tipo: 'local',      stack: 'Node+Express+PG' },
+  { nombre: 'sanatorio-macias',   dir: 'C:/Proyectos/sanatorio-macias',  dominio: 'sanatorio.zyaeti.mx',            puerto: 3000,  tipo: 'local',      stack: 'Next.js' },
+  { nombre: 'sesiona',            dir: 'C:/Proyectos/sesiona',           dominio: 'sesiona.zyaeti.mx',              puerto: 3400,  tipo: 'local',      stack: 'Next.js+PG' },
+  { nombre: 'stockfs',            dir: 'C:/Proyectos/stockfs',           dominio: 'stockfs.zyaeti.mx',              puerto: 3500,  tipo: 'local',      stack: 'Next.js+PG' },
+  { nombre: 'zya-changelog',      dir: 'C:/Proyectos/zya-changelog',     dominio: 'cambios.zyaeti.mx',              puerto: 3600,  tipo: 'local',      stack: 'Node' },
+  { nombre: 'zya-landing',        dir: 'C:/Proyectos/zya-landing',       dominio: 'zyaeti.mx',                      puerto: 3800,  tipo: 'local',      stack: 'Node' },
+  { nombre: 'zya-monitor',        dir: 'C:/Proyectos/zya-monitor',       dominio: 'monitor.zyaeti.mx',              puerto: 3700,  tipo: 'local',      stack: 'Node' },
+  { nombre: 'luminn',             dir: 'C:/Proyectos/luminn',            dominio: 'luminn.zyaeti.mx',               puerto: 4100,  tipo: 'local',      stack: 'React+Express+PG' },
+  { nombre: 'anonimastudio',      dir: 'C:/Proyectos/anonimastudio',     dominio: 'anonima.zyaeti.mx',              puerto: 4200,  tipo: 'local',      stack: 'Node+Express+SQLite' },
+  { nombre: 'zyapress',           dir: 'C:/Proyectos/zyapress',          dominio: 'zyapress.zyaeti.mx',             puerto: 4300,  tipo: 'local',      stack: 'React+Express+PG' },
+  { nombre: 'psicpatriciaoliver', dir: 'C:/Proyectos/psicpatriciaoliver',dominio: 'psicpatriciaoliver.zyaeti.mx',   puerto: 4005,  tipo: 'local',      stack: 'Node+Express' },
+  { nombre: 'zya-quieromiweb',    dir: 'C:/Proyectos/zya-quieromiweb',   dominio: 'quieromiweb.zyaeti.mx',          puerto: 5438,  tipo: 'local',      stack: 'React+Express+SQLite' },
+  { nombre: 'zya-ecommerce',      dir: 'C:/Proyectos/zya-ecommerce',     dominio: 'commerce.zyaeti.mx',             puerto: 4000,  tipo: 'local',      stack: 'React+Express+SQLite' },
+  { nombre: 'sanyos-app',         dir: 'C:/Proyectos/sanyos-app',        dominio: 'sanyos.zyaeti.mx',               puerto: 3001,  tipo: 'NAS',        stack: 'Node+Express' },
+  { nombre: 'sanyos-ops',         dir: 'C:/Proyectos/sanyos-ops',        dominio: 'ops.zyaeti.mx',                  puerto: 3001,  tipo: 'NAS',        stack: 'React+Node' },
+  { nombre: 'usg-solano',         dir: 'C:/Proyectos/usg-solano',        dominio: 'usg.zyaeti.mx',                  puerto: 3030,  tipo: 'NAS',        stack: 'Node+Express' },
+  { nombre: '_playwright-zya',    dir: 'C:/Proyectos/_playwright-zya',   dominio: null,                             puerto: null,  tipo: 'herramienta',stack: 'Node' },
+  { nombre: '_report-builder',    dir: 'C:/Proyectos/_report-builder',   dominio: null,                             puerto: null,  tipo: 'modulo',     stack: 'React+Node' },
+  { nombre: '_zya-about',         dir: 'C:/Proyectos/_zya-about',        dominio: null,                             puerto: null,  tipo: 'modulo',     stack: 'JS vanilla' },
+  { nombre: '_zya-theme',         dir: 'C:/Proyectos/_zya-theme',        dominio: null,                             puerto: null,  tipo: 'modulo',     stack: 'CSS' },
+  { nombre: 'zya-soporte',        dir: 'C:/Proyectos/zya-soporte',       dominio: 'soporte.zyaeti.mx',              puerto: 5439,  tipo: 'local',      stack: 'React+Express+SQLite' },
+  { nombre: 'coimprit-b2b',       dir: 'C:/Proyectos/coimprit-b2b',      dominio: 'coimprit.zyaeti.mx',             puerto: 5440,  tipo: 'local',      stack: 'React+Express+SQLite' },
+  { nombre: 'optica-cha',         dir: 'C:/Proyectos/opticascha',        dominio: 'opticascha.com',                 puerto: 5441,  tipo: 'local',      stack: 'Next.js' },
 ];
+
+function contarArchivosPorExt(dir) {
+  const counts = { js: 0, ts: 0, jsx: 0, tsx: 0, css: 0, md: 0 };
+  if (!fs.existsSync(dir)) return counts;
+  function walk(d) {
+    let entries;
+    try { entries = fs.readdirSync(d, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      if (e.name === 'node_modules' || e.name === '.git' || e.name === 'dist' || e.name === '.next') continue;
+      const full = path.join(d, e.name);
+      if (e.isDirectory()) { walk(full); }
+      else {
+        const ext = e.name.split('.').pop();
+        if (counts.hasOwnProperty(ext)) counts[ext]++;
+      }
+    }
+  }
+  walk(dir);
+  return counts;
+}
+
+function contarLineas(dir) {
+  let total = 0;
+  const exts = new Set(['js','ts','jsx','tsx','css','md']);
+  if (!fs.existsSync(dir)) return 0;
+  function walk(d) {
+    let entries;
+    try { entries = fs.readdirSync(d, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      if (e.name === 'node_modules' || e.name === '.git' || e.name === 'dist' || e.name === '.next') continue;
+      const full = path.join(d, e.name);
+      if (e.isDirectory()) { walk(full); }
+      else {
+        const ext = e.name.split('.').pop();
+        if (exts.has(ext)) {
+          try {
+            const content = fs.readFileSync(full, 'utf8');
+            total += content.split('\n').length;
+          } catch {}
+        }
+      }
+    }
+  }
+  walk(dir);
+  return total;
+}
+
+function contarArchivosTotal(dir) {
+  let total = 0;
+  if (!fs.existsSync(dir)) return 0;
+  function walk(d) {
+    let entries;
+    try { entries = fs.readdirSync(d, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      if (e.name === 'node_modules' || e.name === '.git' || e.name === 'dist' || e.name === '.next') continue;
+      const full = path.join(d, e.name);
+      if (e.isDirectory()) walk(full);
+      else total++;
+    }
+  }
+  walk(dir);
+  return total;
+}
+
+function getUltimoCommit(dir) {
+  if (!fs.existsSync(dir)) return 'sin-git';
+  try {
+    const result = execSync('git log --oneline -1', { cwd: dir, timeout: 3000, encoding: 'utf8', stdio: ['pipe','pipe','pipe'] });
+    return result.trim() || 'sin commits';
+  } catch {
+    return 'sin-git';
+  }
+}
+
+function getRama(dir) {
+  if (!fs.existsSync(dir)) return 'N/A';
+  try {
+    const result = execSync('git rev-parse --abbrev-ref HEAD', { cwd: dir, timeout: 3000, encoding: 'utf8', stdio: ['pipe','pipe','pipe'] });
+    return result.trim() || 'N/A';
+  } catch {
+    return 'N/A';
+  }
+}
+
+function calcularProyectos() {
+  return PROYECTOS_DEF.map(p => {
+    const exts = contarArchivosPorExt(p.dir);
+    return {
+      ...p,
+      ...exts,
+      total_archivos: contarArchivosTotal(p.dir),
+      lineas: contarLineas(p.dir),
+      ultimo_commit: getUltimoCommit(p.dir),
+      rama: getRama(p.dir),
+    };
+  });
+}
+
+function getProyectos() {
+  const now = Date.now();
+  if (_proyectosCache && (now - _proyectosCacheAt) < CACHE_TTL) return _proyectosCache;
+  _proyectosCache = calcularProyectos();
+  _proyectosCacheAt = now;
+  return _proyectosCache;
+}
 
 const GIT_SYNC = [
   { proyecto: 'byrsa', pc: true, nas: true, github: true },
@@ -292,16 +153,31 @@ const GIT_SYNC = [
   { proyecto: 'usg-solano', pc: true, nas: true, github: true }
 ];
 
-const PENDIENTES = [
-  { id: 'sesiona-toggle', descripcion: 'Activar toggle recordatorios en sesiona.zyaeti.mx/configuracion', tipo: 'manual', responsable: 'Carlos', proyecto: 'sesiona' },
-  { id: 'usg-datos-solano', descripcion: 'Llenar cédula/teléfono/dirección Dr. Solano en usg.zyaeti.mx/admin', tipo: 'manual', responsable: 'Carlos', proyecto: 'usg-solano' },
-  { id: 'usg-canvas-pdf', descripcion: 'Integrar canvas snapshot al PDF (USG)', tipo: 'codigo', responsable: 'CC', proyecto: 'usg-solano' },
-  { id: 'sesiona-websockets', descripcion: 'Sesiona: WebSockets chat + SERVER_ENCRYPTION_KEY', tipo: 'codigo', responsable: 'CC', proyecto: 'sesiona' },
-  { id: 'byrsa-comparacion', descripcion: 'Byrsa: comparación digital inventario (escaneo vs Factusol)', tipo: 'codigo', responsable: 'CC', proyecto: 'byrsa' },
-  { id: 'rustdesk-oracle', descripcion: 'RustDesk self-hosted: completar setup VM Ubuntu 22.04 + Docker en Oracle Cloud Free Tier (US East Ashburn)', tipo: 'codigo', responsable: 'CC', proyecto: 'infraestructura' },
-  { id: 'gsc-verificar', descripcion: 'Google Search Console: registrar y verificar propiedades (T38) — Carlos entra a GSC → agrega sites → verifica → CC escribe gsc-tools.js', tipo: 'manual', responsable: 'Carlos', proyecto: 'infraestructura' },
-  { id: 'sanyos-gmail-facturas', descripcion: 'Crear cuenta Gmail dedicada facturas.sanyos y configurar reenvío automático en correo de Santiago (prerequisito HI-11 conciliación CML)', tipo: 'manual', responsable: 'Carlos', proyecto: 'sanyos-ops' },
-];
+// ── Parser pendientes.md ──────────────────────────────────────────────────────
+function parsePendientes() {
+  const pendientesPath = 'C:/Proyectos/deseimp/pendientes.md';
+  if (!fs.existsSync(pendientesPath)) return [];
+  const content = fs.readFileSync(pendientesPath, 'utf8');
+  const items = [];
+  let actual = null;
+  for (const line of content.split('\n')) {
+    if (line.startsWith('#') && !line.startsWith('##')) continue; // título principal
+    const encabezado = line.match(/^## ([^\s—]+) — (.+)/);
+    if (encabezado) {
+      if (actual) items.push(actual);
+      actual = { id: encabezado[1], descripcion: encabezado[2], tipo: '', responsable: '', proyecto: '' };
+    } else if (actual) {
+      const tipo = line.match(/\*\*Tipo:\*\* (.+)/);
+      if (tipo) actual.tipo = tipo[1].trim();
+      const resp = line.match(/\*\*Responsable:\*\* (.+)/);
+      if (resp) actual.responsable = resp[1].trim();
+      const proy = line.match(/\*\*Proyecto:\*\* (.+)/);
+      if (proy) actual.proyecto = proy[1].trim();
+    }
+  }
+  if (actual) items.push(actual);
+  return items.filter(i => i.id);
+}
 
 // ── Tasks state (checkboxes) ──────────────────────────────────────────────────
 const STATE_PATH = path.join(__dirname, 'tasks-state.json');
@@ -350,23 +226,28 @@ app.get('/api/health', (req, res) => {
 app.get('/health', (req, res) => res.redirect('/api/health'));
 
 app.get('/api/stats', (req, res) => {
-  const totalLineas = PROYECTOS.reduce((s, p) => s + p.lineas, 0);
-  const totalArchivos = PROYECTOS.reduce((s, p) => s + p.total_archivos, 0);
-  const serviciosActivos = PROYECTOS.filter(p => p.dominio !== null).length;
+  const proyectos = getProyectos();
+  const totalLineas = proyectos.reduce((s, p) => s + p.lineas, 0);
+  const totalArchivos = proyectos.reduce((s, p) => s + p.total_archivos, 0);
+  const serviciosActivos = proyectos.filter(p => p.dominio !== null).length;
 
   const hoy = new Date().toISOString().slice(0, 10);
   res.json({
     resumen: {
-      total_proyectos: PROYECTOS.length,
+      total_proyectos: proyectos.length,
       total_lineas: totalLineas,
       total_archivos: totalArchivos,
       servicios_activos: serviciosActivos,
       actualizado: hoy
     },
-    proyectos: PROYECTOS,
+    proyectos,
     git_sync: GIT_SYNC,
-    pendientes: PENDIENTES
+    pendientes: parsePendientes()
   });
+});
+
+app.get('/api/pendientes', (req, res) => {
+  res.json({ pendientes: parsePendientes() });
 });
 
 // ── Hilos abiertos (parsea deseimp/hilos-abiertos.md) ───────────────────────
@@ -406,19 +287,22 @@ function parseTareas() {
   const content = fs.readFileSync(backlogPath, 'utf8');
   const tareas = [];
   let tareaActual = null;
+  let bodyLines = [];
   for (const line of content.split('\n')) {
     const encabezado = line.match(/^## (T\d+) — (.+)/);
     if (encabezado) {
-      if (tareaActual) tareas.push(tareaActual);
-      tareaActual = { id: encabezado[1], titulo: encabezado[2], estado: '', proyecto: '' };
+      if (tareaActual) { tareaActual.cuerpo = bodyLines.join('\n').trim(); tareas.push(tareaActual); }
+      tareaActual = { id: encabezado[1], titulo: encabezado[2], estado: '', proyecto: '', cuerpo: '' };
+      bodyLines = [];
     } else if (tareaActual) {
       const est = line.match(/\*\*Estado:\*\* (.+)/);
       if (est) tareaActual.estado = est[1];
       const proy = line.match(/\*\*Proyecto:\*\* (.+)/);
       if (proy) tareaActual.proyecto = proy[1].replace(/\s*\(.*\)/, '').trim();
+      bodyLines.push(line);
     }
   }
-  if (tareaActual) tareas.push(tareaActual);
+  if (tareaActual) { tareaActual.cuerpo = bodyLines.join('\n').trim(); tareas.push(tareaActual); }
   return tareas.filter(t => t.id);
 }
 
