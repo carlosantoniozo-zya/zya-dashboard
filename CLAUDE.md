@@ -11,12 +11,13 @@ Dashboard de estadísticas del ecosistema ZYA. Muestra métricas reales de todos
 ## Stack
 - Node.js + Express
 - HTML/CSS/JS vanilla en public/
-- Sin base de datos (datos en JSON hardcoded en server.js + API futura)
+- Sin base de datos — stats dinámicas (git log + filesystem, caché 5 min) + parseo en tiempo real de archivos .md de deseimp/
 
 ## Restricciones
 - No-cache en HTML (obligatorio ZYA)
-- Stats actualizadas manualmente por ahora (futuro: git API)
 - Puerto 4600 fijo
+- Stats de proyectos dinámicas (caché 5 min); metadatos estables en `PROYECTOS_DEF` de server.js, stats calculadas por `calcularProyectos()`
+- Pendientes, hilos y backlog: parseo dinámico de deseimp/*.md — no editar arrays en server.js
 
 ## Protocolo estándar ZyA
 
@@ -27,7 +28,7 @@ Dashboard de estadísticas del ecosistema ZYA. Muestra métricas reales de todos
 ### b) Límites operativos
 - No asumir lectura completa de archivos >500 líneas sin paginar
 - Máximo 5 archivos modificados por sesión salvo instrucción explícita
-- Los datos del ecosistema viven en el array PROYECTOS de server.js
+- Los metadatos del ecosistema viven en `PROYECTOS_DEF` de server.js (dominio, puerto, stack). Las stats se calculan dinámicamente por `calcularProyectos()`
 
 ### c) Definición de "terminado"
 - Una tarea está terminada cuando pasaría revisión de un dev senior perfeccionista

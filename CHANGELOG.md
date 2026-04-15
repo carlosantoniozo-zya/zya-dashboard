@@ -1,5 +1,18 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14n] — docs: sincronizar documentación con código real
+
+**Motivo:** Auditoría detectó CLAUDE.md y ESTADO.md desactualizados respecto al código v2.0.0.
+
+**Cambios:**
+- `CLAUDE.md` — Stack: eliminado "datos hardcoded" → dinámicos (git log + filesystem, caché 5 min). Restricciones: "stats manuales/futuro" → ya implementadas. Array PROYECTOS → `PROYECTOS_DEF` + `calcularProyectos()`. Añadida regla: pendientes/hilos/backlog = parseo dinámico de .md
+- `ESTADO.md` — Pendientes: "8 fijos" → "dinámicos desde pendientes.md". Endpoints: agregados `/api/pendientes` y `/api/tasks-state` que faltaban
+- `public/index.html` — Badge "9 archivos" de Documentación viva: id agregado + actualización dinámica en JS al cargar `/api/docs`
+
+**Impacto:** Sin cambios de comportamiento. Solo documentación alineada con el código.
+
+---
+
 ## [2026-04-14m] — revert: eliminar sección verificaciones flotilla del dashboard general
 
 **Motivo:** Información de ops no pertenece al dashboard general del ecosistema.

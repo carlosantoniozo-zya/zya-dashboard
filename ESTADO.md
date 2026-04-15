@@ -16,7 +16,7 @@
 - Stats ecosistema: 25 proyectos, líneas, archivos, servicios activos
 - **Hilos abiertos** — parsea `deseimp/hilos-abiertos.md` en tiempo real
 - **Backlog de tareas** — parsea `deseimp/backlog.md` en tiempo real
-- **Pendientes reales** — 8 acciones puntuales con checkbox colaborativo (SSE, quien/cuando)
+- **Pendientes reales** — acciones puntuales con checkbox colaborativo (SSE, quien/cuando). Dinámicos desde `deseimp/pendientes.md`
 - **Documentación viva** — 9 archivos .md del ecosistema con visor inline markdown coloreado
 - **Auto-refresh** — OFF/30s/1min/5min, countdown visual, por defecto 1 min
 - **Vista integrada** — iframes Monitor + Changelog (lazy-load). Responsive: desktop 2col, tablet 1col, móvil tarjetas con links
@@ -32,5 +32,7 @@
 - `GET /api/hilos` — parseo dinámico hilos-abiertos.md
 - `GET /api/docs` — índice 9 archivos .md
 - `GET /api/docs/:id` — contenido de un .md específico
+- `GET /api/pendientes` — parseo dinámico pendientes.md
 - `GET /api/events` — SSE para estado de checkboxes en tiempo real
+- `GET /api/tasks-state` — estado actual de checkboxes (JSON)
 - `POST /api/toggle` — marcar/desmarcar pendiente o hilo
