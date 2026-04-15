@@ -1,5 +1,13 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14m] — revert: eliminar sección verificaciones flotilla del dashboard general
+
+**Motivo:** Información de ops no pertenece al dashboard general del ecosistema.
+
+**Cambios:** Eliminados CSS, HTML, JS (loadVerificaciones) y proxy /api/ops/verificaciones de server.js.
+
+---
+
 ## [2026-04-14l] — fix: sección verificaciones abierta por defecto + fecha fin de período
 
 **Motivo:** La sección arrancaba colapsada (invisible). Los períodos con fecha_referencia ahora muestran "ENE-ABR 2026 (fin 2026-04-30)" para claridad.

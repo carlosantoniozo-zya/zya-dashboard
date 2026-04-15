@@ -882,71 +882,6 @@
       .vista-grid { display: none; }
       .vista-mobile-card { display: flex; }
     }
-
-    /* ── Verificaciones flotilla ─────────────────────────────────────────── */
-    .verif-resumen {
-      display: flex;
-      gap: 12px;
-      padding: 12px 16px;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-    }
-    .verif-chip {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-family: var(--mono);
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-weight: 700;
-    }
-    .verif-chip.vencida  { background: rgba(239,68,68,.15);  color: #ef4444; }
-    .verif-chip.critica  { background: rgba(245,158,11,.15); color: #f59e0b; }
-    .verif-chip.proxima  { background: rgba(56,189,248,.15); color: #38bdf8; }
-    .verif-chip.al-dia   { background: rgba(94,172,36,.12);  color: var(--green); }
-    .verif-chip.texto    { background: rgba(148,163,184,.1); color: var(--text-muted); }
-
-    .verif-table-wrap { overflow-x: auto; }
-    .verif-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .verif-table thead th {
-      background: var(--bg3);
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      padding: 8px 14px;
-      text-align: left;
-      white-space: nowrap;
-      border-bottom: 1px solid var(--border);
-    }
-    .verif-table tbody tr { border-bottom: 1px solid var(--border); }
-    .verif-table tbody tr:last-child { border-bottom: none; }
-    .verif-table tbody tr:hover { background: var(--green-glow); }
-    .verif-table td { padding: 8px 14px; white-space: nowrap; vertical-align: middle; }
-    .verif-eco   { font-family: var(--mono); font-weight: 700; color: var(--green); }
-    .verif-dias  { font-family: var(--mono); font-weight: 700; text-align: right; }
-    .verif-dias.vencida { color: #ef4444; }
-    .verif-dias.critica { color: #f59e0b; }
-    .verif-dias.proxima { color: #38bdf8; }
-    .verif-dias.al-dia  { color: var(--green); }
-    .verif-dias.texto   { color: var(--text-muted); }
-    .verif-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
-      display: inline-block;
-      white-space: nowrap;
-    }
-    .verif-badge.vencida { background: rgba(239,68,68,.2); color: #ef4444; }
-    .verif-badge.critica { background: rgba(245,158,11,.2); color: #f59e0b; }
-    .verif-badge.proxima { background: rgba(56,189,248,.2); color: #38bdf8; }
-    .verif-badge.al-dia  { background: rgba(94,172,36,.15); color: var(--green); }
-    .verif-badge.texto   { background: rgba(148,163,184,.1); color: var(--text-muted); }
-    .verif-empty { padding: 24px; text-align: center; color: var(--text-muted); font-size: 13px; }
-    .verif-error { padding: 16px; color: #ef4444; font-size: 12px; font-family: var(--mono); }
   </style>
 </head>
 <body>
@@ -997,33 +932,6 @@
       <div class="stat-sub">con dominio público</div>
     </div>
   </div>
-
-  <!-- Verificaciones flotilla SANYOS -->
-  <section>
-    <div class="section-header" onclick="toggleSection(this)">
-      <h2>Verificaciones flotilla — SANYOS OPS</h2>
-      <span class="badge" id="badge-verif">—</span>
-      <span class="section-chevron">▾</span>
-    </div>
-    <div class="section-body">
-      <div class="verif-resumen" id="verif-resumen"></div>
-      <div class="verif-table-wrap">
-        <table class="verif-table">
-          <thead>
-            <tr>
-              <th>ECO</th>
-              <th>Placas</th>
-              <th>Unidad</th>
-              <th>Próx. verificación</th>
-              <th>Días</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody id="verif-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
 
   <!-- Hilos abiertos -->
   <section>
@@ -1537,66 +1445,7 @@ function setRefresh(val) {
   refreshInterval = setInterval(async () => {
     refreshCountdown = secs;
     await loadDynamic();
-    loadVerificaciones();
   }, secs * 1000);
-}
-
-// ── Verificaciones flotilla ───────────────────────────────────────────────────
-async function loadVerificaciones() {
-  const tbody  = document.getElementById('verif-tbody');
-  const resDiv = document.getElementById('verif-resumen');
-  const badge  = document.getElementById('badge-verif');
-  try {
-    const r = await fetch('/api/ops/verificaciones');
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const { todas, resumen } = await r.json();
-
-    // Badge en header
-    badge.textContent = resumen.total_alertas > 0 ? resumen.total_alertas + ' alertas' : 'al día';
-
-    // Chips resumen
-    const chips = [];
-    if (resumen.vencidas)  chips.push(`<div class="verif-chip vencida">⛔ ${resumen.vencidas} vencida${resumen.vencidas>1?'s':''}</div>`);
-    if (resumen.criticas)  chips.push(`<div class="verif-chip critica">⚠ ${resumen.criticas} crítica${resumen.criticas>1?'s':''} (≤15 d)</div>`);
-    if (resumen.proximas)  chips.push(`<div class="verif-chip proxima">🔔 ${resumen.proximas} próxima${resumen.proximas>1?'s':''} (≤60 d)</div>`);
-    if (resumen.texto)     chips.push(`<div class="verif-chip texto">📋 ${resumen.texto} período</div>`);
-    if (resumen.al_dia)    chips.push(`<div class="verif-chip al-dia">✓ ${resumen.al_dia} al día</div>`);
-    resDiv.innerHTML = chips.length ? chips.join('') : '<span style="color:var(--text-muted);font-size:12px">Sin datos de verificación registrados</span>';
-
-    // Tabla
-    if (!todas || !todas.length) {
-      tbody.innerHTML = `<tr><td colspan="6" class="verif-empty">No hay unidades con verificación registrada</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = todas.map(u => {
-      const cls = u.clasificacion === 'al_dia' ? 'al-dia' : u.clasificacion;
-      let diasHtml;
-      if (u.dias_restantes === null) {
-        diasHtml = `<td class="verif-dias texto">—</td>`;
-      } else if (u.dias_restantes <= 0) {
-        diasHtml = `<td class="verif-dias vencida">${Math.abs(u.dias_restantes)}d vencida</td>`;
-      } else {
-        diasHtml = `<td class="verif-dias ${cls}">${u.dias_restantes}d</td>`;
-      }
-      const labelMap = { vencida:'VENCIDA', critica:'CRÍTICA', proxima:'PRÓXIMA', al_dia:'AL DÍA', texto:'PERÍODO', 'al-dia':'AL DÍA' };
-      // Mostrar período original + fecha de referencia calculada si existe
-      const vencDisplay = u.fecha_referencia && u.fecha_referencia !== u.vencimiento_verificacion
-        ? `<span style="color:var(--text-muted)">${u.vencimiento_verificacion}</span> <span style="font-size:11px;color:#60748a">(fin ${u.fecha_referencia})</span>`
-        : `<span>${u.vencimiento_verificacion || '—'}</span>`;
-      return `<tr>
-        <td class="verif-eco">${u.eco || '—'}</td>
-        <td>${u.placas || '—'}</td>
-        <td style="color:var(--text-muted)">${[u.marca, u.modelo].filter(Boolean).join(' ') || '—'}</td>
-        <td style="font-family:var(--mono);font-size:12px">${vencDisplay}</td>
-        ${diasHtml}
-        <td><span class="verif-badge ${cls}">${labelMap[u.clasificacion] || u.clasificacion}</span></td>
-      </tr>`;
-    }).join('');
-  } catch (e) {
-    badge.textContent = 'error';
-    document.getElementById('verif-resumen').innerHTML = `<div class="verif-error">No se pudo cargar: ${e.message}</div>`;
-    tbody.innerHTML = '';
-  }
 }
 
 // ── Carga principal ───────────────────────────────────────────────────────────
@@ -1754,9 +1603,6 @@ function cerrarTareaModal(e) {
     const docsRes = await fetch('/api/docs');
     docsIndex = await docsRes.json();
     renderDocs();
-
-    // Verificaciones flotilla
-    loadVerificaciones();
 
     // Activar auto-refresh (1 min por defecto)
     setRefresh(60);
