@@ -1003,9 +1003,9 @@
     <div class="section-header" onclick="toggleSection(this)">
       <h2>Verificaciones flotilla — SANYOS OPS</h2>
       <span class="badge" id="badge-verif">—</span>
-      <span class="section-chevron collapsed">▾</span>
+      <span class="section-chevron">▾</span>
     </div>
-    <div class="section-body collapsed">
+    <div class="section-body">
       <div class="verif-resumen" id="verif-resumen"></div>
       <div class="verif-table-wrap">
         <table class="verif-table">
@@ -1579,11 +1579,15 @@ async function loadVerificaciones() {
         diasHtml = `<td class="verif-dias ${cls}">${u.dias_restantes}d</td>`;
       }
       const labelMap = { vencida:'VENCIDA', critica:'CRÍTICA', proxima:'PRÓXIMA', al_dia:'AL DÍA', texto:'PERÍODO', 'al-dia':'AL DÍA' };
+      // Mostrar período original + fecha de referencia calculada si existe
+      const vencDisplay = u.fecha_referencia && u.fecha_referencia !== u.vencimiento_verificacion
+        ? `<span style="color:var(--text-muted)">${u.vencimiento_verificacion}</span> <span style="font-size:11px;color:#60748a">(fin ${u.fecha_referencia})</span>`
+        : `<span>${u.vencimiento_verificacion || '—'}</span>`;
       return `<tr>
         <td class="verif-eco">${u.eco || '—'}</td>
         <td>${u.placas || '—'}</td>
         <td style="color:var(--text-muted)">${[u.marca, u.modelo].filter(Boolean).join(' ') || '—'}</td>
-        <td style="font-family:var(--mono);font-size:12px">${u.vencimiento_verificacion || '—'}</td>
+        <td style="font-family:var(--mono);font-size:12px">${vencDisplay}</td>
         ${diasHtml}
         <td><span class="verif-badge ${cls}">${labelMap[u.clasificacion] || u.clasificacion}</span></td>
       </tr>`;

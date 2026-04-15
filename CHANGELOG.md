@@ -1,5 +1,14 @@
 # CHANGELOG — dashboard
 
+## [2026-04-14l] — fix: sección verificaciones abierta por defecto + fecha fin de período
+
+**Motivo:** La sección arrancaba colapsada (invisible). Los períodos con fecha_referencia ahora muestran "ENE-ABR 2026 (fin 2026-04-30)" para claridad.
+
+**Cambios:**
+- `public/index.html`: sección verificaciones sin clase `collapsed` (abierta por defecto). Render muestra fecha de referencia calculada junto al período textual.
+
+---
+
 ## [2026-04-14k] — feat: sección verificaciones flotilla SANYOS OPS
 
 **Motivo:** Visualizar el estado de verificaciones vehiculares de la flotilla directamente en el dashboard con semáforo por días restantes.
