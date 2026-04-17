@@ -591,6 +591,66 @@
       margin: 0;
     }
 
+    /* ── Sesiones de hoy ────────────────────────────────────────────────── */
+    .sesion-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sesion-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sesion-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green);
+      background: var(--green-glow);
+      padding: 2px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+
+    .sesion-tema {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .sesion-resumen {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .sesion-cambios {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      opacity: 0.7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sesiones-empty {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 4px 0;
+    }
+
     /* ── Checkboxes ──────────────────────────────────────────────────────── */
     .cb-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
@@ -933,6 +993,18 @@
     </div>
   </div>
 
+  <!-- Sesiones de hoy -->
+  <section>
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Sesiones de hoy</h2>
+      <span class="badge" id="badge-sesiones-hoy">—</span>
+      <span class="section-chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div id="sesiones-hoy-list" style="display:flex;flex-direction:column;gap:8px;padding:12px 16px 16px"></div>
+    </div>
+  </section>
+
   <!-- Hilos abiertos -->
   <section>
     <div class="section-header" onclick="toggleSection(this)">
@@ -961,6 +1033,13 @@
     </div>
     <div class="section-body">
       <div class="pendientes-list" id="pendientes-list"></div>
+      <details id="pendientes-completados-wrap" style="margin:0 16px 16px;display:none">
+        <summary style="cursor:pointer;font-size:12px;color:var(--text-muted);font-family:monospace;letter-spacing:.05em;padding:6px 4px;list-style:none;display:flex;align-items:center;gap:8px">
+          <span id="pendientes-completados-arrow" style="font-size:10px">▶</span>
+          COMPLETADOS <span class="badge" id="badge-pendientes-completados" style="background:#1a2a1a;color:#4a7a4a">—</span>
+        </summary>
+        <div class="pendientes-list" id="pendientes-completados-list" style="margin-top:10px;opacity:.65"></div>
+      </details>
     </div>
   </section>
 
@@ -1152,21 +1231,16 @@ function renderPendientes() {
   const tipoLabel = { manual: 'Manual', codigo: 'Código', 'espera-cliente': 'Espera cliente' };
   const state = tasksState.pendientes || {};
 
-  const sorted = [...pendientesData].sort((a, b) => {
-    const ac = state[a.id]?.completado ? 1 : 0;
-    const bc = state[b.id]?.completado ? 1 : 0;
-    return ac - bc;
-  });
+  const activos     = pendientesData.filter(p => !state[p.id]?.completado);
+  const completados = pendientesData.filter(p =>  !!state[p.id]?.completado);
 
-  document.getElementById('badge-pendientes').textContent = pendientesData.length;
-  document.getElementById('pendientes-list').innerHTML = sorted.map(p => {
+  function buildItem(p, completado) {
     const s = state[p.id] || {};
-    const completado = !!s.completado;
     const quienClass = s.quien === 'Carlos' ? 'badge-carlos' : 'badge-cc';
     return `
       <div class="pendiente-item ${completado ? 'item-completado' : ''}" data-id="${p.id}">
         <div class="cb-wrap">
-          <div class="cb ${completado ? 'checked' : ''}" title="Marcar como completado"
+          <div class="cb ${completado ? 'checked' : ''}" title="${completado ? 'Desmarcar' : 'Marcar como completado'}"
             onclick="promptToggle('pendientes','${p.id}')"></div>
           <span class="badge-quien ${quienClass} ${completado ? 'visible' : ''}">${s.quien || ''}</span>
           <span class="badge-cuando ${completado ? 'visible' : ''}">${fmtCuando(s.cuando)}</span>
@@ -1178,7 +1252,22 @@ function renderPendientes() {
         </div>
       </div>
     `;
-  }).join('');
+  }
+
+  document.getElementById('badge-pendientes').textContent = activos.length;
+  document.getElementById('pendientes-list').innerHTML = activos.map(p => buildItem(p, false)).join('');
+
+  const wrap = document.getElementById('pendientes-completados-wrap');
+  if (completados.length > 0) {
+    wrap.style.display = '';
+    document.getElementById('badge-pendientes-completados').textContent = completados.length;
+    document.getElementById('pendientes-completados-list').innerHTML = completados.map(p => buildItem(p, true)).join('');
+    wrap.addEventListener('toggle', () => {
+      document.getElementById('pendientes-completados-arrow').textContent = wrap.open ? '▼' : '▶';
+    }, { once: false });
+  } else {
+    wrap.style.display = 'none';
+  }
 }
 
 // ── Render hilos ──────────────────────────────────────────────────────────────
@@ -1228,20 +1317,19 @@ function renderHilos() {
   const abiertos = hilosData.filter(h => !esCerrado(h.estado));
   const cerrados = hilosData.filter(h =>  esCerrado(h.estado));
 
-  const sortedAbiertos = [...abiertos].sort((a, b) => {
-    const ac = state[a.id]?.completado ? 1 : 0;
-    const bc = state[b.id]?.completado ? 1 : 0;
-    return ac - bc;
-  });
+  // Checkbox-completados se mueven a cerrados
+  const abiertosActivos     = abiertos.filter(h => !state[h.id]?.completado);
+  const abiertosCompletados = abiertos.filter(h =>  !!state[h.id]?.completado);
+  const todosCerrados       = [...cerrados, ...abiertosCompletados];
 
-  document.getElementById('badge-hilos').textContent = abiertos.length;
-  document.getElementById('hilos-grid').innerHTML = sortedAbiertos.map(renderCard).join('');
+  document.getElementById('badge-hilos').textContent = abiertosActivos.length;
+  document.getElementById('hilos-grid').innerHTML = abiertosActivos.map(renderCard).join('');
 
   const wrap = document.getElementById('hilos-cerrados-wrap');
-  if (cerrados.length > 0) {
+  if (todosCerrados.length > 0) {
     wrap.style.display = '';
-    document.getElementById('badge-hilos-cerrados').textContent = cerrados.length;
-    document.getElementById('hilos-cerrados-grid').innerHTML = cerrados.map(renderCard).join('');
+    document.getElementById('badge-hilos-cerrados').textContent = todosCerrados.length;
+    document.getElementById('hilos-cerrados-grid').innerHTML = todosCerrados.map(renderCard).join('');
     wrap.addEventListener('toggle', () => {
       document.getElementById('hilos-cerrados-arrow').textContent = wrap.open ? '▼' : '▶';
     }, { once: false });
@@ -1448,14 +1536,48 @@ function setRefresh(val) {
   }, secs * 1000);
 }
 
+// ── Sesiones de hoy ───────────────────────────────────────────────────────────
+function renderSesionesHoy(sesiones) {
+  const badge = document.getElementById('badge-sesiones-hoy');
+  const list  = document.getElementById('sesiones-hoy-list');
+  badge.textContent = sesiones.length;
+
+  if (!sesiones.length) {
+    list.innerHTML = '<div class="sesiones-empty">Sin sesiones registradas hoy aún.</div>';
+    return;
+  }
+
+  list.innerHTML = sesiones.map(s => `
+    <div class="sesion-card">
+      <div class="sesion-header">
+        <span class="sesion-num">S${s.numero}</span>
+        <span class="sesion-tema">${s.tema || '(sin tema)'}</span>
+      </div>
+      ${s.resumen ? `<div class="sesion-resumen">${s.resumen}</div>` : ''}
+      ${s.cambios ? `<div class="sesion-cambios">📁 ${s.cambios}</div>` : ''}
+    </div>
+  `).join('');
+}
+
 // ── Carga principal ───────────────────────────────────────────────────────────
 async function loadDynamic() {
   try {
+    // Sesiones de hoy
+    const sesionesRes = await fetch('/api/sesiones-hoy');
+    const sesionesData = await sesionesRes.json();
+    renderSesionesHoy(sesionesData.sesiones || []);
+
     // Hilos
     const hilosRes = await fetch('/api/hilos');
     const hilosDataRaw = await hilosRes.json();
     hilosData = hilosDataRaw.hilos || [];
     renderHilos();
+
+    // Pendientes
+    const pendientesRes = await fetch('/api/pendientes');
+    const pendientesDataRaw = await pendientesRes.json();
+    pendientesData = pendientesDataRaw.pendientes || [];
+    renderPendientes();
 
     // Tareas
     const tareasRes = await fetch('/api/tareas');
@@ -1516,18 +1638,77 @@ function renderTareas(tareas, tr) {
   }).join('');
 }
 
+let _tareaActivaId = null;
+
 function abrirTareaModal(id) {
   const t = _tareasCache[id];
   if (!t) return;
+  _tareaActivaId = id;
   document.getElementById('tarea-modal-id').textContent = t.id;
   document.getElementById('tarea-modal-titulo').textContent = t.titulo;
   document.getElementById('tarea-modal-content').innerHTML = renderMarkdown(t.cuerpo || '(Sin descripción)');
+  // Resetear modo edición
+  document.getElementById('tarea-modal-content').style.display = '';
+  document.getElementById('tarea-modal-edit-form').style.display = 'none';
+  document.getElementById('tarea-modal-edit-btn').style.display = '';
   document.getElementById('tarea-modal-overlay').classList.add('visible');
 }
 
 function cerrarTareaModal(e) {
   if (e && e.target !== document.getElementById('tarea-modal-overlay')) return;
   document.getElementById('tarea-modal-overlay').classList.remove('visible');
+}
+
+function activarEdicionTarea() {
+  const t = _tareasCache[_tareaActivaId];
+  if (!t) return;
+  // Pre-seleccionar estado en el dropdown
+  const sel = document.getElementById('tarea-edit-estado');
+  const el = (t.estado || '').toLowerCase();
+  if      (el.includes('proceso'))                              sel.value = 'En proceso';
+  else if (el.includes('planificada'))                         sel.value = 'Planificada';
+  else if (el.includes('espera') || el.includes('bloqueado'))  sel.value = 'En espera';
+  else if (el.includes('completada') || el.includes('completo')) sel.value = 'Completada';
+  else if (el.includes('cancelad'))                            sel.value = 'Cancelada';
+  else                                                          sel.value = 'Pendiente';
+
+  document.getElementById('tarea-edit-cuerpo').value = t.cuerpo || '';
+  document.getElementById('tarea-modal-content').style.display = 'none';
+  document.getElementById('tarea-modal-edit-form').style.display = '';
+  document.getElementById('tarea-modal-edit-btn').style.display = 'none';
+}
+
+function cancelarEdicionTarea() {
+  document.getElementById('tarea-modal-content').style.display = '';
+  document.getElementById('tarea-modal-edit-form').style.display = 'none';
+  document.getElementById('tarea-modal-edit-btn').style.display = '';
+}
+
+async function guardarTarea() {
+  const id = _tareaActivaId;
+  if (!id) return;
+  const estado = document.getElementById('tarea-edit-estado').value;
+  const cuerpo = document.getElementById('tarea-edit-cuerpo').value;
+  const btn = document.getElementById('tarea-save-btn');
+  btn.textContent = 'Guardando…';
+  btn.disabled = true;
+  try {
+    const r = await fetch(`/api/tareas/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ estado, cuerpo })
+    });
+    if (!r.ok) throw new Error((await r.json()).error || r.statusText);
+    // Recargar tareas y cerrar modal
+    const td = await (await fetch('/api/tareas')).json();
+    renderTareas(td.tareas, td.resumen);
+    cerrarTareaModal();
+  } catch (err) {
+    alert('Error al guardar: ' + err.message);
+  } finally {
+    btn.textContent = 'Guardar';
+    btn.disabled = false;
+  }
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -1631,10 +1812,42 @@ document.addEventListener('keydown', e => {
     <div class="tarea-modal-header">
       <span class="tarea-modal-id" id="tarea-modal-id">—</span>
       <span class="tarea-modal-titulo" id="tarea-modal-titulo">—</span>
+      <button id="tarea-modal-edit-btn" onclick="activarEdicionTarea()"
+        style="margin-left:auto;background:#1e3a5f;color:#38bdf8;border:1px solid #1d4a7a;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:700;flex-shrink:0">
+        Editar
+      </button>
       <span class="tarea-modal-close" onclick="cerrarTareaModal()">✕</span>
     </div>
     <div class="tarea-modal-body">
       <pre id="tarea-modal-content"></pre>
+      <div id="tarea-modal-edit-form" style="display:none">
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;color:var(--text-muted);font-family:var(--mono);display:block;margin-bottom:4px">ESTADO</label>
+          <select id="tarea-edit-estado" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:6px 10px;font-size:13px">
+            <option value="En proceso">En proceso</option>
+            <option value="Planificada">Planificada</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="En espera">En espera</option>
+            <option value="Completada">Completada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;color:var(--text-muted);font-family:var(--mono);display:block;margin-bottom:4px">CUERPO</label>
+          <textarea id="tarea-edit-cuerpo" rows="12"
+            style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 10px;font-size:12px;font-family:var(--mono);resize:vertical;line-height:1.6;box-sizing:border-box"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button onclick="cancelarEdicionTarea()"
+            style="background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:6px;padding:6px 16px;cursor:pointer;font-size:12px">
+            Cancelar
+          </button>
+          <button id="tarea-save-btn" onclick="guardarTarea()"
+            style="background:#1a2e10;color:#5EAC24;border:1px solid #3d7018;border-radius:6px;padding:6px 16px;cursor:pointer;font-size:12px;font-weight:700">
+            Guardar
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

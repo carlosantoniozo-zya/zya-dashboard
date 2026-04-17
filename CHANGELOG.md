@@ -1,5 +1,32 @@
 # CHANGELOG — dashboard
 
+## [2026-04-16b] — feat: sección "Sesiones de hoy" + fix pendientes en auto-refresh
+
+**Motivo:** Carlos reportó que el dashboard no mostraba actividad del día. (1) No había sección que mostrara las sesiones de trabajo del día actual. (2) Pendientes no se recargaban en auto-refresh (bug: solo hilos y tareas se refrescaban en `loadDynamic()`).
+
+**Cambios:**
+- `server.js` — `parseSesionesHoy()`: parsea `conversaciones.md` y filtra sesiones de la fecha de hoy, ordenadas de más reciente a más antigua. Endpoint `/api/sesiones-hoy`.
+- `public/index.html` — Nueva sección "Sesiones de hoy" antes de "Hilos abiertos": tarjetas con número de sesión, tema, resumen y archivos cambiados.
+- `public/index.html` — `loadDynamic()`: ahora también recarga pendientes vía `/api/pendientes` en cada ciclo de auto-refresh.
+
+**Impacto:** El dashboard muestra las sesiones del día actual en tiempo real. Pendientes se sincronizan junto con hilos y tareas en el auto-refresh de 1 min.
+
+---
+
+## [2026-04-16a] — feat: completados pasan a cerrados + edición inline del backlog
+
+**Motivo:** (1) Al marcar un ítem como "realizado", el elemento permanecía visible con tachado en lugar de moverse a la sección de cerrados. (2) Carlos necesitaba pedir a CC que editara backlog.md manualmente para actualizar tareas.
+
+**Cambios:**
+- `server.js` — Nuevo endpoint `PUT /api/tareas/:id`: localiza el bloque de la tarea en `deseimp/backlog.md`, actualiza la línea `**Estado:**` y sobreescribe el cuerpo con el contenido enviado desde el cliente.
+- `public/index.html` — `renderPendientes()`: separa activos vs completados. Completados se muestran en `<details id="pendientes-completados-wrap">` colapsable al fondo. Badge refleja solo activos.
+- `public/index.html` — `renderHilos()`: hilos marcados via checkbox se filtran de `abiertosActivos` y se añaden a `todosCerrados`, apareciendo en el apartado `CERRADOS ▶`.
+- `public/index.html` — Modal de tarea: botón `Editar` que activa formulario con dropdown de estado + textarea de cuerpo editable. `Guardar` llama a `PUT /api/tareas/:id` y recarga el backlog en pantalla.
+
+**Impacto:** Los ítems completados desaparecen del listado activo y quedan accesibles en sección colapsable. El backlog es editable directamente desde el dashboard sin intervención de CC.
+
+---
+
 ## [2026-04-14n] — docs: sincronizar documentación con código real
 
 **Motivo:** Auditoría detectó CLAUDE.md y ESTADO.md desactualizados respecto al código v2.0.0.

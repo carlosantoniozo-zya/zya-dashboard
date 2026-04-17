@@ -328,6 +328,83 @@ app.get('/api/tareas', (req, res) => {
   res.json({ tareas, resumen });
 });
 
+app.put('/api/tareas/:id', (req, res) => {
+  const { id } = req.params;
+  const { estado, cuerpo } = req.body;
+  if (!estado || cuerpo === undefined) return res.status(400).json({ error: 'Faltan parámetros' });
+
+  const backlogPath = 'C:/Proyectos/deseimp/backlog.md';
+  if (!fs.existsSync(backlogPath)) return res.status(404).json({ error: 'backlog.md no encontrado' });
+
+  const content = fs.readFileSync(backlogPath, 'utf8');
+  const lines = content.split('\n');
+
+  let startIdx = -1, endIdx = lines.length;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].match(new RegExp(`^## ${id} — `))) {
+      startIdx = i;
+    } else if (startIdx !== -1 && lines[i].match(/^## T\d+ — /) && i > startIdx) {
+      endIdx = i;
+      break;
+    }
+  }
+
+  if (startIdx === -1) return res.status(404).json({ error: `Tarea ${id} no encontrada` });
+
+  const titulo = lines[startIdx].replace(new RegExp(`^## ${id} — `), '').trim();
+
+  // Actualizar la línea **Estado:** dentro del cuerpo
+  let newCuerpo = cuerpo;
+  if (/\*\*Estado:\*\*/.test(newCuerpo)) {
+    newCuerpo = newCuerpo.replace(/\*\*Estado:\*\* [^\n]+/, `**Estado:** ${estado}`);
+  }
+
+  const newBlockLines = [`## ${id} — ${titulo}`, ...newCuerpo.split('\n')];
+
+  // Preservar la línea en blanco que precede al siguiente bloque
+  const newLines = [
+    ...lines.slice(0, startIdx),
+    ...newBlockLines,
+    ...lines.slice(endIdx)
+  ];
+
+  fs.writeFileSync(backlogPath, newLines.join('\n'), 'utf8');
+  res.json({ ok: true, titulo });
+});
+
+// ── Sesiones de hoy (parsea conversaciones.md) ──────────────────────────────
+function parseSesionesHoy() {
+  const convPath = 'C:/Proyectos/deseimp/conversaciones.md';
+  if (!fs.existsSync(convPath)) return [];
+  const content = fs.readFileSync(convPath, 'utf8');
+  const hoy = new Date().toISOString().slice(0, 10);
+
+  const sesiones = [];
+  let actual = null;
+
+  for (const line of content.split('\n')) {
+    const m = line.match(/^## (\d{4}-\d{2}-\d{2}) — Sesion (\d+)/);
+    if (m) {
+      if (actual) sesiones.push(actual);
+      actual = { fecha: m[1], numero: parseInt(m[2]), tema: '', resumen: '', cambios: '' };
+    } else if (actual) {
+      const tema     = line.match(/\*\*Tema:\*\* (.+)/);
+      if (tema)    actual.tema    = tema[1].trim();
+      const resumen  = line.match(/\*\*Resumen:\*\* (.+)/);
+      if (resumen) actual.resumen = resumen[1].trim();
+      const cambios  = line.match(/\*\*Cambios:\*\* (.+)/);
+      if (cambios) actual.cambios = cambios[1].trim();
+    }
+  }
+  if (actual) sesiones.push(actual);
+
+  return sesiones.filter(s => s.fecha === hoy).sort((a, b) => b.numero - a.numero);
+}
+
+app.get('/api/sesiones-hoy', (req, res) => {
+  res.json({ sesiones: parseSesionesHoy(), fecha: new Date().toISOString().slice(0, 10) });
+});
+
 // ── Documentación viva ────────────────────────────────────────────────────────
 const DOCS = [
   { id: 'backlog',        label: 'Backlog',                 path: 'C:/Proyectos/deseimp/backlog.md',         categoria: 'operativo'    },
