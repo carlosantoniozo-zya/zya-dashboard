@@ -1,5 +1,20 @@
 # CHANGELOG — dashboard
 
+## [2026-04-18] — fix: clasificador estados, hilos duplicados, proyectos faltantes
+
+**Motivo:** Dashboard mostraba T23 y T57 como "Pendientes" en lugar de "En proceso", HI-50 aparecía 4 veces, T42 duplicado en backlog, zya-notificaciones y zya-mail ausentes de la lista de proyectos.
+
+**Cambios:**
+- `server.js` — `clasificarEstado()`: verifica inicio del estado antes de buscar en el cuerpo (fix T57 "EN PROGRESO" + "COMPLETAS"). Agrega "en progreso", "en desarrollo", "montado en", "activo" como sinónimos de 'en-proceso'.
+- `server.js` — `parseHilosAbiertos()`: resetea hiloActual=null cuando `###` no matchea regex HI-XX (fix duplicados HI-50 por subsecciones P1/P2).
+- `server.js` — `PROYECTOS_DEF`: agrega zya-notificaciones (5443) y zya-mail (webmail.zyaeti.mx).
+- `deseimp/backlog.md` — Renombra segundo T42 (Omada Controller) a T58 (ID libre).
+- `deseimp/hilos-abiertos.md` — HI-05: estado "CAMINO A+B COMPLETOS" → "ESPERANDO — Carlos asigna tarifas" (ahora clasifica correctamente como hilo abierto en espera).
+
+**Resultado:** 50 completadas, 7 abiertas, 1 cancelada, 0 espera. 10 hilos abiertos / 13 cerrados. Sin duplicados.
+
+---
+
 ## [2026-04-16b] — feat: sección "Sesiones de hoy" + fix pendientes en auto-refresh
 
 **Motivo:** Carlos reportó que el dashboard no mostraba actividad del día. (1) No había sección que mostrara las sesiones de trabajo del día actual. (2) Pendientes no se recargaban en auto-refresh (bug: solo hilos y tareas se refrescaban en `loadDynamic()`).

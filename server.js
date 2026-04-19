@@ -39,6 +39,9 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-soporte',        dir: 'C:/Proyectos/zya-soporte',       dominio: 'soporte.zyaeti.mx',              puerto: 5439,  tipo: 'local',      stack: 'React+Express+SQLite' },
   { nombre: 'coimprit-b2b',       dir: 'C:/Proyectos/coimprit-b2b',      dominio: 'coimprit.zyaeti.mx',             puerto: 5440,  tipo: 'local',      stack: 'React+Express+SQLite' },
   { nombre: 'optica-cha',         dir: 'C:/Proyectos/opticascha',        dominio: 'opticascha.com',                 puerto: 5441,  tipo: 'local',      stack: 'Next.js' },
+  { nombre: 'sanyos-web',         dir: 'C:/Proyectos/sanyos-web',        dominio: 'sanyos.mx',                      puerto: 3850,  tipo: 'local',      stack: 'Node+Express' },
+  { nombre: 'zya-notificaciones', dir: 'C:/Proyectos/zya-notificaciones', dominio: null,                            puerto: 5443,  tipo: 'local',      stack: 'Express+SQLite+Meta' },
+  { nombre: 'zya-mail',           dir: 'C:/Proyectos/zya-mail',          dominio: 'webmail.zyaeti.mx',              puerto: null,  tipo: 'local',      stack: 'Mailcow+WSL2' },
 ];
 
 function contarArchivosPorExt(dir) {
@@ -264,7 +267,11 @@ function parseHilosAbiertos() {
     } else if (line.startsWith('### ')) {
       if (hiloActual) hilos.push(hiloActual);
       const m = line.match(/### (HI-\d+) — (.+)/);
-      if (m) hiloActual = { id: m[1], titulo: m[2], proyecto: proyectoActual, estado: '', proximo: '' };
+      if (m) {
+        hiloActual = { id: m[1], titulo: m[2], proyecto: proyectoActual, estado: '', proximo: '' };
+      } else {
+        hiloActual = null; // subsección auxiliar (### P1, ### F2, etc.), ignorar
+      }
     } else if (hiloActual) {
       const est = line.match(/\*\*Estado:\*\* (.+)/);
       if (est) hiloActual.estado = est[1];
@@ -308,11 +315,13 @@ function parseTareas() {
 
 function clasificarEstado(estado) {
   const e = estado.toLowerCase();
-  if (e.includes('completada') || e.includes('completo')) return 'completada';
-  if (e.includes('cancelad'))                              return 'cancelada';
-  if (e.includes('en espera') || e.includes('bloqueado')) return 'espera';
-  if (e.includes('en proceso'))                           return 'en-proceso';
-  if (e.includes('planificada'))                          return 'planificada';
+  // Verificar inicio del estado primero para evitar falsos positivos
+  if (e.startsWith('en proceso') || e.startsWith('en progreso') || e.startsWith('en desarrollo') || e.startsWith('montado en') || e.startsWith('activo')) return 'en-proceso';
+  if (e.includes('completada') || e.includes('completo'))  return 'completada';
+  if (e.includes('cancelad'))                               return 'cancelada';
+  if (e.includes('en espera') || e.includes('bloqueado'))   return 'espera';
+  if (e.includes('en proceso') || e.includes('en progreso') || e.includes('en desarrollo')) return 'en-proceso';
+  if (e.includes('planificada'))                            return 'planificada';
   return 'pendiente';
 }
 
