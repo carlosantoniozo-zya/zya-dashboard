@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-04-20-b] — chore: baja COIMPRIT B2B del ecosistema
+**Archivos:** `server.js`
+**Motivo:** Cliente canceló proyecto.
+**Cambios:** Eliminada entrada coimprit-b2b de PROYECTOS_DEF.
+**Impacto:** Dashboard deja de mostrar stats de coimprit-b2b.
+
 ## [2026-04-20] — docs: auditoría sincronización — dashboard se auto-reporta, stacks corregidos
 
 **Motivo:** Auditoría de sincronización globales/individuales/código detectó que el dashboard no estaba en su propio PROYECTOS_DEF y que los stacks de sanyos-ops y byrsa eran genéricos.

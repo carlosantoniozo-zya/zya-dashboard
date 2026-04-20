@@ -37,7 +37,6 @@ const PROYECTOS_DEF = [
   { nombre: '_zya-about',         dir: 'C:/Proyectos/_zya-about',        dominio: null,                             puerto: null,  tipo: 'modulo',     stack: 'JS vanilla' },
   { nombre: '_zya-theme',         dir: 'C:/Proyectos/_zya-theme',        dominio: null,                             puerto: null,  tipo: 'modulo',     stack: 'CSS' },
   { nombre: 'zya-soporte',        dir: 'C:/Proyectos/zya-soporte',       dominio: 'soporte.zyaeti.mx',              puerto: 5439,  tipo: 'local',      stack: 'React+Express+SQLite' },
-  { nombre: 'coimprit-b2b',       dir: 'C:/Proyectos/coimprit-b2b',      dominio: 'coimprit.zyaeti.mx',             puerto: 5440,  tipo: 'local',      stack: 'React+Express+SQLite' },
   { nombre: 'optica-cha',         dir: 'C:/Proyectos/opticascha',        dominio: 'opticascha.com',                 puerto: 5441,  tipo: 'local',      stack: 'Next.js' },
   { nombre: 'sanyos-web',         dir: 'C:/Proyectos/sanyos-web',        dominio: 'sanyos.mx',                      puerto: 3850,  tipo: 'local',      stack: 'Node+Express' },
   { nombre: 'zya-notificaciones', dir: 'C:/Proyectos/zya-notificaciones', dominio: null,                            puerto: 5443,  tipo: 'local',      stack: 'Express+SQLite+Meta' },
