@@ -15,7 +15,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 // Definición de proyectos (metadatos estables — sin stats)
 const PROYECTOS_DEF = [
   { nombre: 'anza-planner',       dir: 'C:/Proyectos/anza-planner',      dominio: 'anzaplanner.zyaeti.mx',          puerto: 3900,  tipo: 'local',      stack: 'Next.js' },
-  { nombre: 'byrsa',              dir: 'C:/Proyectos/byrsa',             dominio: 'byrsa.zyaeti.mx',                puerto: 3001,  tipo: 'NAS',        stack: 'React+Node' },
+  { nombre: 'byrsa',              dir: 'C:/Proyectos/byrsa',             dominio: 'byrsa.zyaeti.mx',                puerto: 3001,  tipo: 'NAS',        stack: 'React+Express+SQLite' },
   { nombre: 'pricechecker',       dir: 'C:/Proyectos/pricechecker',      dominio: 'pricechecker.zyaeti.mx',         puerto: 3300,  tipo: 'local',      stack: 'Node+Express+PG' },
   { nombre: 'sanatorio-macias',   dir: 'C:/Proyectos/sanatorio-macias',  dominio: 'sanatorio.zyaeti.mx',            puerto: 3000,  tipo: 'local',      stack: 'Next.js' },
   { nombre: 'sesiona',            dir: 'C:/Proyectos/sesiona',           dominio: 'sesiona.zyaeti.mx',              puerto: 3400,  tipo: 'local',      stack: 'Next.js+PG' },
@@ -30,7 +30,7 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-quieromiweb',    dir: 'C:/Proyectos/zya-quieromiweb',   dominio: 'quieromiweb.zyaeti.mx',          puerto: 5438,  tipo: 'local',      stack: 'React+Express+SQLite' },
   { nombre: 'zya-ecommerce',      dir: 'C:/Proyectos/zya-ecommerce',     dominio: 'commerce.zyaeti.mx',             puerto: 4000,  tipo: 'local',      stack: 'React+Express+SQLite' },
   { nombre: 'sanyos-app',         dir: 'C:/Proyectos/sanyos-app',        dominio: 'sanyos.zyaeti.mx',               puerto: 3001,  tipo: 'NAS',        stack: 'Node+Express' },
-  { nombre: 'sanyos-ops',         dir: 'C:/Proyectos/sanyos-ops',        dominio: 'ops.zyaeti.mx',                  puerto: 3001,  tipo: 'NAS',        stack: 'React+Node' },
+  { nombre: 'sanyos-ops',         dir: 'C:/Proyectos/sanyos-ops',        dominio: 'ops.zyaeti.mx',                  puerto: 3001,  tipo: 'NAS',        stack: 'React+Express+SQLite' },
   { nombre: 'usg-solano',         dir: 'C:/Proyectos/usg-solano',        dominio: 'usg.zyaeti.mx',                  puerto: 3030,  tipo: 'NAS',        stack: 'Node+Express' },
   { nombre: '_playwright-zya',    dir: 'C:/Proyectos/_playwright-zya',   dominio: null,                             puerto: null,  tipo: 'herramienta',stack: 'Node' },
   { nombre: '_report-builder',    dir: 'C:/Proyectos/_report-builder',   dominio: null,                             puerto: null,  tipo: 'modulo',     stack: 'React+Node' },
@@ -42,6 +42,7 @@ const PROYECTOS_DEF = [
   { nombre: 'sanyos-web',         dir: 'C:/Proyectos/sanyos-web',        dominio: 'sanyos.mx',                      puerto: 3850,  tipo: 'local',      stack: 'Node+Express' },
   { nombre: 'zya-notificaciones', dir: 'C:/Proyectos/zya-notificaciones', dominio: null,                            puerto: 5443,  tipo: 'local',      stack: 'Express+SQLite+Meta' },
   { nombre: 'zya-mail',           dir: 'C:/Proyectos/zya-mail',          dominio: 'webmail.zyaeti.mx',              puerto: null,  tipo: 'local',      stack: 'Mailcow+WSL2' },
+  { nombre: 'dashboard',          dir: 'C:/Proyectos/dashboard',         dominio: 'dashboard.zyaeti.mx',            puerto: 4600,  tipo: 'local',      stack: 'Node+Express' },
 ];
 
 function contarArchivosPorExt(dir) {

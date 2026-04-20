@@ -1,5 +1,17 @@
 # CHANGELOG — dashboard
 
+## [2026-04-20] — docs: auditoría sincronización — dashboard se auto-reporta, stacks corregidos
+
+**Motivo:** Auditoría de sincronización globales/individuales/código detectó que el dashboard no estaba en su propio PROYECTOS_DEF y que los stacks de sanyos-ops y byrsa eran genéricos.
+
+**Cambios:**
+- `server.js` — `PROYECTOS_DEF`: agrega entrada del propio dashboard (puerto 4600, dashboard.zyaeti.mx) para auto-reporte de stats.
+- `server.js` — `PROYECTOS_DEF`: corrige stack de sanyos-ops y byrsa a `React+Express+SQLite` (confirmado en package.json de cada proyecto).
+
+**Impacto:** Dashboard ahora incluye sus propias stats en la vista de proyectos.
+
+---
+
 ## [2026-04-18] — fix: clasificador estados, hilos duplicados, proyectos faltantes
 
 **Motivo:** Dashboard mostraba T23 y T57 como "Pendientes" en lugar de "En proceso", HI-50 aparecía 4 veces, T42 duplicado en backlog, zya-notificaciones y zya-mail ausentes de la lista de proyectos.
