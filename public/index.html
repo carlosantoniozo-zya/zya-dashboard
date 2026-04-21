@@ -1119,6 +1119,38 @@
     </div>
   </section>
 
+  <!-- Correo -->
+  <section>
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Correo</h2>
+      <span class="badge" id="badge-correo">—</span>
+      <span class="section-chevron collapsed">▾</span>
+    </div>
+    <div class="section-body collapsed">
+      <div class="table-wrap">
+        <table id="correo-table">
+          <thead>
+            <tr>
+              <th>Buzón</th>
+              <th>Nombre</th>
+              <th>Dominio</th>
+              <th>Estado</th>
+              <th>Mensajes</th>
+              <th>Quota usada</th>
+              <th>Quota total</th>
+              <th>Último SMTP</th>
+              <th>Último IMAP</th>
+              <th>Creado</th>
+            </tr>
+          </thead>
+          <tbody id="correo-tbody">
+            <tr><td colspan="10" style="color:var(--text-muted);text-align:center;padding:20px">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- Vista integrada -->
   <section>
     <div class="section-header" onclick="toggleSection(this)">
@@ -1587,8 +1619,36 @@ async function loadDynamic() {
 
     // Si hay un doc abierto, recargarlo
     if (docActivoId) abrirDoc(docActivoId);
+
+    // Correo
+    loadCorreo();
   } catch (e) {
     console.error('loadDynamic error:', e);
+  }
+}
+
+async function loadCorreo() {
+  try {
+    const res = await fetch('/api/correo');
+    const { buzones } = await res.json();
+    document.getElementById('badge-correo').textContent = buzones.length;
+    const fmt = ts => ts ? new Date(ts * 1000).toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'2-digit' }) : '—';
+    const fmtQ = mb => mb >= 1024 ? (mb / 1024).toFixed(1) + ' GB' : mb + ' MB';
+    document.getElementById('correo-tbody').innerHTML = buzones.map(b => `
+      <tr>
+        <td style="font-family:var(--mono);color:var(--green)">${b.username}</td>
+        <td>${b.name || '<span style="color:var(--text-muted)">—</span>'}</td>
+        <td style="color:var(--text-muted)">${b.domain}</td>
+        <td>${b.active ? '<span style="color:var(--green)">●</span> Activo' : '<span style="color:#f97316">●</span> Inactivo'}</td>
+        <td style="text-align:right">${b.messages}</td>
+        <td style="text-align:right">${b.quota_used_mb > 0 ? fmtQ(b.quota_used_mb) : '0 MB'}</td>
+        <td style="text-align:right;color:var(--text-muted)">${b.quota_total_mb > 0 ? fmtQ(b.quota_total_mb) : '∞'}</td>
+        <td>${fmt(b.last_smtp)}</td>
+        <td>${fmt(b.last_imap)}</td>
+        <td style="color:var(--text-muted)">${b.created ? b.created.slice(0,10) : '—'}</td>
+      </tr>`).join('');
+  } catch (e) {
+    document.getElementById('correo-tbody').innerHTML = `<tr><td colspan="10" style="color:#f97316;text-align:center;padding:16px">Error al cargar buzones</td></tr>`;
   }
 }
 

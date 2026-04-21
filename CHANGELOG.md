@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-04-21] — feat: sección Correo con buzones Mailcow
+**Archivos:** `server.js`, `public/index.html`
+**Motivo:** Carlos necesitaba una lista de buzones con todos sus datos en el Dashboard.
+**Cambios:** Nuevo endpoint `/api/correo` que consulta Mailcow API (caché 2 min). Sección "Correo" en el Dashboard con tabla: buzón, nombre, dominio, estado, mensajes, quota, último SMTP/IMAP, fecha creación.
+**Impacto:** Los buzones de zyaeti.mx y sanyos.mx son visibles en tiempo real desde el Dashboard.
+
 ## [2026-04-20-b] — chore: baja COIMPRIT B2B del ecosistema
 **Archivos:** `server.js`
 **Motivo:** Cliente canceló proyecto.

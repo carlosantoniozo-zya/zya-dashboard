@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
 const { execSync } = require('child_process');
 
 const app = express();
@@ -485,6 +486,56 @@ app.post('/api/toggle', (req, res) => {
 // ── Estado actual de tasks ────────────────────────────────────────────────────
 app.get('/api/tasks-state', (req, res) => {
   res.json(loadTasksState());
+});
+
+// ── Correo (Mailcow) ──────────────────────────────────────────────────────────
+const MAILCOW_API = 'https://webmail.zyaeti.mx/api/v1/get/mailbox/all';
+const MAILCOW_KEY = 'zya-mailcow-22f3f71d4c3af7bc289eef236fa97445';
+let _correoCache = null;
+let _correoCacheAt = 0;
+const CORREO_TTL = 2 * 60 * 1000;
+
+function fetchMailboxes() {
+  return new Promise((resolve, reject) => {
+    const req = https.get(MAILCOW_API, { headers: { 'X-API-Key': MAILCOW_KEY } }, res => {
+      let body = '';
+      res.on('data', d => body += d);
+      res.on('end', () => {
+        try { resolve(JSON.parse(body)); } catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    req.setTimeout(8000, () => { req.destroy(); reject(new Error('timeout')); });
+  });
+}
+
+app.get('/api/correo', async (req, res) => {
+  if (_correoCache && (Date.now() - _correoCacheAt) < CORREO_TTL) {
+    return res.json({ buzones: _correoCache, cached: true });
+  }
+  try {
+    const data = await fetchMailboxes();
+    const buzones = data.map(m => ({
+      username:        m.username,
+      local_part:      m.local_part,
+      domain:          m.domain,
+      name:            m.name,
+      active:          m.active === 1,
+      quota_total_mb:  Math.round(m.quota / 1048576),
+      quota_used_mb:   Math.round((m.quota_used || 0) / 1048576),
+      percent:         m.percent_in_use,
+      messages:        m.messages,
+      created:         m.created,
+      last_imap:       m.last_imap_login,
+      last_smtp:       m.last_smtp_login,
+    }));
+    _correoCache = buzones;
+    _correoCacheAt = Date.now();
+    res.json({ buzones, cached: false });
+  } catch (e) {
+    if (_correoCache) return res.json({ buzones: _correoCache, cached: true, error: e.message });
+    res.status(503).json({ error: e.message });
+  }
 });
 
 app.get('/zya-about.js', (req, res) => {
