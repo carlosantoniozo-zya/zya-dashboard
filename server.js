@@ -509,12 +509,17 @@ function fetchMailboxes() {
   });
 }
 
+const CORREO_PWD_FILE = path.join(__dirname, 'correo-buzones.json');
+function loadCorreoPwds() {
+  try { return JSON.parse(fs.readFileSync(CORREO_PWD_FILE, 'utf8')); } catch { return {}; }
+}
+
 app.get('/api/correo', async (req, res) => {
   if (_correoCache && (Date.now() - _correoCacheAt) < CORREO_TTL) {
     return res.json({ buzones: _correoCache, cached: true });
   }
   try {
-    const data = await fetchMailboxes();
+    const [data, pwds] = await Promise.all([fetchMailboxes(), Promise.resolve(loadCorreoPwds())]);
     const buzones = data.map(m => ({
       username:        m.username,
       local_part:      m.local_part,
@@ -528,6 +533,7 @@ app.get('/api/correo', async (req, res) => {
       created:         m.created,
       last_imap:       m.last_imap_login,
       last_smtp:       m.last_smtp_login,
+      password:        pwds[m.username] || null,
     }));
     _correoCache = buzones;
     _correoCacheAt = Date.now();

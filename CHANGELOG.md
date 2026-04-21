@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-04-21-b] — feat: contraseñas de buzones en sección Correo
+**Archivos:** `server.js`, `public/index.html`, `.gitignore`, `correo-buzones.json` (local, no en git)
+**Motivo:** Carlos necesitaba ver las contraseñas de los buzones sin tener que recordarlas.
+**Cambios:** `correo-buzones.json` almacena localmente username→contraseña (fuera de git). Endpoint `/api/correo` mezcla datos Mailcow con contraseñas. Dashboard muestra columna Contraseña con botón 👁 para revelar/ocultar.
+**Impacto:** Contraseñas visibles solo en Dashboard local (no viajan a git ni GitHub).
+
 ## [2026-04-21] — feat: sección Correo con buzones Mailcow
 **Archivos:** `server.js`, `public/index.html`
 **Motivo:** Carlos necesitaba una lista de buzones con todos sus datos en el Dashboard.
