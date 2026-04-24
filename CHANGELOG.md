@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-04-24] — chore: registrar zya-markdown en PROYECTOS_DEF
+**Archivos:** `server.js`
+**Motivo:** Alta del nuevo servicio ZYA Markdown en el ecosistema.
+**Cambios:** Entrada `zya-markdown` en PROYECTOS_DEF (dominio markdown.zyaeti.mx, puerto 5444).
+**Impacto:** Retrocompatible.
+
 ## [2026-04-21-b] — feat: contraseñas de buzones en sección Correo
 **Archivos:** `server.js`, `public/index.html`, `.gitignore`, `correo-buzones.json` (local, no en git)
 **Motivo:** Carlos necesitaba ver las contraseñas de los buzones sin tener que recordarlas.
