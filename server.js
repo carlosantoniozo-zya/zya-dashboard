@@ -43,6 +43,8 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-notificaciones', dir: 'C:/Proyectos/zya-notificaciones', dominio: null,                            puerto: 5443,  tipo: 'local',      stack: 'Express+SQLite+Meta' },
   { nombre: 'zya-mail',           dir: 'C:/Proyectos/zya-mail',          dominio: 'webmail.zyaeti.mx',              puerto: null,  tipo: 'local',      stack: 'Mailcow+WSL2' },
   { nombre: 'zya-markdown',       dir: 'C:/Proyectos/zya-markdown',      dominio: 'markdown.zyaeti.mx',             puerto: 5444,  tipo: 'local',      stack: 'Express+SQLite+Tiptap' },
+  { nombre: 'zya-auth',           dir: 'C:/Proyectos/zya-auth',          dominio: 'auth.zyaeti.mx',                 puerto: 5445,  tipo: 'local',      stack: 'Express+SQLite+JWT' },
+  { nombre: 'zya-suite',          dir: 'C:/Proyectos/zya-suite',         dominio: 'suite.zyaeti.mx',                puerto: 5446,  tipo: 'local',      stack: 'React+Vite+Express' },
   { nombre: 'dashboard',          dir: 'C:/Proyectos/dashboard',         dominio: 'dashboard.zyaeti.mx',            puerto: 4600,  tipo: 'local',      stack: 'Node+Express' },
 ];
 

@@ -1,5 +1,9 @@
 # CHANGELOG — dashboard
 
+## [2026-04-26] — feat: registrar zya-auth y zya-suite en PROYECTOS_DEF
+**Archivos:** `server.js`
+**Motivo:** Alta de ZYA Auth (5445) y ZYA Suite (5446) en el panel (auditoría S02).
+
 ## [2026-04-24] — chore: registrar zya-markdown en PROYECTOS_DEF
 **Archivos:** `server.js`
 **Motivo:** Alta del nuevo servicio ZYA Markdown en el ecosistema.
