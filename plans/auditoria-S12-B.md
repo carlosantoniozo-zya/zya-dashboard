@@ -45,7 +45,7 @@
 | P7 | Sin meta description | 🟡 | ⏳ | `Read public/index.html → sin <meta name="description">` confirmado | `public/index.html:9` (después de title) → agregar `<meta name="description" content="Dashboard centralizado del ecosistema ZyA — estadísticas de proyectos, estado de servicios y documentación viva.">` |
 | P9 | Sin favicon | 🟡 | ⏳ | `ls public/ → index.html, robots.txt` — sin favicon.* | `public/` → agregar `favicon.ico` (copiar de zya-landing o zya-changelog) |
 | P11 | Sin feedback widget | 🟠 | ⏳ | `grep -n "widget" public/index.html → sin resultados`. ESTANDARES §216: aplica a todo producto ZYA incluyendo herramientas internas | `public/index.html` antes de `</body>` → agregar `<script src="https://monitor.zyaeti.mx/feedback/widget.js" defer></script>` |
-| P15 | Dashboard no en zya-landing | 🟠 | ⏳ | `grep -n "dashboard" zya-landing/server.js → sin resultados` — zya-monitor y zya-changelog sí están | `zya-landing/server.js` → agregar `'dashboard': { carpeta: 'dashboard', nombre: 'ZYA Dashboard' }` en el objeto de proyectos internos (línea ~142) |
+| P15 | Dashboard no en zya-landing | 🟠 | ⏭️ DIFERIDO | `grep -n "dashboard" zya-landing/server.js → sin resultados` — zya-monitor y zya-changelog sí están | Diferido — toca código de zya-landing (proyecto fuera de scope S12). Se aplica cuando se audite zya-landing (S14/S15) |
 
 ---
 
@@ -90,15 +90,15 @@
 | 2 | H4 | MAILCOW_API URL hardcodeada | 🟠 | server.js:495 | `process.env.MAILCOW_API \|\| '...'` | ⏳ |
 | 3 | H2 | PORT hardcodeado | 🟠 | server.js:8 | `parseInt(process.env.PORT) \|\| 4600` | ⏳ |
 | 4 | P11 | Sin feedback widget | 🟠 | public/index.html (antes de </body>) | Agregar `<script src="https://monitor.zyaeti.mx/feedback/widget.js" defer>` | ⏳ |
-| 5 | P15 | Dashboard no en zya-landing | 🟠 | zya-landing/server.js:~142 | Agregar entrada `'dashboard'` en objeto proyectos | ⏳ |
-| 6 | D8 | Sin .env.example | 🟠 | — (crear archivo) | `.env.example` con MAILCOW_KEY=, MAILCOW_API=, PORT= | ⏳ |
-| 7 | P3+D1 | ESTADO.md desactualizado | 🟡 | ESTADO.md | Actualizar: 31 proyectos, módulo Correo, Sync CC, endpoints | ⏳ |
-| 8 | P6 | `<title>` sin branding | 🟡 | public/index.html:9 | `ZYA Dashboard \| ZyA Especialistas en TI` | ⏳ |
-| 9 | P7 | Sin meta description | 🟡 | public/index.html:9 | Agregar `<meta name="description" content="...">` | ⏳ |
-| 10 | P9 | Sin favicon | 🟡 | public/ | Copiar favicon.ico de otro proyecto ZYA | ⏳ |
-| 11 | D6 | package.json v1.0.0 | 🟡 | package.json:3 | Actualizar a `"2.1.0"` | ⏳ |
-| 12 | H6 | Ruta absoluta en sendFile | 🟡 | server.js:551 | `path.resolve(__dirname, '..', '_zya-about', 'about.js')` | ⏳ |
-| 13 | D3 | Sin memory/project_dashboard.md | 🟡 | memory/ | Crear archivo con estado auditado | ⏳ |
+| 5 | D8 | Sin .env.example | 🟠 | — (crear archivo) | `.env.example` con MAILCOW_KEY=, MAILCOW_API=, PORT= | ⏳ |
+| 6 | P3+D1 | ESTADO.md desactualizado | 🟡 | ESTADO.md | Actualizar: 31 proyectos, módulo Correo, Sync CC, endpoints | ⏳ |
+| 7 | P6 | `<title>` sin branding | 🟡 | public/index.html:9 | `ZYA Dashboard \| ZyA Especialistas en TI` | ⏳ |
+| 8 | P7 | Sin meta description | 🟡 | public/index.html:9 | Agregar `<meta name="description" content="...">` | ⏳ |
+| 9 | P9 | Sin favicon | 🟡 | public/ | Copiar favicon.ico de otro proyecto ZYA | ⏳ |
+| 10 | D6 | package.json v1.0.0 | 🟡 | package.json:3 | Actualizar a `"2.1.0"` | ⏳ |
+| 11 | H6 | Ruta absoluta en sendFile | 🟡 | server.js:551 | `path.resolve(__dirname, '..', '_zya-about', 'about.js')` | ⏳ |
+| 12 | D3 | Sin memory/project_dashboard.md | 🟡 | memory/ | Crear archivo con estado auditado | ⏳ |
+| — | P15 | Dashboard no en zya-landing | 🟠 | zya-landing/server.js | ⏭️ DIFERIDO — aplicar en auditoría S14/S15 (zya-landing) | ⏭️ |
 
 ---
 
@@ -106,9 +106,9 @@
 
 *(Llenar cuando Carlos da el visto bueno — antes de arrancar fase C)*
 
-**Aprobado:** —
-**Fecha:** —
-**Vetos/modificaciones:** —
+**Aprobado:** Carlos Antonio Zapata Oliver
+**Fecha:** 2026-04-27
+**Vetos/modificaciones:** P15 diferido — toca zya-landing (fuera de scope S12), se aplica en S14/S15
 **Notas:** —
 
 ---
