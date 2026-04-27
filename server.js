@@ -5,7 +5,7 @@ const https = require('https');
 const { execSync } = require('child_process');
 
 const app = express();
-const PORT = 4600;
+const PORT = parseInt(process.env.PORT) || 4600;
 const START_TIME = Date.now();
 
 // ── Caché stats proyectos ────────────────────────────────────────────────────
@@ -85,7 +85,7 @@ function contarLineas(dir) {
           try {
             const content = fs.readFileSync(full, 'utf8');
             total += content.split('\n').length;
-          } catch {}
+          } catch { /* fallo silencioso al leer archivo — el caller recibe 0 */ }
         }
       }
     }
@@ -492,8 +492,8 @@ app.get('/api/tasks-state', (req, res) => {
 });
 
 // ── Correo (Mailcow) ──────────────────────────────────────────────────────────
-const MAILCOW_API = 'https://webmail.zyaeti.mx/api/v1/get/mailbox/all';
-const MAILCOW_KEY = 'zya-mailcow-22f3f71d4c3af7bc289eef236fa97445';
+const MAILCOW_API = process.env.MAILCOW_API || 'https://webmail.zyaeti.mx/api/v1/get/mailbox/all';
+const MAILCOW_KEY = process.env.MAILCOW_KEY;
 let _correoCache = null;
 let _correoCacheAt = 0;
 const CORREO_TTL = 2 * 60 * 1000;
@@ -548,7 +548,7 @@ app.get('/api/correo', async (req, res) => {
 });
 
 app.get('/zya-about.js', (req, res) => {
-  const aboutPath = path.join('C:/Proyectos/_zya-about/about.js');
+  const aboutPath = path.resolve(__dirname, '..', '_zya-about', 'about.js');
   if (fs.existsSync(aboutPath)) {
     res.setHeader('Content-Type', 'application/javascript');
     res.sendFile(path.resolve(aboutPath));

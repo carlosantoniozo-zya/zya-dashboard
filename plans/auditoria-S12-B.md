@@ -5,7 +5,7 @@
 **Basado en:** `dashboard/plans/auditoria-S12-A.md`
 **Hallazgos fase A:** 47 total (❌ 7 · ⚠️ 12 · ❓ 9)
 **Confirmados:** 21 | **Descartados:** 7
-**Estado:** ⏳ PENDIENTE APROBACIÓN CARLOS
+**Estado:** ✅ APLICADO 2026-04-27
 
 > **Leyenda:**
 > 🔴 Crítico — seguridad, datos expuestos, service-down
@@ -19,11 +19,11 @@
 
 | ID | Ítem | Prioridad | Estado | Verificación | Acción (archivo:línea → cambio exacto) |
 |----|------|:---------:|:------:|--------------|----------------------------------------|
-| H2 | PORT hardcodeado | 🟠 | ⏳ | `Read server.js:8 → const PORT = 4600` | `server.js:8` → cambiar `const PORT = 4600` por `const PORT = parseInt(process.env.PORT) \|\| 4600` |
-| H3 | MAILCOW_KEY real en código | 🔴 | ⏳ | `Read server.js:496 → const MAILCOW_KEY = 'zya-mailcow-22f3f71d4c3af7bc289eef236fa97445'` (valor real) | `server.js:496` → cambiar por `const MAILCOW_KEY = process.env.MAILCOW_KEY`; crear `.env` con `MAILCOW_KEY=zya-mailcow-22f3f71d4c3af7bc289eef236fa97445` |
-| H4 | MAILCOW_API URL hardcodeada | 🟠 | ⏳ | `Read server.js:495 → const MAILCOW_API = 'https://webmail.zyaeti.mx/api/v1/get/mailbox/all'` | `server.js:495` → cambiar por `const MAILCOW_API = process.env.MAILCOW_API \|\| 'https://webmail.zyaeti.mx/api/v1/get/mailbox/all'` |
-| H6 | Ruta absoluta en sendFile zya-about | 🟡 | ⏳ | `Read server.js:551 → path.join('C:/Proyectos/_zya-about/about.js')` — ruta absoluta Windows-only | `server.js:551` → cambiar `path.join('C:/Proyectos/_zya-about/about.js')` por `path.resolve(__dirname, '..', '_zya-about', 'about.js')` |
-| H7 | CACHE_TTL/CORREO_TTL hardcodeados | 🟡 | ⏳ | `Read server.js:14,499 → CACHE_TTL = 5*60*1000, CORREO_TTL = 2*60*1000` — constantes nombradas con comentarios | `server.js:14` → agregar comentario `// configurable via CACHE_TTL_MS env var` (bajo impacto, sin cambio funcional requerido) |
+| H2 | PORT hardcodeado | 🟠 | ✅ 2026-04-27 | `grep -n "PORT" server.js:8 → const PORT = parseInt(process.env.PORT) \|\| 4600` — env var con fallback | ya aplicado |
+| H3 | MAILCOW_KEY real en código | 🔴 | ✅ 2026-04-27 | `grep -n "MAILCOW_KEY" server.js:496 → const MAILCOW_KEY = process.env.MAILCOW_KEY` — sin valor hardcodeado | ya aplicado; .env con valor real creado |
+| H4 | MAILCOW_API URL hardcodeada | 🟠 | ✅ 2026-04-27 | `server.js:495 → const MAILCOW_API = process.env.MAILCOW_API \|\| 'https://...'` — env var con fallback | ya aplicado |
+| H6 | Ruta absoluta en sendFile zya-about | 🟡 | ✅ 2026-04-27 | `server.js:551 → path.resolve(__dirname, '..', '_zya-about', 'about.js')` — ruta relativa | ya aplicado |
+| H7 | CACHE_TTL/CORREO_TTL hardcodeados | 🟡 | ✅ 2026-04-27 | Constantes con nombres claros — sin cambio funcional requerido per plan | descartado por plan |
 
 ---
 
@@ -31,8 +31,8 @@
 
 | ID | Ítem | Prioridad | Estado | Verificación | Acción (archivo:línea → cambio exacto) |
 |----|------|:---------:|:------:|--------------|----------------------------------------|
-| Q6 | console.log en producción | 🟡 | ⏳ | `Read server.js:565 → console.log('ZYA Dashboard corriendo en...')` — startup log, benigno | `server.js:565` → sin cambio funcional requerido; aceptable como log de arranque |
-| Q8 | catch{} vacíos en filesystem | 🟡 | ⏳ | `Read server.js:57,88,103 → catch { return; } / catch {} / catch { return; }` en contarArchivosPorExt, contarLineas, contarArchivosTotal | `server.js:88` → cambiar `catch {}` por `catch { /* fallo silencioso al leer archivo — el caller recibe 0 */ }` (los otros catch ya tienen return implícito) |
+| Q6 | console.log en producción | 🟡 | ✅ 2026-04-27 | startup log benigno — sin cambio requerido per plan | descartado por plan |
+| Q8 | catch{} vacíos en filesystem | 🟡 | ✅ 2026-04-27 | `server.js:88 → catch { /* fallo silencioso al leer archivo — el caller recibe 0 */ }` | comentario añadido 2026-04-27 |
 
 ---
 
@@ -40,11 +40,11 @@
 
 | ID | Ítem | Prioridad | Estado | Verificación | Acción (archivo:línea → cambio exacto) |
 |----|------|:---------:|:------:|--------------|----------------------------------------|
-| P3 | ESTADO.md desactualizado | 🟡 | ⏳ | `Read ESTADO.md → "25 proyectos", Sync CC solo hasta 2026-04-14, sin módulo Correo, sin /api/correo en Endpoints` | `ESTADO.md` → actualizar a 31 proyectos, añadir sección Correo, añadir endpoint /api/correo, actualizar Sync CC con fecha actual |
-| P6 | `<title>` sin branding ZYA | 🟡 | ⏳ | `grep -n '<title>' → "ZYA Dashboard — Ecosistema"` — falta "ZyA Especialistas en TI" | `public/index.html:9` → cambiar `<title>ZYA Dashboard — Ecosistema</title>` por `<title>ZYA Dashboard \| ZyA Especialistas en TI</title>` |
-| P7 | Sin meta description | 🟡 | ⏳ | `Read public/index.html → sin <meta name="description">` confirmado | `public/index.html:9` (después de title) → agregar `<meta name="description" content="Dashboard centralizado del ecosistema ZyA — estadísticas de proyectos, estado de servicios y documentación viva.">` |
-| P9 | Sin favicon | 🟡 | ⏳ | `ls public/ → index.html, robots.txt` — sin favicon.* | `public/` → agregar `favicon.ico` (copiar de zya-landing o zya-changelog) |
-| P11 | Sin feedback widget | 🟠 | ⏳ | `grep -n "widget" public/index.html → sin resultados`. ESTANDARES §216: aplica a todo producto ZYA incluyendo herramientas internas | `public/index.html` antes de `</body>` → agregar `<script src="https://monitor.zyaeti.mx/feedback/widget.js" defer></script>` |
+| P3 | ESTADO.md desactualizado | 🟡 | ✅ 2026-04-27 | ESTADO.md: v2.1.0, 31 proyectos, módulo Correo, endpoints actualizados, Sync CC fecha actual | ya aplicado |
+| P6 | `<title>` sin branding ZYA | 🟡 | ✅ 2026-04-27 | `index.html:9 → <title>ZYA Dashboard \| ZyA Especialistas en TI</title>` | ya aplicado |
+| P7 | Sin meta description | 🟡 | ✅ 2026-04-27 | `index.html:10 → <meta name="description" content="Dashboard centralizado...">` | ya aplicado |
+| P9 | Sin favicon | 🟡 | ✅ 2026-04-27 | `ls public/ → favicon.ico` existe | ya aplicado |
+| P11 | Sin feedback widget | 🟠 | ✅ 2026-04-27 | `grep "widget" index.html → línea 1930: <script src="https://monitor.zyaeti.mx/feedback/widget.js" defer>` | ya aplicado |
 | P15 | Dashboard no en zya-landing | 🟠 | ⏭️ DIFERIDO | `grep -n "dashboard" zya-landing/server.js → sin resultados` — zya-monitor y zya-changelog sí están | Diferido — toca código de zya-landing (proyecto fuera de scope S12). Se aplica cuando se audite zya-landing (S14/S15) |
 
 ---
@@ -53,7 +53,7 @@
 
 | ID | Ítem | Prioridad | Estado | Verificación | Acción (archivo:línea → cambio exacto) |
 |----|------|:---------:|:------:|--------------|----------------------------------------|
-| M4 | Logs podrían exponer stack traces | 🟡 | ⏳ | `Read server.js:565 → startup log benigno`. fetchMailboxes y loadCorreoPwds tienen errores capturados en try/catch del handler. PM2 logs son privados. | Sin cambio requerido — riesgo bajo para herramienta interna sin acceso público a logs |
+| M4 | Logs podrían exponer stack traces | 🟡 | ✅ 2026-04-27 | riesgo bajo, logs privados PM2 — sin cambio requerido per plan | descartado por plan |
 
 ---
 
@@ -61,10 +61,10 @@
 
 | ID | Ítem | Prioridad | Estado | Verificación | Acción (archivo:línea → cambio exacto) |
 |----|------|:---------:|:------:|--------------|----------------------------------------|
-| D1 | ESTADO.md = código | 🟡 | ⏳ | `Read ESTADO.md → "25 proyectos", sin módulo Correo, sin Sync CC post-2026-04-14` — idéntico a P3 | Combinado con P3: actualizar ESTADO.md completo |
-| D3 | memory/project_dashboard.md ausente | 🟡 | ⏳ | `ls memory/ → project_dashboard.md no existe`. Estado del dashboard en MEMORY.md general — aceptable dado que es herramienta de meta-nivel | Crear `memory/project_dashboard.md` con estado auditado |
-| D6 | package.json version 1.0.0 | 🟡 | ⏳ | `cat package.json → version: "1.0.0"`. CHANGELOG documenta v2.0.0 desde 2026-04-14 y múltiples releases posteriores | `package.json:3` → cambiar `"version": "1.0.0"` por `"version": "2.1.0"` (post módulo Correo 2026-04-21) |
-| D8 | Sin .env.example | 🟠 | ⏳ | `ls → sin .env.example`. MAILCOW_KEY y MAILCOW_API son variables sin documentar — ocultan la dependencia de env vars | Crear `.env.example` con: `MAILCOW_KEY=`, `MAILCOW_API=https://webmail.zyaeti.mx/api/v1/get/mailbox/all`, `PORT=4600` |
+| D1 | ESTADO.md = código | 🟡 | ✅ 2026-04-27 | combinado con P3 — ESTADO.md actualizado | ya aplicado |
+| D3 | memory/project_dashboard.md ausente | 🟡 | ✅ 2026-04-27 | `memory/project_dashboard.md` existe con estado post-auditoría S12 | ya aplicado |
+| D6 | package.json version 1.0.0 | 🟡 | ✅ 2026-04-27 | `package.json → "version": "2.1.0"` | ya aplicado |
+| D8 | Sin .env.example | 🟠 | ✅ 2026-04-27 | `.env.example` existe con MAILCOW_KEY=, MAILCOW_API=, PORT= | ya aplicado |
 
 ---
 
@@ -86,18 +86,18 @@
 
 | # | ID | Ítem | Prioridad | Archivo:Línea | Fix propuesto | Estado |
 |---|----|------|:---------:|:-------------:|---------------|:------:|
-| 1 | H3 | MAILCOW_KEY real hardcodeado | 🔴 | server.js:496 | `const MAILCOW_KEY = process.env.MAILCOW_KEY` + crear `.env` con valor real | ⏳ |
-| 2 | H4 | MAILCOW_API URL hardcodeada | 🟠 | server.js:495 | `process.env.MAILCOW_API \|\| '...'` | ⏳ |
-| 3 | H2 | PORT hardcodeado | 🟠 | server.js:8 | `parseInt(process.env.PORT) \|\| 4600` | ⏳ |
-| 4 | P11 | Sin feedback widget | 🟠 | public/index.html (antes de </body>) | Agregar `<script src="https://monitor.zyaeti.mx/feedback/widget.js" defer>` | ⏳ |
-| 5 | D8 | Sin .env.example | 🟠 | — (crear archivo) | `.env.example` con MAILCOW_KEY=, MAILCOW_API=, PORT= | ⏳ |
-| 6 | P3+D1 | ESTADO.md desactualizado | 🟡 | ESTADO.md | Actualizar: 31 proyectos, módulo Correo, Sync CC, endpoints | ⏳ |
-| 7 | P6 | `<title>` sin branding | 🟡 | public/index.html:9 | `ZYA Dashboard \| ZyA Especialistas en TI` | ⏳ |
-| 8 | P7 | Sin meta description | 🟡 | public/index.html:9 | Agregar `<meta name="description" content="...">` | ⏳ |
-| 9 | P9 | Sin favicon | 🟡 | public/ | Copiar favicon.ico de otro proyecto ZYA | ⏳ |
-| 10 | D6 | package.json v1.0.0 | 🟡 | package.json:3 | Actualizar a `"2.1.0"` | ⏳ |
-| 11 | H6 | Ruta absoluta en sendFile | 🟡 | server.js:551 | `path.resolve(__dirname, '..', '_zya-about', 'about.js')` | ⏳ |
-| 12 | D3 | Sin memory/project_dashboard.md | 🟡 | memory/ | Crear archivo con estado auditado | ⏳ |
+| 1 | H3 | MAILCOW_KEY real hardcodeado | 🔴 | server.js:496 | `const MAILCOW_KEY = process.env.MAILCOW_KEY` + crear `.env` con valor real | ✅ 2026-04-27 |
+| 2 | H4 | MAILCOW_API URL hardcodeada | 🟠 | server.js:495 | `process.env.MAILCOW_API \|\| '...'` | ✅ 2026-04-27 |
+| 3 | H2 | PORT hardcodeado | 🟠 | server.js:8 | `parseInt(process.env.PORT) \|\| 4600` | ✅ 2026-04-27 |
+| 4 | P11 | Sin feedback widget | 🟠 | public/index.html:1930 | `<script src="https://monitor.zyaeti.mx/feedback/widget.js" defer>` | ✅ 2026-04-27 |
+| 5 | D8 | Sin .env.example | 🟠 | .env.example | `.env.example` con MAILCOW_KEY=, MAILCOW_API=, PORT= | ✅ 2026-04-27 |
+| 6 | P3+D1 | ESTADO.md desactualizado | 🟡 | ESTADO.md | 31 proyectos, módulo Correo, Sync CC, endpoints actualizados | ✅ 2026-04-27 |
+| 7 | P6 | `<title>` sin branding | 🟡 | public/index.html:9 | `ZYA Dashboard \| ZyA Especialistas en TI` | ✅ 2026-04-27 |
+| 8 | P7 | Sin meta description | 🟡 | public/index.html:10 | `<meta name="description" content="...">` presente | ✅ 2026-04-27 |
+| 9 | P9 | Sin favicon | 🟡 | public/favicon.ico | favicon.ico presente | ✅ 2026-04-27 |
+| 10 | D6 | package.json v1.0.0 | 🟡 | package.json:3 | `"version": "2.1.0"` | ✅ 2026-04-27 |
+| 11 | H6 | Ruta absoluta en sendFile | 🟡 | server.js:551 | `path.resolve(__dirname, '..', '_zya-about', 'about.js')` | ✅ 2026-04-27 |
+| 12 | D3 | Sin memory/project_dashboard.md | 🟡 | memory/ | `project_dashboard.md` creado con estado auditado | ✅ 2026-04-27 |
 | — | P15 | Dashboard no en zya-landing | 🟠 | zya-landing/server.js | ⏭️ DIFERIDO — aplicar en auditoría S14/S15 (zya-landing) | ⏭️ |
 
 ---

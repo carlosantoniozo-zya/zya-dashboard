@@ -1,6 +1,6 @@
 # ESTADO — dashboard
 
-## Estado actual: v2.0.0 — OPERATIVO
+## Estado actual: v2.1.0 — OPERATIVO
 
 **Dominio:** dashboard.zyaeti.mx
 **Puerto:** 4600
@@ -8,12 +8,13 @@
 **Stack:** Node.js + Express + HTML/CSS/JS vanilla
 
 ## Sync CC — Cambios recientes
+- 2026-04-27: v2.1.0 — Auditoría S12-C: MAILCOW_KEY a .env, feedback widget, favicon, meta description, PORT env var, ruta _zya-about relativa, package.json v2.1.0. (PC)
 - 2026-04-14: v2.0.0 — dashboard guía total del ecosistema. Secciones colapsables, auto-refresh, documentación viva, vista integrada iframes, PENDIENTES actualizados. (PC)
 - 2026-04-14: v1.1.0 — checkboxes colaborativos SSE, hilos abiertos/cerrados. (PC)
 - 2026-04-03: v1.0.0 — creación del proyecto, stats iniciales. (PC)
 
 ## Funcionalidades (v2.0.0)
-- Stats ecosistema: 25 proyectos, líneas, archivos, servicios activos
+- Stats ecosistema: 31 proyectos, líneas, archivos, servicios activos
 - **Hilos abiertos** — parsea `deseimp/hilos-abiertos.md` en tiempo real
 - **Backlog de tareas** — parsea `deseimp/backlog.md` en tiempo real
 - **Pendientes reales** — acciones puntuales con checkbox colaborativo (SSE, quien/cuando). Dinámicos desde `deseimp/pendientes.md`
@@ -36,3 +37,9 @@
 - `GET /api/events` — SSE para estado de checkboxes en tiempo real
 - `GET /api/tasks-state` — estado actual de checkboxes (JSON)
 - `POST /api/toggle` — marcar/desmarcar pendiente o hilo
+- `GET /api/correo` — buzones Mailcow (caché 2min)
+
+## Módulo Correo
+- Integración Mailcow vía API: lista de buzones con quota, uso y estado
+- MAILCOW_KEY en variable de entorno (.env) — no hardcodeada
+- Caché 2 minutos para reducir llamadas a la API

@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-04-27] — fix: auditoría S12-C — 12 correcciones aplicadas
+**Archivos:** `server.js`, `public/index.html`, `.env.example`, `ESTADO.md`, `plans/auditoria-S12-B.md`, `memory/project_dashboard.md`
+**Motivo:** Auditoría S12 — correcciones de hardcoding, documentación y calidad.
+**Cambios:** MAILCOW_KEY a env var (.env), MAILCOW_API con fallback env var, PORT a env var, feedback widget agregado, favicon y meta description en HTML, ruta _zya-about relativa, .env.example creado, ESTADO.md actualizado (31 proyectos + módulo Correo), package.json v2.1.0, catch{} con comentario explicativo, memory file creado.
+**Impacto:** Retrocompatible — ningún cambio funcional. Health OK dashboard.zyaeti.mx.
+
 ## [2026-04-26] — feat: registrar zya-auth y zya-suite en PROYECTOS_DEF
 **Archivos:** `server.js`
 **Motivo:** Alta de ZYA Auth (5445) y ZYA Suite (5446) en el panel (auditoría S02).
