@@ -1,10 +1,10 @@
 # CHANGELOG — dashboard
 
 ## [2026-05-01] — fix: sección buzones rota en producción
-**Archivos:** `C:/Proyectos/ecosystem.config.js`
+**Archivos:** `C:/Proyectos/ecosystem.config.js`, `correo-buzones.json`
 **Motivo:** `/api/correo` devolvía `Invalid value "undefined" for header "X-API-Key"`. El proceso PM2 `dashboard` no tenía `MAILCOW_KEY` en su entorno (la auditoría S12 movió la key a env var pero no se agregó al ecosystem).
-**Cambios:** Bloque `dashboard` en ecosystem.config.js gana `env: { MAILCOW_KEY: ... }`. `pm2 delete dashboard && pm2 start ecosystem --only dashboard && pm2 save`.
-**Impacto:** Sección Correo del dashboard vuelve a listar los 4 buzones (contacto@zyaeti.mx, contacto@sanyos.mx, facturas@sanyos.mx, rutas@sanyos.mx).
+**Cambios:** Bloque `dashboard` en ecosystem.config.js gana `env: { MAILCOW_KEY: ... }`. `pm2 delete dashboard && pm2 start ecosystem --only dashboard && pm2 save`. Adicional: `correo-buzones.json` corregido — facturas@sanyos.mx tenía pwd stale `SanyosFacturas2026!`; la real (verificada con cfdi-ingestor IMAP en producción) es `F4cturas0psNAS!`.
+**Impacto:** Sección Correo del dashboard vuelve a listar los 4 buzones con contraseñas correctas.
 
 ## [2026-04-27] — fix: auditoría S12-C — 12 correcciones aplicadas
 **Archivos:** `server.js`, `public/index.html`, `.env.example`, `ESTADO.md`, `plans/auditoria-S12-B.md`, `memory/project_dashboard.md`
