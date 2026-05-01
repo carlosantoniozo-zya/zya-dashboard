@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-05-01] — fix: sección buzones rota en producción
+**Archivos:** `C:/Proyectos/ecosystem.config.js`
+**Motivo:** `/api/correo` devolvía `Invalid value "undefined" for header "X-API-Key"`. El proceso PM2 `dashboard` no tenía `MAILCOW_KEY` en su entorno (la auditoría S12 movió la key a env var pero no se agregó al ecosystem).
+**Cambios:** Bloque `dashboard` en ecosystem.config.js gana `env: { MAILCOW_KEY: ... }`. `pm2 delete dashboard && pm2 start ecosystem --only dashboard && pm2 save`.
+**Impacto:** Sección Correo del dashboard vuelve a listar los 4 buzones (contacto@zyaeti.mx, contacto@sanyos.mx, facturas@sanyos.mx, rutas@sanyos.mx).
+
 ## [2026-04-27] — fix: auditoría S12-C — 12 correcciones aplicadas
 **Archivos:** `server.js`, `public/index.html`, `.env.example`, `ESTADO.md`, `plans/auditoria-S12-B.md`, `memory/project_dashboard.md`
 **Motivo:** Auditoría S12 — correcciones de hardcoding, documentación y calidad.
