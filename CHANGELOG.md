@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-05-02] — fix+feat: zya-launcher en PROYECTOS_DEF + bug esCerrado con emojis (S631)
+**Archivos:** `server.js`, `public/index.html`
+**Motivo:** zya-launcher (5447) no aparecía en el panel de proyectos. Bug: hilos con estado `✅ COMPLETADO` aparecían como activos porque el emoji bloqueaba el `startsWith('completo')`.
+**Cambios:** Entrada `zya-launcher` en `PROYECTOS_DEF`. `esCerrado()` ahora strip caracteres no-palabra al inicio antes de comparar — HI-67 y futuros hilos con ✅ van correctamente a la sección CERRADOS.
+**Impacto:** Panel de proyectos muestra los 32 proyectos del ecosistema. Sección Hilos correcta.
+
 ## [2026-05-01] — fix: sección buzones rota en producción
 **Archivos:** `C:/Proyectos/ecosystem.config.js`, `correo-buzones.json`
 **Motivo:** `/api/correo` devolvía `Invalid value "undefined" for header "X-API-Key"`. El proceso PM2 `dashboard` no tenía `MAILCOW_KEY` en su entorno (la auditoría S12 movió la key a env var pero no se agregó al ecosystem).
