@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-05-02] — feat: GIT_SYNC dinámico real (S631)
+**Archivos:** `server.js`, `public/index.html`
+**Motivo:** GIT_SYNC era un array hardcodeado siempre en verde — no reflejaba el estado real.
+**Cambios:** `calcularGitSync()` ejecuta `git status --porcelain` + `git log @{upstream}..HEAD` para cada proyecto NAS. Caché 2 min. NAS = `null` (no verificable sin SSH) → píldora gris "unknown" en UI. Descubrimiento inmediato: byrsa tiene cambios sin pushear en PC.
+**Impacto:** La sección Git Sync del dashboard ahora muestra el estado real de la copia PC.
+
 ## [2026-05-02] — fix+feat: zya-launcher en PROYECTOS_DEF + bug esCerrado con emojis (S631)
 **Archivos:** `server.js`, `public/index.html`
 **Motivo:** zya-launcher (5447) no aparecía en el panel de proyectos. Bug: hilos con estado `✅ COMPLETADO` aparecían como activos porque el emoji bloqueaba el `startsWith('completo')`.

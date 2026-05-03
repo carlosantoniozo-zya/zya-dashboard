@@ -323,8 +323,10 @@
       border: 1px solid var(--border);
     }
 
-    .sync-pill.ok   { background: #1a2e10; color: var(--green); border-color: var(--green-dim); }
-    .sync-pill.fail { background: #2e1010; color: var(--red);   border-color: #7f1d1d; }
+    .sync-pill.ok      { background: #1a2e10; color: var(--green); border-color: var(--green-dim); }
+    .sync-pill.fail    { background: #2e1010; color: var(--red);   border-color: #7f1d1d; }
+    .sync-pill.unknown { background: #1e1e1e; color: #666;         border-color: #333; }
+    .unknown .sync-dot { background: #555; }
 
     .sync-dot { width: 6px; height: 6px; border-radius: 50%; }
     .ok .sync-dot   { background: var(--green); }
@@ -1843,7 +1845,7 @@ async function guardarTarea() {
         <div class="sync-name">${s.proyecto}</div>
         <div class="sync-indicators">
           <div class="sync-pill ${s.pc ? 'ok' : 'fail'}"><div class="sync-dot"></div> PC</div>
-          <div class="sync-pill ${s.nas ? 'ok' : 'fail'}"><div class="sync-dot"></div> NAS</div>
+          <div class="sync-pill ${s.nas === null ? 'unknown' : s.nas ? 'ok' : 'fail'}"><div class="sync-dot"></div> NAS</div>
           <div class="sync-pill ${s.github ? 'ok' : 'fail'}"><div class="sync-dot"></div> GitHub</div>
         </div>
       </div>

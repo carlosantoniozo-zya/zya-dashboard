@@ -154,12 +154,35 @@ function getProyectos() {
   return _proyectosCache;
 }
 
-const GIT_SYNC = [
-  { proyecto: 'byrsa', pc: true, nas: true, github: true },
-  { proyecto: 'sanyos-ops', pc: true, nas: true, github: true },
-  { proyecto: 'sanyos-app', pc: true, nas: true, github: true },
-  { proyecto: 'usg-solano', pc: true, nas: true, github: true }
+// ── Git sync dinámico (PC real, NAS no verificable desde aquí) ───────────────
+const GIT_SYNC_PROYECTOS = [
+  { proyecto: 'byrsa',      dir: 'C:/Proyectos/byrsa' },
+  { proyecto: 'sanyos-ops', dir: 'C:/Proyectos/sanyos-ops' },
+  { proyecto: 'sanyos-app', dir: 'C:/Proyectos/sanyos-app' },
+  { proyecto: 'usg-solano', dir: 'C:/Proyectos/usg-solano' },
 ];
+
+let _gitSyncCache = null;
+let _gitSyncCacheAt = 0;
+const GIT_SYNC_TTL = 2 * 60 * 1000;
+
+function gitCmd(dir, args) {
+  try { return execSync(`git -C "${dir}" ${args}`, { timeout: 5000, encoding: 'utf8' }).trim(); }
+  catch { return null; }
+}
+
+function calcularGitSync() {
+  const now = Date.now();
+  if (_gitSyncCache && (now - _gitSyncCacheAt) < GIT_SYNC_TTL) return _gitSyncCache;
+  _gitSyncCache = GIT_SYNC_PROYECTOS.map(({ proyecto, dir }) => {
+    const dirty  = gitCmd(dir, 'status --porcelain');
+    const ahead  = gitCmd(dir, 'log @{upstream}..HEAD --oneline');
+    const pc     = dirty === '' && ahead === '';
+    return { proyecto, pc, github: pc, nas: null }; // nas = no verificable sin SSH
+  });
+  _gitSyncCacheAt = now;
+  return _gitSyncCache;
+}
 
 // ── Parser pendientes.md ──────────────────────────────────────────────────────
 function parsePendientes() {
@@ -249,7 +272,7 @@ app.get('/api/stats', (req, res) => {
       actualizado: hoy
     },
     proyectos,
-    git_sync: GIT_SYNC,
+    git_sync: calcularGitSync(),
     pendientes: parsePendientes()
   });
 });
