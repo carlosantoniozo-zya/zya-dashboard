@@ -1,5 +1,10 @@
 # CHANGELOG — dashboard
 
+## [2026-05-13] — feat: registrar zya-consolidate en PROYECTOS_DEF
+**Archivos:** `server.js`
+**Motivo:** Auditoría ZYA AAP — zya-consolidate no estaba en el dashboard.
+**Cambio:** Entrada en PROYECTOS_DEF. consolidate.zyaeti.mx · puerto 5449 · React+Vite+Express+PG.
+
 ## [2026-05-02] — feat: GIT_SYNC dinámico real (S631)
 **Archivos:** `server.js`, `public/index.html`
 **Motivo:** GIT_SYNC era un array hardcodeado siempre en verde — no reflejaba el estado real.

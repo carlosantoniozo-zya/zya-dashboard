@@ -47,6 +47,7 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-suite',          dir: 'C:/Proyectos/zya-suite',         dominio: 'suite.zyaeti.mx',                puerto: 5446,  tipo: 'local',      stack: 'React+Vite+Express' },
   { nombre: 'dashboard',          dir: 'C:/Proyectos/dashboard',         dominio: 'dashboard.zyaeti.mx',            puerto: 4600,  tipo: 'local',      stack: 'Node+Express' },
   { nombre: 'zya-launcher',       dir: 'C:/Proyectos/zya-launcher',      dominio: null,                             puerto: 5447,  tipo: 'local',      stack: 'Express+AHK' },
+  { nombre: 'zya-consolidate',    dir: 'C:/Proyectos/zya-consolidate',   dominio: 'consolidate.zyaeti.mx',          puerto: 5449,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
 ];
 
 function contarArchivosPorExt(dir) {
