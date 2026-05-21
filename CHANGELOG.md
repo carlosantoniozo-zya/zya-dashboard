@@ -1,5 +1,10 @@
 # CHANGELOG — dashboard
 
+## [2026-05-21] — feat: registrar zya-navigator en PROYECTOS_DEF
+**Archivos:** `server.js`
+**Motivo:** S993 — proyecto zya-navigator creado. Agregado a PROYECTOS_DEF para stats del dashboard.
+**Impacto:** Retrocompatible.
+
 ## [2026-05-13] — feat: registrar zya-consolidate en PROYECTOS_DEF
 **Archivos:** `server.js`
 **Motivo:** Auditoría ZYA AAP — zya-consolidate no estaba en el dashboard.
