@@ -1,5 +1,12 @@
 # CHANGELOG — dashboard
 
+## [2026-06-08] — chore: renombrar zya-markdown→markdown, zyapress→press; agregar check (S1197)
+**Archivos:** `server.js`
+- PROYECTOS_DEF: actualizar dir de markdown (antes zya-markdown), dir de press (antes zyapress)
+- Agregar check (puerto 5452, check.zyaeti.mx)
+
+---
+
 ## [2026-05-21] — feat: registrar zya-navigator en PROYECTOS_DEF
 **Archivos:** `server.js`
 **Motivo:** S993 — proyecto zya-navigator creado. Agregado a PROYECTOS_DEF para stats del dashboard.
