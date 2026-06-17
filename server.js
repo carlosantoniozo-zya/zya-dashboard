@@ -50,6 +50,8 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-launcher',       dir: 'C:/Proyectos/zya-launcher',      dominio: null,                             puerto: 5447,  tipo: 'local',      stack: 'Express+AHK' },
   { nombre: 'zya-consolidate',    dir: 'C:/Proyectos/zya-consolidate',   dominio: 'consolidate.zyaeti.mx',          puerto: 5449,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
   { nombre: 'zya-navigator',     dir: 'C:/Proyectos/zya-navigator',     dominio: 'navigator.zyaeti.mx',            puerto: 5451,  tipo: 'local',      stack: 'React+Vite+Express' },
+  { nombre: 'unipay',           dir: 'C:/Proyectos/unipay',            dominio: 'unipay.zyaeti.mx',               puerto: 5454,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
+  { nombre: 'conta-ia',         dir: 'C:/Proyectos/conta-ia',          dominio: 'contaia.zyaeti.mx',              puerto: 5456,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
 ];
 
 function contarArchivosPorExt(dir) {

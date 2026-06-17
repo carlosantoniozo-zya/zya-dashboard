@@ -1,5 +1,12 @@
 # CHANGELOG — dashboard
 
+## [2026-06-17] — chore: registrar unipay y conta-ia en PROYECTOS_DEF (S1228)
+**Archivos:** `server.js`
+- Nuevos proyectos: unipay (5454) y conta-ia (5456) con stack React+Vite+Express+PG
+**Impacto:** Aparecen en dashboard con stats de código y git
+
+---
+
 ## [2026-06-08] — chore: renombrar zya-markdown→markdown, zyapress→press; agregar check (S1197)
 **Archivos:** `server.js`
 - PROYECTOS_DEF: actualizar dir de markdown (antes zya-markdown), dir de press (antes zyapress)
