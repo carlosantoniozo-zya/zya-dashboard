@@ -29,6 +29,7 @@ Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanill
 ## Deuda técnica ⚠️
 - Sin TypeScript — errores de tipo solo visibles en runtime
 - README.md ausente
+- ⚠️ CRÍTICA ASEG (S1238): Sin autenticación en endpoint público dashboard.zyaeti.mx. Rutas sin auth: GET /api/docs/:id (expone MEMORY.md, conversaciones.md, backlog.md, estandares), GET /api/correo (posible exposición passwords de buzones si correo-buzones.json existe), PUT /api/tareas/:id (write sin auth sobre backlog.md). Requiere decisión de arquitectura: añadir login page o restringir acceso a red privada (Tailscale/IP whitelist).
 
 ## Próximas implementaciones 💡
 - Agregar nuevos proyectos del ecosistema a PROYECTOS_DEF cuando se creen

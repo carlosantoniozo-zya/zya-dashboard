@@ -1,5 +1,12 @@
 # CHANGELOG — dashboard
 
+## [2026-06-17] — docs: auditoría AHCD+ACAL+AREV+AAP+AMON+ACOD (S1238)
+**Hallazgos:**
+- Health ✅, zya-about.js ✅, feedback widget ✅, CHANGELOG ✅, PM2 ✅, Monitor ✅
+- CRÍTICA ASEG: sin auth en dashboard.zyaeti.mx — /api/docs/:id expone MEMORY.md/conversaciones.md, /api/correo puede exponer passwords, PUT /api/tareas/:id escribe backlog sin auth. Documentado en ESTADO.md. Requiere decisión arquitectural de Carlos.
+- AHCD BAJA: rutas C:/Proyectos/deseimp/ hardcodeadas — aceptable para herramienta PC-específica
+**Cambios:** Solo ESTADO.md y CHANGELOG.md (documentación).
+
 ## [2026-06-17] — chore: registrar unipay y conta-ia en PROYECTOS_DEF (S1228)
 **Archivos:** `server.js`
 - Nuevos proyectos: unipay (5454) y conta-ia (5456) con stack React+Vite+Express+PG
