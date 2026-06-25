@@ -7,6 +7,14 @@ const { execSync } = require('child_process');
 const app = express();
 const PORT = parseInt(process.env.PORT) || 4600;
 const START_TIME = Date.now();
+const DASHBOARD_KEY = process.env.DASHBOARD_KEY;
+
+function requireKey(req, res, next) {
+  if (!DASHBOARD_KEY) return next();
+  const k = req.headers['x-dashboard-key'];
+  if (k !== DASHBOARD_KEY) return res.status(401).json({ error: 'Clave incorrecta' });
+  next();
+}
 
 // ── Caché stats proyectos ────────────────────────────────────────────────────
 let _proyectosCache = null;
@@ -52,6 +60,7 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-navigator',     dir: 'C:/Proyectos/zya-navigator',     dominio: 'navigator.zyaeti.mx',            puerto: 5451,  tipo: 'local',      stack: 'React+Vite+Express' },
   { nombre: 'unipay',           dir: 'C:/Proyectos/unipay',            dominio: 'unipay.zyaeti.mx',               puerto: 5454,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
   { nombre: 'conta-ia',         dir: 'C:/Proyectos/conta-ia',          dominio: 'contaia.zyaeti.mx',              puerto: 5456,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
+  { nombre: 'zya-recv',         dir: 'C:/Proyectos/zya-recv',          dominio: 'upload.zyaeti.mx',               puerto: 5460,  tipo: 'local',      stack: 'Express+SQLite+JWT' },
 ];
 
 function contarArchivosPorExt(dir) {
@@ -370,7 +379,7 @@ app.get('/api/tareas', (req, res) => {
   res.json({ tareas, resumen });
 });
 
-app.put('/api/tareas/:id', (req, res) => {
+app.put('/api/tareas/:id', requireKey, (req, res) => {
   const { id } = req.params;
   const { estado, cuerpo } = req.body;
   if (!estado || cuerpo === undefined) return res.status(400).json({ error: 'Faltan parámetros' });
@@ -460,11 +469,11 @@ const DOCS = [
   { id: 'decisiones',    label: 'Decisiones',              path: 'C:/Proyectos/deseimp/conversaciones/decisiones.md', categoria: 'historial' },
 ];
 
-app.get('/api/docs', (req, res) => {
+app.get('/api/docs', requireKey, (req, res) => {
   res.json(DOCS.map(d => ({ id: d.id, label: d.label, categoria: d.categoria })));
 });
 
-app.get('/api/docs/:id', (req, res) => {
+app.get('/api/docs/:id', requireKey, (req, res) => {
   const doc = DOCS.find(d => d.id === req.params.id);
   if (!doc) return res.status(404).json({ error: 'doc no encontrado' });
   if (!fs.existsSync(doc.path)) return res.status(404).json({ error: 'archivo no encontrado', path: doc.path });
@@ -546,7 +555,7 @@ function loadCorreoPwds() {
   try { return JSON.parse(fs.readFileSync(CORREO_PWD_FILE, 'utf8')); } catch { return {}; }
 }
 
-app.get('/api/correo', async (req, res) => {
+app.get('/api/correo', requireKey, async (req, res) => {
   if (_correoCache && (Date.now() - _correoCacheAt) < CORREO_TTL) {
     return res.json({ buzones: _correoCache, cached: true });
   }

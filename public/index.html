@@ -1219,6 +1219,17 @@ let tasksState = { pendientes: {}, hilos: {} };
 let pendientesData = [];
 let hilosData = [];
 
+// ── Auth interno dashboard ─────────────────────────────────────────────────────
+function getDKey() {
+  let k = localStorage.getItem('dbk');
+  if (!k) {
+    k = prompt('Dashboard ZYA — clave de acceso:') || '';
+    if (k) localStorage.setItem('dbk', k);
+  }
+  return k;
+}
+function authHdr() { return { 'x-dashboard-key': getDKey() }; }
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmt = n => n.toLocaleString('es-MX');
 
@@ -1519,7 +1530,7 @@ async function abrirDoc(id) {
   content.innerHTML = '<pre style="color:var(--text-muted)">Cargando...</pre>';
 
   try {
-    const res = await fetch('/api/docs/' + id);
+    const res = await fetch('/api/docs/' + id, { headers: authHdr() });
     const data = await res.json();
     title.textContent = data.label;
     content.innerHTML = `<pre>${renderMarkdown(data.content)}</pre>`;
@@ -1634,7 +1645,7 @@ async function loadDynamic() {
 
 async function loadCorreo() {
   try {
-    const res = await fetch('/api/correo');
+    const res = await fetch('/api/correo', { headers: authHdr() });
     const { buzones } = await res.json();
     document.getElementById('badge-correo').textContent = buzones.length;
     const fmt = ts => ts ? new Date(ts * 1000).toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'2-digit' }) : '—';
@@ -1773,7 +1784,7 @@ async function guardarTarea() {
   try {
     const r = await fetch(`/api/tareas/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHdr() },
       body: JSON.stringify({ estado, cuerpo })
     });
     if (!r.ok) throw new Error((await r.json()).error || r.statusText);
@@ -1859,7 +1870,7 @@ async function guardarTarea() {
     await loadDynamic();
 
     // Documentación viva
-    const docsRes = await fetch('/api/docs');
+    const docsRes = await fetch('/api/docs', { headers: authHdr() });
     docsIndex = await docsRes.json();
     document.getElementById('badge-docs').textContent = docsIndex.length + ' archivos';
     renderDocs();

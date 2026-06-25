@@ -1,5 +1,10 @@
 # CHANGELOG — dashboard
 
+## [2026-06-25] — security: T196 — auth en endpoints sensibles (S1282)
+**Archivos:** `server.js`, `public/index.html`, `.env`
+**Endpoints protegidos:** `GET /api/docs`, `GET /api/docs/:id`, `GET /api/correo`, `PUT /api/tareas/:id`
+**Mecanismo:** `DASHBOARD_KEY` en `.env` (`zya-dash-2026`); middleware `requireKey` verifica header `x-dashboard-key`. Frontend: `getDKey()` lee de `localStorage.dbk` (prompt en primer acceso), `authHdr()` inyecta el header en los 4 fetch afectados.
+
 ## [2026-06-17] — docs: auditoría AHCD+ACAL+AREV+AAP+AMON+ACOD (S1238)
 **Hallazgos:**
 - Health ✅, zya-about.js ✅, feedback widget ✅, CHANGELOG ✅, PM2 ✅, Monitor ✅
