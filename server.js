@@ -359,10 +359,10 @@ function clasificarEstado(estado) {
   const e = estado.toLowerCase();
   // Verificar inicio del estado primero para evitar falsos positivos
   if (e.startsWith('en proceso') || e.startsWith('en progreso') || e.startsWith('en desarrollo') || e.startsWith('montado en') || e.startsWith('activo')) return 'en-proceso';
-  if (e.includes('completada') || e.includes('completo'))  return 'completada';
+  if (e.includes('completad') || e.includes('completo') || e.includes('resuelto')) return 'completada';
   if (e.includes('cancelad'))                               return 'cancelada';
   if (e.includes('en espera') || e.includes('bloqueado'))   return 'espera';
-  if (e.includes('en proceso') || e.includes('en progreso') || e.includes('en desarrollo')) return 'en-proceso';
+  if (e.includes('en proceso') || e.includes('en progreso') || e.includes('en desarrollo') || e.includes('en curso')) return 'en-proceso';
   if (e.includes('planificada'))                            return 'planificada';
   return 'pendiente';
 }
@@ -456,30 +456,94 @@ app.get('/api/sesiones-hoy', (req, res) => {
   res.json({ sesiones: parseSesionesHoy(), fecha: new Date().toISOString().slice(0, 10) });
 });
 
-// ── Documentación viva ────────────────────────────────────────────────────────
-const DOCS = [
-  { id: 'backlog',        label: 'Backlog',                 path: 'C:/Proyectos/deseimp/backlog.md',         categoria: 'operativo'    },
-  { id: 'hilos',         label: 'Hilos abiertos',          path: 'C:/Proyectos/deseimp/hilos-abiertos.md', categoria: 'operativo'    },
-  { id: 'conversaciones',label: 'Conversaciones',           path: 'C:/Proyectos/deseimp/conversaciones.md', categoria: 'operativo'    },
-  { id: 'preguntas',     label: 'Preguntas pendientes',    path: 'C:/Proyectos/deseimp/preguntas.md',       categoria: 'operativo'    },
-  { id: 'memory',        label: 'Memoria (MEMORY.md)',     path: 'C:/Users/Carlos Antonio/.claude/projects/C--Proyectos/memory/MEMORY.md', categoria: 'memoria' },
-  { id: 'ecosistema',    label: 'Ecosistema',              path: 'C:/Proyectos/deseimp/ECOSISTEMA.md',      categoria: 'arquitectura' },
-  { id: 'estandares',    label: 'Estándares ZYA',          path: 'C:/Proyectos/deseimp/ESTANDARES-ZYA.md', categoria: 'arquitectura' },
-  { id: 'procedimientos',label: 'Manual de procedimientos',path: 'C:/Proyectos/deseimp/manual-procedimientos.md', categoria: 'arquitectura' },
-  { id: 'decisiones',    label: 'Decisiones',              path: 'C:/Proyectos/deseimp/conversaciones/decisiones.md', categoria: 'historial' },
-];
+// ── Documentación viva (auto-discovery) ──────────────────────────────────────
+const DESEIMP_DIR = 'C:/Proyectos/deseimp';
+
+// Metadatos conocidos: label legible + categoría. Cualquier archivo nuevo en
+// deseimp/ aparece automáticamente con fallback de nombre + categoría 'otros'.
+const DOC_META = {
+  'backlog':                { label: 'Backlog',                    categoria: 'operativo'    },
+  'hilos-abiertos':         { label: 'Hilos abiertos',             categoria: 'operativo'    },
+  'conversaciones':         { label: 'Conversaciones',             categoria: 'operativo'    },
+  'preguntas':              { label: 'Preguntas pendientes',       categoria: 'operativo'    },
+  'auditorias':             { label: 'Auditorías',                 categoria: 'operativo'    },
+  'control-auditorias':     { label: 'Control de auditorías',      categoria: 'operativo'    },
+  'pendientes':             { label: 'Pendientes',                 categoria: 'operativo'    },
+  'credenciales':           { label: 'Credenciales',               categoria: 'operativo'    },
+  'ECOSISTEMA':             { label: 'Ecosistema',                 categoria: 'arquitectura' },
+  'ESTANDARES-ZYA':         { label: 'Estándares ZYA',             categoria: 'arquitectura' },
+  'manual-procedimientos':  { label: 'Manual de procedimientos',   categoria: 'arquitectura' },
+  'FLUJO-PRODUCCION':       { label: 'Flujo de producción',        categoria: 'arquitectura' },
+  'checklist-proyectos':    { label: 'Checklist proyectos nuevos', categoria: 'arquitectura' },
+  'catalogo-proyectos':     { label: 'Catálogo de proyectos',      categoria: 'arquitectura' },
+  'instruccion-auditoria-A':{ label: 'Instrucción auditoría A',    categoria: 'arquitectura' },
+  'instruccion-auditoria-B':{ label: 'Instrucción auditoría B',    categoria: 'arquitectura' },
+  'instruccion-auditoria-C':{ label: 'Instrucción auditoría C',    categoria: 'arquitectura' },
+  'CHANGELOG':              { label: 'Changelog deseimp',          categoria: 'historial'    },
+  'conversaciones-historico':{ label: 'Conversaciones (histórico)',  categoria: 'historial'    },
+};
+
+// Archivos que se omiten en el listado (muy grandes, parseo propio, o sin valor como texto crudo)
+const DOC_OMITIR = new Set(['conversaciones-historico']);
+
+function labelFromFilename(name) {
+  const meta = DOC_META[name];
+  if (meta) return meta.label;
+  return name.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function categoriaFromFilename(name) {
+  return (DOC_META[name] || {}).categoria || 'otros';
+}
+
+function listDocs() {
+  const docs = [];
+
+  // Escanear deseimp/ raíz — cualquier .md nuevo aparece automáticamente
+  if (fs.existsSync(DESEIMP_DIR)) {
+    const archivos = fs.readdirSync(DESEIMP_DIR)
+      .filter(f => f.endsWith('.md'))
+      .sort((a, b) => a.localeCompare(b, 'es'));
+
+    for (const archivo of archivos) {
+      const name = archivo.slice(0, -3); // quitar .md
+      if (DOC_OMITIR.has(name)) continue;
+      docs.push({
+        id:        name,
+        label:     labelFromFilename(name),
+        path:      path.join(DESEIMP_DIR, archivo).replace(/\\/g, '/'),
+        categoria: categoriaFromFilename(name),
+      });
+    }
+  }
+
+  // deseimp/conversaciones/decisiones.md (única entrada útil del subdirectorio)
+  const decisionesPath = 'C:/Proyectos/deseimp/conversaciones/decisiones.md';
+  if (fs.existsSync(decisionesPath)) {
+    docs.push({ id: 'decisiones', label: 'Decisiones', path: decisionesPath, categoria: 'historial' });
+  }
+
+  // MEMORY.md — fuera de deseimp
+  const memoryPath = 'C:/Users/Carlos Antonio/.claude/projects/C--Proyectos/memory/MEMORY.md';
+  if (fs.existsSync(memoryPath)) {
+    docs.push({ id: 'memory', label: 'Memoria (MEMORY.md)', path: memoryPath, categoria: 'memoria' });
+  }
+
+  return docs;
+}
 
 app.get('/api/docs', requireKey, (req, res) => {
-  res.json(DOCS.map(d => ({ id: d.id, label: d.label, categoria: d.categoria })));
+  const docs = listDocs();
+  res.json(docs.map(d => ({ id: d.id, label: d.label, categoria: d.categoria })));
 });
 
 app.get('/api/docs/:id', requireKey, (req, res) => {
-  const doc = DOCS.find(d => d.id === req.params.id);
+  const doc = listDocs().find(d => d.id === req.params.id);
   if (!doc) return res.status(404).json({ error: 'doc no encontrado' });
   if (!fs.existsSync(doc.path)) return res.status(404).json({ error: 'archivo no encontrado', path: doc.path });
   const content = fs.readFileSync(doc.path, 'utf8');
-  // Para conversaciones, devolver solo las últimas 15000 chars (es muy largo)
-  const trimmed = doc.id === 'conversaciones' && content.length > 15000
+  // Archivos largos: mostrar solo las últimas 15000 chars
+  const trimmed = content.length > 15000
     ? '… (mostrando últimas entradas)\n\n' + content.slice(-15000)
     : content;
   res.json({ id: doc.id, label: doc.label, content: trimmed });

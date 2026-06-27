@@ -1,5 +1,24 @@
 # CHANGELOG — dashboard
 
+## [2026-06-27] — fix+feat: clasificarEstado corregido + documentación viva dinámica (S1291)
+**Archivos:** `server.js`
+
+**Fix — clasificarEstado():** La función no reconocía "COMPLETADO" como completada — buscaba `completada` o `completo` pero el estado más común en el backlog es `COMPLETADO` (que no coincide con ninguno de los dos). Resultado: ~190 tareas completadas aparecían como "pendientes" y el dashboard mostraba 108 tareas abiertas cuando la realidad era ~20.
+- `completad` ahora captura COMPLETADO, COMPLETADA, COMPLETADAS
+- Agregado `resuelto` para estados tipo RESUELTO / RESUELTO S1014
+- Agregado `en curso` como sinónimo de 'en-proceso'
+
+**Feat — listDocs() dinámica:** El array `DOCS` estaba hardcodeado con 9 entradas y no incluía archivos nuevos como `auditorias.md`, `control-auditorias.md`, `FLUJO-PRODUCCION.md`, etc. Reemplazado por:
+- `listDocs()`: escanea `deseimp/` con `fs.readdirSync` — cualquier `.md` nuevo aparece automáticamente sin tocar el servidor
+- `DOC_META`: mapa de label legible + categoría para archivos conocidos (fallback: kebab-case → Title Case + categoría 'otros')
+- `DOC_OMITIR`: set de archivos a excluir (`conversaciones-historico` — demasiado largo)
+- `conversaciones/decisiones.md` y `MEMORY.md` se agregan explícitamente por estar fuera del directorio escaneado
+- El endpoint `/api/docs/:id` ya no trunca solo por id sino por tamaño (>15000 chars), más general
+
+**Impacto:** Dashboard muestra el conteo correcto de tareas abiertas. Sección Documentación viva pasa de 9 a 21 archivos (todos los .md de deseimp/) y se actualiza sola cuando se agregan archivos nuevos.
+
+---
+
 ## [2026-06-25] — security: T196 — auth en endpoints sensibles (S1282)
 **Archivos:** `server.js`, `public/index.html`, `.env`
 **Endpoints protegidos:** `GET /api/docs`, `GET /api/docs/:id`, `GET /api/correo`, `PUT /api/tareas/:id`
