@@ -1,5 +1,24 @@
 # CHANGELOG — dashboard
 
+## [2026-07-12b] — security: fail-closed en requireKey + fix real de DASHBOARD_KEY (T223)
+**Archivos:** `server.js`, `.env.example`, `C:\Proyectos\ecosystem.config.js`
+**Motivo:** `requireKey` era fail-open (`if (!DASHBOARD_KEY) return next()`). Al investigar se encontró que el fallo era más grave de lo documentado: `server.js` **nunca cargó `dotenv`**, así que el `.env` del proyecto (que sí tenía `DASHBOARD_KEY=zya-dash-2026`) nunca se leía en producción — el proceso PM2 solo recibe variables del objeto `env:{}` de `ecosystem.config.js`, que únicamente definía `MAILCOW_KEY`. Es decir: la protección de T196 (2026-06-25, "auth DASHBOARD_KEY en endpoints sensibles") **nunca estuvo realmente activa en producción** — `process.env.DASHBOARD_KEY` era `undefined` y el fail-open dejaba pasar todo sin auth.
+**Cambios:**
+- `server.js`: `requireKey` ahora falla cerrado — `process.exit(1)` al arrancar si `DASHBOARD_KEY` no está definida.
+- `C:\Proyectos\ecosystem.config.js`: agregado `DASHBOARD_KEY: 'zya-dash-2026'` al objeto `env` del proceso `dashboard` (mismo patrón que `MAILCOW_KEY`) — es la fuente real de variables de entorno para este proceso.
+- `.env.example`: agregada `DASHBOARD_KEY=` (faltaba).
+**Verificado:** `pm2 restart ecosystem.config.js --only dashboard --update-env`, `/health` OK, `GET /api/docs` sin header → 401, con `x-dashboard-key: zya-dash-2026` → 200.
+**Impacto:** Cierra T223. La protección de endpoints sensibles (`/api/docs`, `/api/correo`, `PUT /api/tareas/:id`) ahora sí está activa en producción.
+
+## [2026-07-12] — docs: auditoría ecosistema F3 — documentación al día
+**Motivo:** Auditoría transversal de documentación de todo el ecosistema (código↔doc↔backlog).
+**Hallazgo relevante:** ESTADO.md seguía documentando como "⚠️ CRÍTICA" la falta de auth en endpoints sensibles (S1238), pese a que T196 (2026-06-25) ya agregó `DASHBOARD_KEY` — confirmado en código (`requireKey` en las 4 rutas afectadas). Verificado también que el middleware es fail-open si la variable falta (nuevo hallazgo, no corregido — ver T223 backlog.md).
+**Cambios:**
+- `ESTADO.md` — T196 y S1291 (fix clasificarEstado + listDocs dinámico) agregados a Implementado, que faltaban. Deuda técnica actualizada de "sin auth" a "fail-open si falta env var". Fecha actualizada a 2026-07-12.
+- `plans/index-planes.md` — S12-A/B agregados a CERRADOS (plan huérfano completado desde 2026-04-27).
+- `deseimp/backlog.md` — nueva tarea T223.
+**Impacto:** Solo documentación. Sin cambios de código ni deploy requerido.
+
 ## [2026-06-27] — fix+feat: clasificarEstado corregido + documentación viva dinámica (S1291)
 **Archivos:** `server.js`
 

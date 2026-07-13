@@ -1,5 +1,5 @@
 # ESTADO.md — dashboard
-Última actualización: 2026-05-07
+Última actualización: 2026-07-12
 
 ## Resumen
 Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanilla · dashboard.zyaeti.mx · puerto 4600 · PC local
@@ -19,6 +19,9 @@ Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanill
 - Health endpoint, no-cache, PM2, Cloudflare, Monitor
 - MAILCOW_KEY en .env (no hardcodeado — fix S12-C)
 - Dashboard registrado en zya-landing PROYECTOS_MAP (S631, commit ce3f80a — P15 resuelto)
+- **T196 (2026-06-25):** auth `DASHBOARD_KEY` agregada en endpoints sensibles (`PUT /api/tareas/:id`, `GET /api/docs`, `GET /api/docs/:id`, `GET /api/correo`) — resuelve la vulnerabilidad crítica ASEG documentada en S1238.
+- **S1291 (2026-06-27):** fix `clasificarEstado()` — no reconocía "COMPLETADO" (solo "completada"/"completo"), ~190 tareas aparecían como pendientes cuando eran ~20 reales. `listDocs()` ahora escanea `deseimp/` dinámicamente (9→21 documentos, ya no hardcodeado).
+- Unipay y conta-ia registrados en `PROYECTOS_DEF` (2026-06-17)
 
 ## Pendientes 🔄
 - Ninguno activo conocido
@@ -29,7 +32,7 @@ Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanill
 ## Deuda técnica ⚠️
 - Sin TypeScript — errores de tipo solo visibles en runtime
 - README.md ausente
-- ⚠️ CRÍTICA ASEG (S1238): Sin autenticación en endpoint público dashboard.zyaeti.mx. Rutas sin auth: GET /api/docs/:id (expone MEMORY.md, conversaciones.md, backlog.md, estandares), GET /api/correo (posible exposición passwords de buzones si correo-buzones.json existe), PUT /api/tareas/:id (write sin auth sobre backlog.md). Requiere decisión de arquitectura: añadir login page o restringir acceso a red privada (Tailscale/IP whitelist).
+- `requireKey` middleware (server.js:10-15) es fail-open si `DASHBOARD_KEY` no está configurada en `.env` (`if (!DASHBOARD_KEY) return next()`) — protege por defecto solo mientras la variable exista. Además, `DASHBOARD_KEY` no está documentada en `.env.example`. Ver T223 en backlog.md.
 
 ## Próximas implementaciones 💡
 - Agregar nuevos proyectos del ecosistema a PROYECTOS_DEF cuando se creen

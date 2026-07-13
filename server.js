@@ -8,9 +8,12 @@ const app = express();
 const PORT = parseInt(process.env.PORT) || 4600;
 const START_TIME = Date.now();
 const DASHBOARD_KEY = process.env.DASHBOARD_KEY;
+if (!DASHBOARD_KEY) {
+  console.error('FATAL: DASHBOARD_KEY no configurada');
+  process.exit(1);
+}
 
 function requireKey(req, res, next) {
-  if (!DASHBOARD_KEY) return next();
   const k = req.headers['x-dashboard-key'];
   if (k !== DASHBOARD_KEY) return res.status(401).json({ error: 'Clave incorrecta' });
   next();
@@ -61,6 +64,8 @@ const PROYECTOS_DEF = [
   { nombre: 'unipay',           dir: 'C:/Proyectos/unipay',            dominio: 'unipay.zyaeti.mx',               puerto: 5454,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
   { nombre: 'conta-ia',         dir: 'C:/Proyectos/conta-ia',          dominio: 'contaia.zyaeti.mx',              puerto: 5456,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
   { nombre: 'zya-recv',         dir: 'C:/Proyectos/zya-recv',          dominio: 'upload.zyaeti.mx',               puerto: 5460,  tipo: 'local',      stack: 'Express+SQLite+JWT' },
+  { nombre: 'comicio360',       dir: 'C:/Proyectos/comicio360',        dominio: 'comicio360.org',                 puerto: 5461,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
+  { nombre: 'jgy-landing',      dir: 'C:/Proyectos/josegalindoyamak-landing', dominio: 'josegalindoyamak.mx',      puerto: 5463,  tipo: 'local',      stack: 'Express (estático)' },
 ];
 
 function contarArchivosPorExt(dir) {
