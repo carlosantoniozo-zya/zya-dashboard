@@ -1,5 +1,13 @@
 # CHANGELOG — dashboard
 
+## [2026-07-15] — feat: registrar ZYA Radar en PROYECTOS_DEF
+**Motivo:** Cierre de Fase 7 del proyecto nuevo ZYA Radar (monitoreo de redes sociales) — checklist
+estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
+**Cambios:** `server.js` — nueva entrada en `PROYECTOS_DEF`: `{ nombre: 'zya-radar', dir:
+'C:/Proyectos/zya-radar', dominio: 'radar.zyaeti.mx', puerto: 5464, tipo: 'local', stack:
+'React+Vite+Express+PG' }`.
+**Impacto:** Ninguno sobre otros proyectos — solo agrega una entrada más a las estadísticas del ecosistema.
+
 ## [2026-07-12b] — security: fail-closed en requireKey + fix real de DASHBOARD_KEY (T223)
 **Archivos:** `server.js`, `.env.example`, `C:\Proyectos\ecosystem.config.js`
 **Motivo:** `requireKey` era fail-open (`if (!DASHBOARD_KEY) return next()`). Al investigar se encontró que el fallo era más grave de lo documentado: `server.js` **nunca cargó `dotenv`**, así que el `.env` del proyecto (que sí tenía `DASHBOARD_KEY=zya-dash-2026`) nunca se leía en producción — el proceso PM2 solo recibe variables del objeto `env:{}` de `ecosystem.config.js`, que únicamente definía `MAILCOW_KEY`. Es decir: la protección de T196 (2026-06-25, "auth DASHBOARD_KEY en endpoints sensibles") **nunca estuvo realmente activa en producción** — `process.env.DASHBOARD_KEY` era `undefined` y el fail-open dejaba pasar todo sin auth.
