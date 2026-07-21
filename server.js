@@ -67,6 +67,7 @@ const PROYECTOS_DEF = [
   { nombre: 'comicio360',       dir: 'C:/Proyectos/comicio360',        dominio: 'comicio360.org',                 puerto: 5461,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
   { nombre: 'jgy-landing',      dir: 'C:/Proyectos/josegalindoyamak-landing', dominio: 'josegalindoyamak.mx',      puerto: 5463,  tipo: 'local',      stack: 'Express (estático)' },
   { nombre: 'zya-radar',        dir: 'C:/Proyectos/zya-radar',         dominio: 'radar.zyaeti.mx',                puerto: 5464,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
+  { nombre: 'yosoy',            dir: 'C:/Proyectos/yosoy',             dominio: 'yosoy.zyaeti.mx',                puerto: 5467,  tipo: 'local',      stack: 'Express+cookie-parser' },
 ];
 
 function contarArchivosPorExt(dir) {

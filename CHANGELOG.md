@@ -1,5 +1,10 @@
 # CHANGELOG — dashboard
 
+## [2026-07-21] — feat: registrar yosoy en PROYECTOS_DEF
+**Motivo:** Alta de proyecto `yosoy` (página personal protegida con PIN) — checklist estándar de alta de proyecto (ESTANDARES-ZYA.md §15), a petición explícita de Carlos.
+**Cambios:** `server.js` — nueva entrada en `PROYECTOS_DEF`: `{ nombre: 'yosoy', dir: 'C:/Proyectos/yosoy', dominio: 'yosoy.zyaeti.mx', puerto: 5467, tipo: 'local', stack: 'Express+cookie-parser' }`.
+**Impacto:** Ninguno sobre otros proyectos — solo agrega una entrada más a las estadísticas del ecosistema. Verificado post-deploy: `pm2 restart dashboard` → `/api/health` 200 → `yosoy` aparece en `/api/stats`. Nota aparte (no introducida por este cambio): `ultimo_commit`/`rama` reportan "sin-git"/"N/A" para `yosoy` igual que para otros proyectos recientes (`zya-radar`, `comicio360`) — parece un problema preexistente de `getUltimoCommit()`/`getRama()` bajo el proceso PM2 (corre como `NT AUTHORITY\SYSTEM`), no algo roto por esta entrada.
+
 ## [2026-07-15] — feat: registrar ZYA Radar en PROYECTOS_DEF
 **Motivo:** Cierre de Fase 7 del proyecto nuevo ZYA Radar (monitoreo de redes sociales) — checklist
 estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
