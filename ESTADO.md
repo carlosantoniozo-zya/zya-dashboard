@@ -32,7 +32,7 @@ Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanill
 ## Deuda técnica ⚠️
 - Sin TypeScript — errores de tipo solo visibles en runtime
 - README.md ausente
-- `requireKey` middleware (server.js:10-15) es fail-open si `DASHBOARD_KEY` no está configurada en `.env` (`if (!DASHBOARD_KEY) return next()`) — protege por defecto solo mientras la variable exista. Además, `DASHBOARD_KEY` no está documentada en `.env.example`. Ver T223 en backlog.md.
+- `requireKey` middleware (server.js:16-20) es fail-closed: si `DASHBOARD_KEY` no está configurada, `process.exit(1)` al arrancar (server.js:10-13). `DASHBOARD_KEY` ya está documentada en `.env.example`.
 
 ## Próximas implementaciones 💡
 - Agregar nuevos proyectos del ecosistema a PROYECTOS_DEF cuando se creen
