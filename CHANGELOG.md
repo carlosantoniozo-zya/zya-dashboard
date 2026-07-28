@@ -4,6 +4,7 @@
 **Motivo:** Carlos revisó el conteo de tareas abiertas y detectó (a petición) que T226 y T234 aparecían como pendientes en `/api/tareas` pese a decir "CORS corregido"/"CORREGIDO en código" en su campo Estado — `clasificarEstado()` solo reconocía "completad"/"completo"/"resuelto".
 **Cambios:** `server.js` — agregado `corregid` como sinónimo de completada, con guardia `corregidoNegado` (regex `\b(no|sin|tampoco)\s+corregid`) para no marcar como completadas tareas cuyo estado dice "no corregido"/"sin corregir" (existen 2 casos así en backlog.md, líneas 29 y 39).
 **Impacto:** Ninguno sobre otros proyectos. Verificado: `pm2 restart dashboard` → `/api/tareas` pasa de 48 a 44 "abiertas" (183 completadas vs 179 antes), T226 y T234 ahora clasifican como `completada`.
+**Nota (2026-07-28):** el cambio en `server.js` corría en producción desde el día anterior pero nunca se había commiteado — quedó pendiente hasta esta fecha.
 
 ## [2026-07-21] — feat: registrar yosoy en PROYECTOS_DEF
 **Motivo:** Alta de proyecto `yosoy` (página personal protegida con PIN) — checklist estándar de alta de proyecto (ESTANDARES-ZYA.md §15), a petición explícita de Carlos.

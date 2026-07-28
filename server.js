@@ -364,9 +364,10 @@ function parseTareas() {
 
 function clasificarEstado(estado) {
   const e = estado.toLowerCase();
+  const corregidoNegado = /\b(no|sin|tampoco)\s+corregid/.test(e);
   // Verificar inicio del estado primero para evitar falsos positivos
   if (e.startsWith('en proceso') || e.startsWith('en progreso') || e.startsWith('en desarrollo') || e.startsWith('montado en') || e.startsWith('activo')) return 'en-proceso';
-  if (e.includes('completad') || e.includes('completo') || e.includes('resuelto')) return 'completada';
+  if (e.includes('completad') || e.includes('completo') || e.includes('resuelto') || (!corregidoNegado && e.includes('corregid'))) return 'completada';
   if (e.includes('cancelad'))                               return 'cancelada';
   if (e.includes('en espera') || e.includes('bloqueado'))   return 'espera';
   if (e.includes('en proceso') || e.includes('en progreso') || e.includes('en desarrollo') || e.includes('en curso')) return 'en-proceso';
