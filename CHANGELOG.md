@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-08-06] — fix: favicon.ico con marca incorrecta (T199)
+**Archivos:** `public/favicon.ico`
+**Motivo:** T199 detectó que el favicon.ico de dashboard estaba roto — mismo bug ya corregido en `zya-monitor` (2026-07-11): el archivo (3870 bytes) era en realidad el ícono genérico de React (átomo azul) copiado por error, no la marca ZYA. En aquel entonces `zya-monitor` se corrigió pero `dashboard` quedó explícitamente fuera de alcance (ver su CHANGELOG del 2026-07-11).
+**Cambio:** favicon.ico regenerado (16/24/32/48/64px) desde el logo ZYA oficial (`zya-landing/public/logo-zya.png`), mismo método que en `zya-monitor`. El logo fuente traía un perfil ICC embebido de ~557KB (metadata de exportación Photoshop) que Pillow arrastraba a cada frame e inflaba el .ico a >1MB; se descartó ese metadata antes de generar el archivo final (19KB). El `<link rel="icon" href="/favicon.ico" />` en `public/index.html` ya existía, no requirió cambio.
+**Impacto:** Ninguno funcional. Archivo estático servido por `express.static` — sin rebuild necesario, solo `pm2 restart dashboard` para invalidar caché del proceso (no aplica realmente a estáticos, pero se hizo por consistencia).
+
 ## [2026-07-27] — fix: clasificarEstado() no reconocía "corregido" como completada
 **Motivo:** Carlos revisó el conteo de tareas abiertas y detectó (a petición) que T226 y T234 aparecían como pendientes en `/api/tareas` pese a decir "CORS corregido"/"CORREGIDO en código" en su campo Estado — `clasificarEstado()` solo reconocía "completad"/"completo"/"resuelto".
 **Cambios:** `server.js` — agregado `corregid` como sinónimo de completada, con guardia `corregidoNegado` (regex `\b(no|sin|tampoco)\s+corregid`) para no marcar como completadas tareas cuyo estado dice "no corregido"/"sin corregir" (existen 2 casos así en backlog.md, líneas 29 y 39).
