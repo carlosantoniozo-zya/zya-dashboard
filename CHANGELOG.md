@@ -1,5 +1,19 @@
 # CHANGELOG — dashboard
 
+## [2026-08-19] — fix: tareas C1-C19 corrompían el estado de T254 + negación "no resuelto" no detectada + facfs faltante
+**Archivos:** `server.js`
+**Motivo:** Carlos pidió revisar si el dashboard de pendientes estaba al día. Se encontraron 3 desfases reales:
+1. `parseTareas()` solo reconocía encabezados `## T\d+ — ` como cierre de bloque. Las 19 tareas `## C1` a `## C19` (Casa Galindo/Chi-Ha-Mi/Plaza Galindo/JOD, backlog.md líneas 34-191) no cerraban el bloque de la última tarea T, así que su contenido (incluida su línea `**Estado:**`) se acumulaba dentro del cuerpo de esa tarea T y sobreescribía su estado real. Caso confirmado: T254 (FacFS, "DESPLEGADO A PRODUCCIÓN... bloqueado en timbrar por falta de CSD real") mostraba en su lugar el estado de C1 ("COMPLETADO. Backup temporal..."). El mismo patrón de regex se usaba en `PUT /api/tareas/:id` para delimitar el bloque a reescribir — riesgo real de que editar una tarea T vía la UI borrara las tareas C intercaladas.
+2. `clasificarEstado()` tenía guardia de negación (`\b(no|sin|tampoco)\s+`) solo para "corregid" (agregada 2026-07-27 tras un caso similar), no para "resuelto". T246 ("PENDIENTE... no resuelto") clasificaba como `completada` porque `"no resuelto"` contiene la subcadena `"resuelto"`.
+3. `facfs` (T254, en producción real desde 2026-08-14) nunca se agregó a `PROYECTOS_DEF` — no aparecía en `/api/stats` ni en la tabla de proyectos.
+**Cambios:**
+- `parseTareas()`: el regex de encabezado ahora reconoce cualquier `## [A-Za-z]+\d+ — ` como cierre de bloque; solo los que empiezan con `T` se agregan al array de tareas (evita que ítems no-T se lean como tareas, pero sí cierran correctamente el bloque anterior).
+- `PUT /api/tareas/:id`: mismo regex ampliado para el límite de fin de bloque, evita que un update de una tarea T sobreescriba tareas C intercaladas.
+- `clasificarEstado()`: guardia de negación (`negado`) ahora cubre `corregid` y `resuelt`.
+- `PROYECTOS_DEF`: agregada entrada `facfs` (`facfs.zyaeti.mx`, puerto 5470).
+**Verificado:** `pm2 restart dashboard` → `/api/health` 200. `/api/tareas`: T254 ahora muestra su estado real propio; T246 pasó de `completada` (falso) a `pendiente` (correcto); resumen cambió de 43→44 abiertas / 199→198 completadas, total sigue en 247. `/api/stats`: `facfs` presente con `dominio: facfs.zyaeti.mx`.
+**Impacto:** Solo lectura/escritura del parser de `deseimp/backlog.md` — no afecta otros endpoints ni otros proyectos. Nota: quedan falsos positivos posibles por coincidencia de subcadena (ej. la palabra "completo" dentro de una frase no relacionada al estado) — limitación conocida de clasificación por keyword, no corregida en este cambio por no ser parte del hallazgo original.
+
 ## [2026-08-06] — fix: favicon.ico con marca incorrecta (T199)
 **Archivos:** `public/favicon.ico`
 **Motivo:** T199 detectó que el favicon.ico de dashboard estaba roto — mismo bug ya corregido en `zya-monitor` (2026-07-11): el archivo (3870 bytes) era en realidad el ícono genérico de React (átomo azul) copiado por error, no la marca ZYA. En aquel entonces `zya-monitor` se corrigió pero `dashboard` quedó explícitamente fuera de alcance (ver su CHANGELOG del 2026-07-11).

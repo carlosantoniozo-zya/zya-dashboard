@@ -68,6 +68,7 @@ const PROYECTOS_DEF = [
   { nombre: 'jgy-landing',      dir: 'C:/Proyectos/josegalindoyamak-landing', dominio: 'josegalindoyamak.mx',      puerto: 5463,  tipo: 'local',      stack: 'Express (estático)' },
   { nombre: 'zya-radar',        dir: 'C:/Proyectos/zya-radar',         dominio: 'radar.zyaeti.mx',                puerto: 5464,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
   { nombre: 'yosoy',            dir: 'C:/Proyectos/yosoy',             dominio: 'yosoy.zyaeti.mx',                puerto: 5467,  tipo: 'local',      stack: 'Express+cookie-parser' },
+  { nombre: 'facfs',            dir: 'C:/Proyectos/facfs',             dominio: 'facfs.zyaeti.mx',                puerto: 5470,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
 ];
 
 function contarArchivosPorExt(dir) {
@@ -345,10 +346,14 @@ function parseTareas() {
   let tareaActual = null;
   let bodyLines = [];
   for (const line of content.split('\n')) {
-    const encabezado = line.match(/^## (T\d+) — (.+)/);
+    // Cualquier encabezado ## X123 — cierra el bloque anterior (evita que tareas
+    // no-T como ## C19 — se lean como parte del cuerpo/estado de la última tarea T)
+    const encabezado = line.match(/^## ([A-Za-z]+\d+) — (.+)/);
     if (encabezado) {
       if (tareaActual) { tareaActual.cuerpo = bodyLines.join('\n').trim(); tareas.push(tareaActual); }
-      tareaActual = { id: encabezado[1], titulo: encabezado[2], estado: '', proyecto: '', cuerpo: '' };
+      tareaActual = encabezado[1].startsWith('T')
+        ? { id: encabezado[1], titulo: encabezado[2], estado: '', proyecto: '', cuerpo: '' }
+        : null;
       bodyLines = [];
     } else if (tareaActual) {
       const est = line.match(/\*\*Estado:\*\* (.+)/);
@@ -364,10 +369,10 @@ function parseTareas() {
 
 function clasificarEstado(estado) {
   const e = estado.toLowerCase();
-  const corregidoNegado = /\b(no|sin|tampoco)\s+corregid/.test(e);
+  const negado = /\b(no|sin|tampoco)\s+(corregid|resuelt)/.test(e);
   // Verificar inicio del estado primero para evitar falsos positivos
   if (e.startsWith('en proceso') || e.startsWith('en progreso') || e.startsWith('en desarrollo') || e.startsWith('montado en') || e.startsWith('activo')) return 'en-proceso';
-  if (e.includes('completad') || e.includes('completo') || e.includes('resuelto') || (!corregidoNegado && e.includes('corregid'))) return 'completada';
+  if (e.includes('completad') || e.includes('completo') || (!negado && (e.includes('resuelto') || e.includes('corregid')))) return 'completada';
   if (e.includes('cancelad'))                               return 'cancelada';
   if (e.includes('en espera') || e.includes('bloqueado'))   return 'espera';
   if (e.includes('en proceso') || e.includes('en progreso') || e.includes('en desarrollo') || e.includes('en curso')) return 'en-proceso';
@@ -402,7 +407,7 @@ app.put('/api/tareas/:id', requireKey, (req, res) => {
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].match(new RegExp(`^## ${id} — `))) {
       startIdx = i;
-    } else if (startIdx !== -1 && lines[i].match(/^## T\d+ — /) && i > startIdx) {
+    } else if (startIdx !== -1 && lines[i].match(/^## [A-Za-z]+\d+ — /) && i > startIdx) {
       endIdx = i;
       break;
     }
