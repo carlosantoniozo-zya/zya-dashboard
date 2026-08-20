@@ -1,5 +1,17 @@
 # CHANGELOG — dashboard
 
+## [2026-08-20] — feat: bandeja de correo unificada (T257)
+**Archivos:** `server.js`, `public/index.html`, `package.json`, `.env`, `.env.example`, `../ecosystem.config.js`
+**Motivo:** Carlos pidió una interfaz para monitorear en un solo lugar todos los correos entrantes de los buzones creados en Mailcow, salvo `comercializadora@sanyos.mx` y `direccion@sanyos.mx` (Sanyos). Surgió durante la configuración de TikTok Business Center (S1435).
+**Cambios:**
+- Módulo propio vía IMAP (patrón `probePort()` + `imap-simple`/`mailparser`, mismo usado por `cfdi_ingestor_pc.js` y `mail-rutas-ingestor.js`) en vez de SOGo multi-cuenta de Mailcow — login único con `DASHBOARD_KEY` ya existente, sin credenciales nuevas para Carlos.
+- `GET /api/inbox` — conecta en paralelo a los 6 buzones (`contacto@zyaeti.mx`, `contacto@sanyos.mx`, `facturas@sanyos.mx`, `rutas@sanyos.mx`, `contacto@casagalindo.com.mx`, `tiktok@zyaeti.mx`), trae encabezados (de/asunto/fecha/leído) de los últimos 20 mensajes por buzón, unifica y ordena por fecha. Caché 2 min, `probePort(127.0.0.1:993)` antes de conectar (evita errores si Mailcow/Docker no ha levantado aún), fallback a caché si IMAP no responde.
+- `GET /api/inbox/body?buzon=&uid=` — trae cuerpo completo (texto/HTML) de un mensaje puntual, bajo demanda (no cacheado).
+- Frontend: nueva sección colapsable "Bandeja de entrada" (mismo patrón que la sección "Correo" existente) + modal de lectura reutilizando estilos `tarea-modal-*`.
+- Credenciales de los 6 buzones vía `INBOX_MAILBOXES` (JSON) en `.env`/`ecosystem.config.js`, mismo patrón que `MAILCOW_KEY`/`DASHBOARD_KEY` — no hardcodeadas en `server.js`.
+**Verificado:** prueba local en puerto 4601 con credenciales reales — `/api/inbox` devolvió 4 buzones con mensajes reales (facturas@, rutas@, contacto@sanyos.mx, contacto@zyaeti.mx) y 2 vacíos sin error (contacto@casagalindo.com.mx, tiktok@zyaeti.mx — buzones nuevos sin correo aún); `/api/inbox/body` devolvió texto real de un mensaje. `pm2 restart dashboard` en producción + verificación `/api/health` 200.
+**Impacto:** Solo lectura IMAP (sin `markSeen`, no se altera el estado de los buzones). No afecta otros endpoints ni otros proyectos.
+
 ## [2026-08-19] — fix: tareas C1-C19 corrompían el estado de T254 + negación "no resuelto" no detectada + facfs faltante
 **Archivos:** `server.js`
 **Motivo:** Carlos pidió revisar si el dashboard de pendientes estaba al día. Se encontraron 3 desfases reales:

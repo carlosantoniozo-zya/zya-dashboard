@@ -662,6 +662,132 @@ app.get('/api/correo', requireKey, async (req, res) => {
   }
 });
 
+// ── Bandeja de correo unificada (T257) ──────────────────────────────────────
+const imapSimple = require('imap-simple');
+const { simpleParser } = require('mailparser');
+const net = require('net');
+
+const INBOX_HOST = process.env.INBOX_HOST || '127.0.0.1';
+const INBOX_PORT = parseInt(process.env.INBOX_PORT || '993');
+let INBOX_MAILBOXES = [];
+try { INBOX_MAILBOXES = JSON.parse(process.env.INBOX_MAILBOXES || '[]'); } catch { INBOX_MAILBOXES = []; }
+
+function probePort(host, port, timeoutMs = 3000) {
+  return new Promise(resolve => {
+    const s = new net.Socket();
+    s.setTimeout(timeoutMs);
+    s.once('connect', () => { s.destroy(); resolve(true); });
+    s.once('error',   () => { s.destroy(); resolve(false); });
+    s.once('timeout', () => { s.destroy(); resolve(false); });
+    s.connect(port, host);
+  });
+}
+
+function imapConfig(mailbox) {
+  return {
+    imap: {
+      user:        mailbox.user,
+      password:    mailbox.pass,
+      host:        INBOX_HOST,
+      port:        INBOX_PORT,
+      tls:         INBOX_PORT === 993,
+      tlsOptions:  { rejectUnauthorized: false },
+      authTimeout: 10000,
+      connTimeout: 15000,
+    }
+  };
+}
+
+async function fetchInboxHeaders(mailbox, limit = 20) {
+  const conn = await imapSimple.connect(imapConfig(mailbox));
+  try {
+    await conn.openBox('INBOX');
+    const all = await conn.search(['ALL'], { bodies: [], markSeen: false });
+    if (!all.length) return [];
+    const uids = all.map(m => m.attributes.uid).sort((a, b) => a - b).slice(-limit);
+    const detailed = await conn.search([['UID', uids.join(',')]], {
+      bodies: ['HEADER.FIELDS (FROM SUBJECT DATE)'],
+      markSeen: false,
+    });
+    return detailed.map(msg => {
+      const header = msg.parts.find(p => p.which.startsWith('HEADER'))?.body || {};
+      const flags = msg.attributes.flags || [];
+      return {
+        buzon:   mailbox.user,
+        uid:     msg.attributes.uid,
+        from:    (header.from || [''])[0] || '(desconocido)',
+        subject: (header.subject || [''])[0] || '(sin asunto)',
+        date:    (header.date || [''])[0] || '',
+        seen:    flags.includes('\\Seen'),
+      };
+    });
+  } finally {
+    conn.end();
+  }
+}
+
+let _inboxCache = null;
+let _inboxCacheAt = 0;
+const INBOX_TTL = 2 * 60 * 1000;
+
+app.get('/api/inbox', requireKey, async (req, res) => {
+  if (_inboxCache && (Date.now() - _inboxCacheAt) < INBOX_TTL) {
+    return res.json({ mensajes: _inboxCache.mensajes, errores: _inboxCache.errores, cached: true });
+  }
+  if (!INBOX_MAILBOXES.length) {
+    return res.status(503).json({ error: 'INBOX_MAILBOXES no configurado' });
+  }
+  const ready = await probePort(INBOX_HOST, INBOX_PORT);
+  if (!ready) {
+    if (_inboxCache) return res.json({ mensajes: _inboxCache.mensajes, errores: _inboxCache.errores, cached: true, error: 'IMAP no disponible' });
+    return res.status(503).json({ error: `IMAP ${INBOX_HOST}:${INBOX_PORT} no disponible` });
+  }
+  try {
+    const resultados = await Promise.allSettled(INBOX_MAILBOXES.map(m => fetchInboxHeaders(m)));
+    const mensajes = [];
+    const errores = [];
+    resultados.forEach((r, i) => {
+      if (r.status === 'fulfilled') mensajes.push(...r.value);
+      else errores.push({ buzon: INBOX_MAILBOXES[i].user, error: r.reason.message });
+    });
+    mensajes.sort((a, b) => new Date(b.date) - new Date(a.date));
+    _inboxCache = { mensajes, errores };
+    _inboxCacheAt = Date.now();
+    res.json({ mensajes, errores, cached: false });
+  } catch (e) {
+    if (_inboxCache) return res.json({ mensajes: _inboxCache.mensajes, errores: _inboxCache.errores, cached: true, error: e.message });
+    res.status(503).json({ error: e.message });
+  }
+});
+
+app.get('/api/inbox/body', requireKey, async (req, res) => {
+  const { buzon, uid } = req.query;
+  const mailbox = INBOX_MAILBOXES.find(m => m.user === buzon);
+  if (!mailbox || !uid) return res.status(400).json({ error: 'buzon/uid requeridos' });
+  const ready = await probePort(INBOX_HOST, INBOX_PORT);
+  if (!ready) return res.status(503).json({ error: `IMAP ${INBOX_HOST}:${INBOX_PORT} no disponible` });
+  let conn;
+  try {
+    conn = await imapSimple.connect(imapConfig(mailbox));
+    await conn.openBox('INBOX');
+    const results = await conn.search([['UID', String(uid)]], { bodies: [''], markSeen: false });
+    if (!results.length) return res.status(404).json({ error: 'mensaje no encontrado' });
+    const raw = results[0].parts.find(p => p.which === '')?.body || '';
+    const parsed = await simpleParser(raw);
+    res.json({
+      from:    parsed.from?.text || '',
+      subject: parsed.subject || '(sin asunto)',
+      date:    parsed.date || null,
+      html:    parsed.html || null,
+      text:    parsed.text || null,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  } finally {
+    if (conn) conn.end();
+  }
+});
+
 app.get('/zya-about.js', (req, res) => {
   const aboutPath = path.resolve(__dirname, '..', '_zya-about', 'about.js');
   if (fs.existsSync(aboutPath)) {

@@ -1156,6 +1156,33 @@
     </div>
   </section>
 
+  <!-- Bandeja de entrada unificada (T257) -->
+  <section>
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Bandeja de entrada</h2>
+      <span class="badge" id="badge-inbox">—</span>
+      <span class="section-chevron collapsed">▾</span>
+    </div>
+    <div class="section-body collapsed">
+      <div class="table-wrap">
+        <table id="inbox-table">
+          <thead>
+            <tr>
+              <th>Buzón</th>
+              <th>De</th>
+              <th>Asunto</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="inbox-tbody">
+            <tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:20px">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- Vista integrada -->
   <section>
     <div class="section-header" onclick="toggleSection(this)">
@@ -1638,9 +1665,55 @@ async function loadDynamic() {
 
     // Correo
     loadCorreo();
+    loadInbox();
   } catch (e) {
     console.error('loadDynamic error:', e);
   }
+}
+
+async function loadInbox() {
+  try {
+    const res = await fetch('/api/inbox', { headers: authHdr() });
+    const { mensajes, errores } = await res.json();
+    document.getElementById('badge-inbox').textContent = mensajes.length;
+    const fmt = d => d ? new Date(d).toLocaleString('es-MX', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
+    inboxCache = mensajes;
+    let rows = mensajes.map((m, i) => `<tr onclick="abrirInbox(${i})" style="cursor:pointer">
+        <td style="font-family:var(--mono);color:var(--green);font-size:11px">${m.buzon}</td>
+        <td>${(m.from || '').replace(/</g,'&lt;')}</td>
+        <td>${!m.seen ? '<strong>' : ''}${(m.subject || '').replace(/</g,'&lt;')}${!m.seen ? '</strong>' : ''}</td>
+        <td style="color:var(--text-muted);white-space:nowrap">${fmt(m.date)}</td>
+        <td>${m.seen ? '<span style="color:var(--text-muted)">Leído</span>' : '<span style="color:var(--green)">● Nuevo</span>'}</td>
+      </tr>`).join('');
+    if (errores && errores.length) {
+      rows += `<tr><td colspan="5" style="color:#f97316;text-align:center;padding:8px;font-size:11px">Error en: ${errores.map(e => e.buzon).join(', ')}</td></tr>`;
+    }
+    document.getElementById('inbox-tbody').innerHTML = rows || `<tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:16px">Sin mensajes</td></tr>`;
+  } catch (e) {
+    document.getElementById('inbox-tbody').innerHTML = `<tr><td colspan="5" style="color:#f97316;text-align:center;padding:16px">Error al cargar bandeja</td></tr>`;
+  }
+}
+
+let inboxCache = [];
+async function abrirInbox(i) {
+  const m = inboxCache[i];
+  if (!m) return;
+  document.getElementById('inbox-modal-id').textContent = m.buzon;
+  document.getElementById('inbox-modal-titulo').textContent = m.subject || '(sin asunto)';
+  document.getElementById('inbox-modal-content').textContent = 'Cargando...';
+  document.getElementById('inbox-modal-overlay').classList.add('visible');
+  try {
+    const res = await fetch(`/api/inbox/body?buzon=${encodeURIComponent(m.buzon)}&uid=${m.uid}`, { headers: authHdr() });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    document.getElementById('inbox-modal-content').textContent = data.text || '(sin contenido de texto)';
+  } catch (e) {
+    document.getElementById('inbox-modal-content').textContent = 'Error al cargar el mensaje: ' + e.message;
+  }
+}
+function cerrarInboxModal(e) {
+  if (e && e.target !== document.getElementById('inbox-modal-overlay')) return;
+  document.getElementById('inbox-modal-overlay').classList.remove('visible');
 }
 
 async function loadCorreo() {
@@ -1889,6 +1962,7 @@ connectSSE();
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('tarea-modal-overlay').classList.remove('visible');
+    document.getElementById('inbox-modal-overlay').classList.remove('visible');
   }
 });
 </script>
@@ -1937,6 +2011,18 @@ document.addEventListener('keydown', e => {
           </button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+<div class="tarea-modal-overlay" id="inbox-modal-overlay" onclick="cerrarInboxModal(event)">
+  <div class="tarea-modal">
+    <div class="tarea-modal-header">
+      <span class="tarea-modal-id" id="inbox-modal-id">—</span>
+      <span class="tarea-modal-titulo" id="inbox-modal-titulo">—</span>
+      <span class="tarea-modal-close" onclick="cerrarInboxModal()">✕</span>
+    </div>
+    <div class="tarea-modal-body">
+      <pre id="inbox-modal-content"></pre>
     </div>
   </div>
 </div>

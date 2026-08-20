@@ -20,6 +20,7 @@ Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanill
 - MAILCOW_KEY en .env (no hardcodeado — fix S12-C)
 - Dashboard registrado en zya-landing PROYECTOS_MAP (S631, commit ce3f80a — P15 resuelto)
 - **T196 (2026-06-25):** auth `DASHBOARD_KEY` agregada en endpoints sensibles (`PUT /api/tareas/:id`, `GET /api/docs`, `GET /api/docs/:id`, `GET /api/correo`) — resuelve la vulnerabilidad crítica ASEG documentada en S1238.
+- **T257 (2026-08-20):** bandeja de correo unificada — `GET /api/inbox` + `GET /api/inbox/body` (IMAP, 6 buzones, ver CHANGELOG) + sección "Bandeja de entrada" en UI.
 - **S1291 (2026-06-27):** fix `clasificarEstado()` — no reconocía "COMPLETADO" (solo "completada"/"completo"), ~190 tareas aparecían como pendientes cuando eran ~20 reales. `listDocs()` ahora escanea `deseimp/` dinámicamente (9→21 documentos, ya no hardcodeado).
 - Unipay y conta-ia registrados en `PROYECTOS_DEF` (2026-06-17)
 
@@ -48,9 +49,10 @@ Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanill
 - **ZYA Monitor** (monitor.zyaeti.mx) — iframe integrado
 - **ZYA Changelog** (cambios.zyaeti.mx) — iframe integrado
 - **deseimp/*.md** — lectura dinámica de backlog, pendientes, hilos
-- **Mailcow** — /api/correo endpoint (MAILCOW_KEY en .env)
+- **Mailcow** — /api/correo endpoint (MAILCOW_KEY en .env) + /api/inbox (IMAP directo, T257)
 
 ## Variables de entorno requeridas
 - PORT=4600
 - MAILCOW_KEY
 - NODE_ENV=production
+- INBOX_HOST / INBOX_PORT / INBOX_MAILBOXES (bandeja unificada, T257)
