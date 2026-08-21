@@ -1,5 +1,21 @@
 # CHANGELOG — dashboard
 
+## [2026-08-21] — fix: "Error al cargar bandeja" sin motivo visible (bandeja unificada, T257)
+**Archivos:** `public/index.html`
+**Motivo:** Carlos reportó "sigue sin cargar los correos en el dashboard". Backend verificado 100% sano (local y público, `/api/inbox`, `/api/correo` y el resto de endpoints de `loadDynamic()` respondían 200 con datos reales al momento de investigar) — el fallo real estaba en el frontend: `loadInbox()` desestructuraba `{mensajes, errores}` de la respuesta sin comprobar `res.ok`. Cuando el backend responde 503 (p. ej. IMAP `127.0.0.1:993` no listo aún — recurrente por la fragilidad de Docker Desktop/WSL2 con Mailcow, ver T258) o 401 (clave incorrecta), el body no trae `mensajes` y `mensajes.length` truena, cayendo en el catch genérico que solo mostraba "Error al cargar bandeja" sin ninguna pista de la causa real.
+**Cambios:** `loadInbox()` ahora comprueba `res.ok` y lanza `data.error` (o `HTTP <status>`) cuando falla; el mensaje mostrado en la tabla ya incluye el motivo real (`Error al cargar bandeja: <detalle>`) en vez de un texto mudo.
+**Verificado:** `pm2 restart` del proceso, confirmado que el HTML servido en producción (`localhost:4600` y `dashboard.zyaeti.mx`) ya trae el fix; `/api/inbox` sigue respondiendo 200 con los 6 buzones.
+**Impacto:** Solo mensaje de error mostrado al usuario — no cambia la lógica de carga de correos. Deja diagnosticable cualquier próxima falla intermitente (IMAP no listo, clave vieja, etc.) sin tener que revisar consola/logs del servidor.
+
+## [2026-08-20] — fix: buzón tiktok@zyaeti.mx sin leer por password vieja + pm2 restart --update-env no releía el archivo (T262)
+**Archivos:** `.env`, `../ecosystem.config.js`
+**Motivo:** Carlos reportó "inicio de sesión fallido" al usar la password de `tiktok@zyaeti.mx` (bandeja unificada de T257). La password documentada en `.env` (`TikTokMail2026!`) ya no era la real.
+**Cambios:**
+- Password del buzón reseteada vía API Mailcow a `TikTok2026Reset` y actualizada en `INBOX_MAILBOXES` de `.env` y del `env{}` de `ecosystem.config.js`.
+- Durante el diagnóstico, `pm2 restart dashboard --update-env` seguía sirviendo la password vieja pese al archivo ya corregido (confirmado con `pm2 env <id>`) — `--update-env` sobre el nombre del proceso reaplica el env que PM2 tiene guardado internamente, no relee `ecosystem.config.js` del disco. Fix: `pm2 restart "C:\Proyectos\ecosystem.config.js" --only dashboard --update-env`.
+**Verificado:** `GET /api/inbox` dejó de reportar error para `tiktok@zyaeti.mx` y trajo el correo real ("TikTok for Business Verification help", `no-reply@ads-service.tiktok.com`).
+**Impacto:** Solo el buzón `tiktok@zyaeti.mx`; el resto de la bandeja unificada (T257) no se tocó. Detalle completo y causa raíz en `deseimp/backlog.md` T262.
+
 ## [2026-08-20] — feat: bandeja de correo unificada (T257)
 **Archivos:** `server.js`, `public/index.html`, `package.json`, `.env`, `.env.example`, `../ecosystem.config.js`
 **Motivo:** Carlos pidió una interfaz para monitorear en un solo lugar todos los correos entrantes de los buzones creados en Mailcow, salvo `comercializadora@sanyos.mx` y `direccion@sanyos.mx` (Sanyos). Surgió durante la configuración de TikTok Business Center (S1435).
