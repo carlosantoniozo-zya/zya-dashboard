@@ -1,5 +1,12 @@
 # CHANGELOG — dashboard
 
+## [2026-08-21] — fix: auth autorreparable — clave guardada vieja/incorrecta ya no rompe en silencio (T264 parte 2)
+**Archivos:** `public/index.html`
+**Motivo:** Tras el fix anterior de "Error al cargar bandeja" (mismo día), Carlos confirmó el mensaje real: "Clave incorrecta" — la clave guardada en `localStorage('dbk')` de su navegador estaba desactualizada. Pidió una solución sin pasos manuales de su parte (sin devtools).
+**Cambios:** Nuevo helper `apiFetch(url, opts)` que envuelve `fetch` con `authHdr()`: si el backend responde 401, borra `localStorage('dbk')` y reintenta una vez — el segundo intento dispara el `prompt()` nativo del navegador para volver a pedir la clave, sin necesidad de tocar la consola. Los 6 puntos que antes hacían `fetch(url, {headers: authHdr()})` (docs, inbox, inbox/body, correo, guardar tarea, docs index) ahora usan `apiFetch`.
+**Verificado:** `pm2 restart`; HTML servido en producción trae `apiFetch`; `/api/inbox` sigue 200.
+**Impacto:** Cualquier sección que dependa de `DASHBOARD_KEY` se autorrepara ante una clave vieja/incorrecta — el usuario solo ve el prompt de nuevo, no un error mudo ni pasos técnicos.
+
 ## [2026-08-21] — fix: "Error al cargar bandeja" sin motivo visible (bandeja unificada, T257)
 **Archivos:** `public/index.html`
 **Motivo:** Carlos reportó "sigue sin cargar los correos en el dashboard". Backend verificado 100% sano (local y público, `/api/inbox`, `/api/correo` y el resto de endpoints de `loadDynamic()` respondían 200 con datos reales al momento de investigar) — el fallo real estaba en el frontend: `loadInbox()` desestructuraba `{mensajes, errores}` de la respuesta sin comprobar `res.ok`. Cuando el backend responde 503 (p. ej. IMAP `127.0.0.1:993` no listo aún — recurrente por la fragilidad de Docker Desktop/WSL2 con Mailcow, ver T258) o 401 (clave incorrecta), el body no trae `mensajes` y `mensajes.length` truena, cayendo en el catch genérico que solo mostraba "Error al cargar bandeja" sin ninguna pista de la causa real.

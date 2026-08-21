@@ -1257,6 +1257,18 @@ function getDKey() {
 }
 function authHdr() { return { 'x-dashboard-key': getDKey() }; }
 
+// fetch autenticado que se autorrepara: si el backend dice 401 (clave guardada
+// vieja/incorrecta), la borra y vuelve a pedirla en vez de fallar en silencio.
+async function apiFetch(url, opts = {}) {
+  const doFetch = () => fetch(url, { ...opts, headers: { ...(opts.headers || {}), ...authHdr() } });
+  let res = await doFetch();
+  if (res.status === 401) {
+    localStorage.removeItem('dbk');
+    res = await doFetch();
+  }
+  return res;
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmt = n => n.toLocaleString('es-MX');
 
@@ -1557,7 +1569,7 @@ async function abrirDoc(id) {
   content.innerHTML = '<pre style="color:var(--text-muted)">Cargando...</pre>';
 
   try {
-    const res = await fetch('/api/docs/' + id, { headers: authHdr() });
+    const res = await apiFetch('/api/docs/' + id);
     const data = await res.json();
     title.textContent = data.label;
     content.innerHTML = `<pre>${renderMarkdown(data.content)}</pre>`;
@@ -1673,7 +1685,7 @@ async function loadDynamic() {
 
 async function loadInbox() {
   try {
-    const res = await fetch('/api/inbox', { headers: authHdr() });
+    const res = await apiFetch('/api/inbox');
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
     const { mensajes, errores } = data;
@@ -1705,7 +1717,7 @@ async function abrirInbox(i) {
   document.getElementById('inbox-modal-content').textContent = 'Cargando...';
   document.getElementById('inbox-modal-overlay').classList.add('visible');
   try {
-    const res = await fetch(`/api/inbox/body?buzon=${encodeURIComponent(m.buzon)}&uid=${m.uid}`, { headers: authHdr() });
+    const res = await apiFetch(`/api/inbox/body?buzon=${encodeURIComponent(m.buzon)}&uid=${m.uid}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     document.getElementById('inbox-modal-content').textContent = data.text || '(sin contenido de texto)';
@@ -1720,7 +1732,7 @@ function cerrarInboxModal(e) {
 
 async function loadCorreo() {
   try {
-    const res = await fetch('/api/correo', { headers: authHdr() });
+    const res = await apiFetch('/api/correo');
     const { buzones } = await res.json();
     document.getElementById('badge-correo').textContent = buzones.length;
     const fmt = ts => ts ? new Date(ts * 1000).toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'2-digit' }) : '—';
@@ -1857,9 +1869,9 @@ async function guardarTarea() {
   btn.textContent = 'Guardando…';
   btn.disabled = true;
   try {
-    const r = await fetch(`/api/tareas/${id}`, {
+    const r = await apiFetch(`/api/tareas/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHdr() },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ estado, cuerpo })
     });
     if (!r.ok) throw new Error((await r.json()).error || r.statusText);
@@ -1945,7 +1957,7 @@ async function guardarTarea() {
     await loadDynamic();
 
     // Documentación viva
-    const docsRes = await fetch('/api/docs', { headers: authHdr() });
+    const docsRes = await apiFetch('/api/docs');
     docsIndex = await docsRes.json();
     document.getElementById('badge-docs').textContent = docsIndex.length + ' archivos';
     renderDocs();
