@@ -1,5 +1,13 @@
 # CHANGELOG — dashboard
 
+## [2026-09-14] — fix: `GET /api/tareas` público exponía el cuerpo completo de `backlog.md` (A5, auditoría T275/S1498)
+**Archivos:** `server.js`, `public/index.html`
+**Motivo:** La auditoría integral (S1498, 2026-09-02) encontró que `GET /api/tareas` no exigía `x-dashboard-key`, y como devuelve el `cuerpo` completo de cada tarea (texto crudo de `backlog.md`), servía en claro secretos mencionados dentro de tareas ya cerradas — confirmado: la password real de `tiktok@zyaeti.mx` (T262) quedaba expuesta sin login desde internet.
+**Cambios:** `server.js` — se agregó `requireKey` a `app.get('/api/tareas', ...)` (ya lo tenía el `PUT`). `public/index.html` — las 2 llamadas que leían `/api/tareas` con `fetch()` plano ahora usan `apiFetch()` (mismo helper que ya usan `/api/correo`/`/api/docs`, autorrepara si la clave guardada es vieja).
+**Verificado:** `pm2 restart dashboard --update-env`; `GET /api/tareas` sin clave → 401 (antes 200); con `DASHBOARD_KEY` real → 200 igual que antes; `/api/health` → 200.
+**Impacto:** Quien ya usa el dashboard (secciones correo/docs) no nota nada, la clave ya está guardada en su navegador. Quien nunca usó esas secciones verá un `prompt()` pidiendo la clave la primera vez que cargue la sección de tareas.
+**Pendiente relacionado (sin resolver, decisión de Carlos):** la password `TikTok2026Reset` ya estuvo expuesta ~3 semanas (desde S1498) — falta rotarla en Mailcow + `.env`/`ecosystem.config.js`. `GET /api/correo` también devuelve las passwords de buzones en claro (ya protegido por `requireKey`, pero la auditoría recomendaba quitar el campo por completo) — no se tocó, es cambio de comportamiento y falta confirmar con Carlos si lo usa para consulta rápida.
+
 ## [2026-08-21] — fix: auth autorreparable — clave guardada vieja/incorrecta ya no rompe en silencio (T264 parte 2)
 **Archivos:** `public/index.html`
 **Motivo:** Tras el fix anterior de "Error al cargar bandeja" (mismo día), Carlos confirmó el mensaje real: "Clave incorrecta" — la clave guardada en `localStorage('dbk')` de su navegador estaba desactualizada. Pidió una solución sin pasos manuales de su parte (sin devtools).

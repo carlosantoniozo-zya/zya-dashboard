@@ -1667,7 +1667,7 @@ async function loadDynamic() {
     renderPendientes();
 
     // Tareas
-    const tareasRes = await fetch('/api/tareas');
+    const tareasRes = await apiFetch('/api/tareas');
     const tareasData = await tareasRes.json();
     const { tareas, resumen: tr } = tareasData;
     renderTareas(tareas, tr);
@@ -1876,7 +1876,7 @@ async function guardarTarea() {
     });
     if (!r.ok) throw new Error((await r.json()).error || r.statusText);
     // Recargar tareas y cerrar modal
-    const td = await (await fetch('/api/tareas')).json();
+    const td = await (await apiFetch('/api/tareas')).json();
     renderTareas(td.tareas, td.resumen);
     cerrarTareaModal();
   } catch (err) {

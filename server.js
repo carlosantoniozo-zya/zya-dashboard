@@ -380,7 +380,7 @@ function clasificarEstado(estado) {
   return 'pendiente';
 }
 
-app.get('/api/tareas', (req, res) => {
+app.get('/api/tareas', requireKey, (req, res) => {
   const tareas = parseTareas().map(t => ({ ...t, clase: clasificarEstado(t.estado) }));
   const resumen = {
     total: tareas.length,
