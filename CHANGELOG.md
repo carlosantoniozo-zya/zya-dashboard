@@ -1,5 +1,12 @@
 # CHANGELOG — dashboard
 
+## [2026-09-24] — fix: /api/stats mostraba "sin-git" en 40 de 43 proyectos (T260, S1543)
+**Archivos:** `server.js`, `ESTADO.md`
+**Motivo:** el dashboard corre como NT AUTHORITYSYSTEM y los repos pertenecen a Carlos; git los rechaza con "dubious ownership" y el último commit salía "sin-git".
+**Cambio:** los tres `git` del servidor (`log --oneline -1`, `rev-parse --abbrev-ref HEAD`, y el helper `git -C`) llevan `-c safe.directory=*` (válido por línea de comandos; no toca la config global del sistema).
+**Verificado:** `pm2 restart dashboard`; apariciones de "sin-git" en `/api/stats`: 40 → 5 (los 5 restantes son carpetas que no son repos git: armador-expedientes, karaoke-landing, zya-social, zya-mail…).
+**Impacto:** solo la visualización del último commit por proyecto.
+
 ## [2026-09-24] — docs: ESTADO.md al día con la realidad verificada (S1543)
 **Archivos:** `ESTADO.md`
 **Motivo:** Verificación de documentación vs realidad: faltaban A5, T264 y S1542; T260 sigue vigente.

@@ -62,3 +62,4 @@ Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanill
 - **T264 (2026-08-21):** fix del "Error al cargar bandeja" y auth autorreparable ante `DASHBOARD_KEY` vieja (commits 7fec17d, c14157a).
 - **S1542 (2026-09-24):** 4 buzones agregados a bandeja/correo (commit 009b01c).
 - **T260 sigue real:** `/api/stats` da `ultimo_commit:"sin-git"` en la mayoría de los proyectos porque git falla con "dubious ownership" bajo la cuenta SYSTEM. (El campo `git_sync` de `/api/stats` sí existe; lo que no existe es un endpoint aparte "Git sync".)
+- **T260 resuelto (S1543):** `git -c safe.directory=*` en las tres invocaciones de git de `server.js`; `/api/stats` ya muestra el último commit real de los repos.
