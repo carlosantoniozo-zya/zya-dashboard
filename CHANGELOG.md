@@ -1,5 +1,12 @@
 # CHANGELOG — dashboard
 
+## [2026-09-24] — chore: 4 buzones agregados a la bandeja/lista de correo (S1542)
+**Archivos:** `.env` (`INBOX_MAILBOXES`), `correo-buzones.json` (ambos en `.gitignore`, no versionados)
+**Motivo:** Faltaban las contraseñas de 3 buzones existentes en Mailcow (pendiente en `deseimp/preguntas.md`, desde S1471) y de `ventas@casagalindo.com.mx` (alta S1469). Carlos pidió completarlas con lo ya registrado en `deseimp/credenciales.md`.
+**Cambios:** Agregados `agalindo@casagalindo.com.mx`, `comercializadora@sanyos.mx`, `direccion@sanyos.mx`, `ventas@casagalindo.com.mx` — de 6 a 10 buzones en cada archivo. Sin cambios de código.
+**Verificado:** `pm2 restart dashboard` → online. NO se probó login IMAP de los buzones nuevos ni la vista del dashboard.
+**Impacto:** La bandeja unificada y `GET /api/correo` incluyen ahora los 4 buzones. Si Arnulfo cambió la password de `agalindo@` (se le recomendó), ese buzón mostrará error de autenticación hasta actualizarla.
+
 ## [2026-09-14] — fix: `GET /api/tareas` público exponía el cuerpo completo de `backlog.md` (A5, auditoría T275/S1498)
 **Archivos:** `server.js`, `public/index.html`
 **Motivo:** La auditoría integral (S1498, 2026-09-02) encontró que `GET /api/tareas` no exigía `x-dashboard-key`, y como devuelve el `cuerpo` completo de cada tarea (texto crudo de `backlog.md`), servía en claro secretos mencionados dentro de tareas ya cerradas — confirmado: la password real de `tiktok@zyaeti.mx` (T262) quedaba expuesta sin login desde internet.
