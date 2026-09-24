@@ -56,3 +56,9 @@ Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanill
 - MAILCOW_KEY
 - NODE_ENV=production
 - INBOX_HOST / INBOX_PORT / INBOX_MAILBOXES (bandeja unificada, T257)
+
+## Actualización S1543 (2026-09-24) — auditoría documental
+- **A5 (commit ed49ac5, 2026-09-14):** `GET /api/tareas` ahora exige `requireKey` (`server.js:383`); no figuraba en este ESTADO.
+- **T264 (2026-08-21):** fix del "Error al cargar bandeja" y auth autorreparable ante `DASHBOARD_KEY` vieja (commits 7fec17d, c14157a).
+- **S1542 (2026-09-24):** 4 buzones agregados a bandeja/correo (commit 009b01c).
+- **T260 sigue real:** `/api/stats` da `ultimo_commit:"sin-git"` en la mayoría de los proyectos porque git falla con "dubious ownership" bajo la cuenta SYSTEM. (El campo `git_sync` de `/api/stats` sí existe; lo que no existe es un endpoint aparte "Git sync".)

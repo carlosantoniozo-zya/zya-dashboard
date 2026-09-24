@@ -1,5 +1,10 @@
 # CHANGELOG — dashboard
 
+## [2026-09-24] — docs: ESTADO.md al día con la realidad verificada (S1543)
+**Archivos:** `ESTADO.md`
+**Motivo:** Verificación de documentación vs realidad: faltaban A5, T264 y S1542; T260 sigue vigente.
+**Cambio:** solo documentación (sección "Actualización S1543" al final de ESTADO.md). **Impacto:** ninguno en runtime.
+
 ## [2026-09-24] — chore: 4 buzones agregados a la bandeja/lista de correo (S1542)
 **Archivos:** `.env` (`INBOX_MAILBOXES`), `correo-buzones.json` (ambos en `.gitignore`, no versionados)
 **Motivo:** Faltaban las contraseñas de 3 buzones existentes en Mailcow (pendiente en `deseimp/preguntas.md`, desde S1471) y de `ventas@casagalindo.com.mx` (alta S1469). Carlos pidió completarlas con lo ya registrado en `deseimp/credenciales.md`.
