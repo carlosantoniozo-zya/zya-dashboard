@@ -96,12 +96,12 @@ estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
 
 ## [2026-07-12b] — security: fail-closed en requireKey + fix real de DASHBOARD_KEY (T223)
 **Archivos:** `server.js`, `.env.example`, `C:\Proyectos\ecosystem.config.js`
-**Motivo:** `requireKey` era fail-open (`if (!DASHBOARD_KEY) return next()`). Al investigar se encontró que el fallo era más grave de lo documentado: `server.js` **nunca cargó `dotenv`**, así que el `.env` del proyecto (que sí tenía `DASHBOARD_KEY=zya-dash-2026`) nunca se leía en producción — el proceso PM2 solo recibe variables del objeto `env:{}` de `ecosystem.config.js`, que únicamente definía `MAILCOW_KEY`. Es decir: la protección de T196 (2026-06-25, "auth DASHBOARD_KEY en endpoints sensibles") **nunca estuvo realmente activa en producción** — `process.env.DASHBOARD_KEY` era `undefined` y el fail-open dejaba pasar todo sin auth.
+**Motivo:** `requireKey` era fail-open (`if (!DASHBOARD_KEY) return next()`). Al investigar se encontró que el fallo era más grave de lo documentado: `server.js` **nunca cargó `dotenv`**, así que el `.env` del proyecto (que sí tenía `DASHBOARD_KEY=[DASHBOARD_KEY: ver credenciales.md]`) nunca se leía en producción — el proceso PM2 solo recibe variables del objeto `env:{}` de `ecosystem.config.js`, que únicamente definía `MAILCOW_KEY`. Es decir: la protección de T196 (2026-06-25, "auth DASHBOARD_KEY en endpoints sensibles") **nunca estuvo realmente activa en producción** — `process.env.DASHBOARD_KEY` era `undefined` y el fail-open dejaba pasar todo sin auth.
 **Cambios:**
 - `server.js`: `requireKey` ahora falla cerrado — `process.exit(1)` al arrancar si `DASHBOARD_KEY` no está definida.
-- `C:\Proyectos\ecosystem.config.js`: agregado `DASHBOARD_KEY: 'zya-dash-2026'` al objeto `env` del proceso `dashboard` (mismo patrón que `MAILCOW_KEY`) — es la fuente real de variables de entorno para este proceso.
+- `C:\Proyectos\ecosystem.config.js`: agregado `DASHBOARD_KEY: '[DASHBOARD_KEY: ver credenciales.md]'` al objeto `env` del proceso `dashboard` (mismo patrón que `MAILCOW_KEY`) — es la fuente real de variables de entorno para este proceso.
 - `.env.example`: agregada `DASHBOARD_KEY=` (faltaba).
-**Verificado:** `pm2 restart ecosystem.config.js --only dashboard --update-env`, `/health` OK, `GET /api/docs` sin header → 401, con `x-dashboard-key: zya-dash-2026` → 200.
+**Verificado:** `pm2 restart ecosystem.config.js --only dashboard --update-env`, `/health` OK, `GET /api/docs` sin header → 401, con `x-dashboard-key: [DASHBOARD_KEY: ver credenciales.md]` → 200.
 **Impacto:** Cierra T223. La protección de endpoints sensibles (`/api/docs`, `/api/correo`, `PUT /api/tareas/:id`) ahora sí está activa en producción.
 
 ## [2026-07-12] — docs: auditoría ecosistema F3 — documentación al día
@@ -135,7 +135,7 @@ estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
 ## [2026-06-25] — security: T196 — auth en endpoints sensibles (S1282)
 **Archivos:** `server.js`, `public/index.html`, `.env`
 **Endpoints protegidos:** `GET /api/docs`, `GET /api/docs/:id`, `GET /api/correo`, `PUT /api/tareas/:id`
-**Mecanismo:** `DASHBOARD_KEY` en `.env` (`zya-dash-2026`); middleware `requireKey` verifica header `x-dashboard-key`. Frontend: `getDKey()` lee de `localStorage.dbk` (prompt en primer acceso), `authHdr()` inyecta el header en los 4 fetch afectados.
+**Mecanismo:** `DASHBOARD_KEY` en `.env` (`[DASHBOARD_KEY: ver credenciales.md]`); middleware `requireKey` verifica header `x-dashboard-key`. Frontend: `getDKey()` lee de `localStorage.dbk` (prompt en primer acceso), `authHdr()` inyecta el header en los 4 fetch afectados.
 
 ## [2026-06-17] — docs: auditoría AHCD+ACAL+AREV+AAP+AMON+ACOD (S1238)
 **Hallazgos:**
