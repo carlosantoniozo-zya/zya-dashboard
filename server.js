@@ -44,6 +44,8 @@ const PROYECTOS_DEF = [
   { nombre: 'sanyos-app',         dir: 'C:/Proyectos/sanyos-app',        dominio: 'sanyos.zyaeti.mx',               puerto: 3001,  tipo: 'NAS',        stack: 'Node+Express' },
   { nombre: 'sanyos-ops',         dir: 'C:/Proyectos/sanyos-ops',        dominio: 'ops.zyaeti.mx',                  puerto: 3001,  tipo: 'NAS',        stack: 'React+Express+SQLite' },
   { nombre: 'usg-solano',         dir: 'C:/Proyectos/usg-solano',        dominio: 'usg.zyaeti.mx',                  puerto: 3030,  tipo: 'NAS',        stack: 'Node+Express' },
+  { nombre: 'casa-galindo',      dir: 'C:/Proyectos/casa-galindo',     dominio: 'casagalindo.com.mx',             puerto: 5459,  tipo: 'NAS',        stack: 'Node+Express (sitio, intranet, tienda)' },
+  { nombre: 'jod',               dir: 'C:/Proyectos/jod',              dominio: 'josefaortizdedominguez.org',     puerto: 5458,  tipo: 'NAS',        stack: 'React+Express (directorio, permisos)' },
   { nombre: '_playwright-zya',    dir: 'C:/Proyectos/_playwright-zya',   dominio: null,                             puerto: null,  tipo: 'herramienta',stack: 'Node' },
   { nombre: '_report-builder',    dir: 'C:/Proyectos/_report-builder',   dominio: null,                             puerto: null,  tipo: 'modulo',     stack: 'React+Node' },
   { nombre: '_zya-about',         dir: 'C:/Proyectos/_zya-about',        dominio: null,                             puerto: null,  tipo: 'modulo',     stack: 'JS vanilla' },

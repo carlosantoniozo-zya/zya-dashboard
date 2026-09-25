@@ -1,4 +1,8 @@
-# CHANGELOG — dashboard
+/^(# [^\n]*\n\s*\n)/## [2026-09-24] — feat: Casa Galindo y JOD agregados a PROYECTOS_DEF (S1544)
+**Archivos:** `server.js`
+**Motivo:** cruce de ECOSISTEMA.md contra el dashboard: los proyectos `casa-galindo` (sitio, intranet y tienda) y `jod` (directorio y permisos) no estaban en la lista.
+**Cambio:** 2 entradas nuevas en `PROYECTOS_DEF` (tipo NAS). `pm2 restart dashboard` aplicado (200).
+**Impacto:** ambos proyectos aparecen ahora en el dashboard.
 
 ## [2026-09-24] — fix: /health responde 200 como exige el estándar (S1543)
 **Archivos:** `server.js`
