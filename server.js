@@ -269,14 +269,18 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/api/health', (req, res) => {
+// /health responde 200 directo (ESTANDARES-ZYA §2); antes redirigía (302) a /api/health
+function healthHandler(req, res) {
   res.json({
     status: 'ok',
+    service: 'dashboard',
     version: '1.0.0',
-    uptime: Math.floor((Date.now() - START_TIME) / 1000)
+    uptime: Math.floor((Date.now() - START_TIME) / 1000),
+    timestamp: new Date().toISOString()
   });
-});
-app.get('/health', (req, res) => res.redirect('/api/health'));
+}
+app.get('/api/health', healthHandler);
+app.get('/health', healthHandler);
 
 app.get('/api/stats', (req, res) => {
   const proyectos = getProyectos();

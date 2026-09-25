@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-09-24] — fix: /health responde 200 como exige el estándar (S1543)
+**Archivos:** `server.js`
+**Motivo:** ESTANDARES-ZYA §2 exige `GET /health` → 200. `/health` redirigía (302) a `/api/health`; un chequeo que no siga redirecciones lo veía como fallo. Ahora ambos comparten el mismo handler y responden 200 directo (con `service` y `timestamp`).
+**Verificado:** `node --check`, `pm2 restart dashboard`: `/health` 200; `/api/tareas` sin clave sigue en 401.
+**Impacto:** solo el endpoint de salud; rutas protegidas sin cambios.
+
 ## [2026-09-24] — fix: /api/stats mostraba "sin-git" en 40 de 43 proyectos (T260, S1543)
 **Archivos:** `server.js`, `ESTADO.md`
 **Motivo:** el dashboard corre como NT AUTHORITYSYSTEM y los repos pertenecen a Carlos; git los rechaza con "dubious ownership" y el último commit salía "sin-git".
