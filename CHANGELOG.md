@@ -1,4 +1,14 @@
-/^(# [^\n]*\n\s*\n)/## [2026-09-24] — feat: Casa Galindo y JOD agregados a PROYECTOS_DEF (S1544)
+# CHANGELOG — dashboard
+
+## [2026-09-28] — chore: buzón direccion@zyaeti.mx agregado a la bandeja unificada y a /api/correo (S1558)
+**Archivos:** `correo-buzones.json`, `.env`, `C:\Proyectos\ecosystem.config.js`
+**Motivo:** se creó el buzón `direccion@zyaeti.mx` (correo personal de Carlos como director) en Mailcow y había que registrarlo donde el dashboard lee credenciales.
+**Cambio:** agregado a `correo-buzones.json` (password para `/api/correo`) y a `INBOX_MAILBOXES` en `.env` y en `ecosystem.config.js` (bandeja unificada T257) — `ecosystem.config.js` es la fuente real que usa el proceso PM2, `.env` del proyecto no se carga por dotenv, se mantiene solo como copia de referencia.
+**Verificado:** `node -e "require('./ecosystem.config.js')"` OK · `pm2 restart ecosystem.config.js --only dashboard --update-env` · `pm2 jlist` confirma `direccion@zyaeti.mx` en el `INBOX_MAILBOXES` vivo del proceso · `/health` y `/api/correo` 200 · `pm2 save`.
+**Hallazgo, sin corregir (fuera de alcance de esta tarea):** el `INBOX_MAILBOXES` vivo en `ecosystem.config.js` solo traía 6 de los 10 buzones que sí están en `correo-buzones.json`/`.env` — faltan `comercializadora@sanyos.mx`, `direccion@sanyos.mx` (posible exclusión intencional, ver backlog T257/conversaciones S1435: problema de sync con Outlook), `agalindo@casagalindo.com.mx` y `ventas@casagalindo.com.mx`. No se tocaron; si quieres que los agregue a la bandeja unificada, avisa.
+**Impacto:** ninguno funcional en el resto del dashboard; se corrigió de paso el encabezado de este archivo (tenía un regex literal corrupto `/^(# [^\n]*\n\s*\n)/` en la primera línea, de una inserción previa fallida).
+
+## [2026-09-24] — feat: Casa Galindo y JOD agregados a PROYECTOS_DEF (S1544)
 **Archivos:** `server.js`
 **Motivo:** cruce de ECOSISTEMA.md contra el dashboard: los proyectos `casa-galindo` (sitio, intranet y tienda) y `jod` (directorio y permisos) no estaban en la lista.
 **Cambio:** 2 entradas nuevas en `PROYECTOS_DEF` (tipo NAS). `pm2 restart dashboard` aplicado (200).
