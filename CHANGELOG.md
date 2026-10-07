@@ -1,5 +1,10 @@
 # CHANGELOG — dashboard
 
+## [2026-10-06] — feat: registrar zya-pdf
+**Archivos:** `server.js` (alta de zya-pdf, pdf.zyaeti.mx, puerto 5474)
+**Motivo:** nuevo servicio zya-pdf (S1611).
+**Impacto:** Retrocompatible.
+
 ## [2026-09-28] — chore: buzón direccion@zyaeti.mx agregado a la bandeja unificada y a /api/correo (S1558)
 **Archivos:** `correo-buzones.json`, `.env`, `C:\Proyectos\ecosystem.config.js`
 **Motivo:** se creó el buzón `direccion@zyaeti.mx` (correo personal de Carlos como director) en Mailcow y había que registrarlo donde el dashboard lee credenciales.
