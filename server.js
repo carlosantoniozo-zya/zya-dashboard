@@ -5,6 +5,10 @@ const https = require('https');
 const { execSync } = require('child_process');
 
 const app = express();
+
+// Acceso humano solo con usuario de zya-auth (únicamente carlosantonio.zo@gmail.com). Las llamadas internas de la PC (sin Cloudflare) pasan.
+const { crearGate } = require('../_zya-gate/gate');
+app.use(crearGate({ app: 'ZYA Dashboard', publico: req => req.path === '/api/health' }));
 const PORT = parseInt(process.env.PORT) || 4600;
 const START_TIME = Date.now();
 const DASHBOARD_KEY = process.env.DASHBOARD_KEY;

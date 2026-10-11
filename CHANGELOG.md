@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-10-11] — feat: acceso al dashboard por zya-auth (S1640)
+**Archivos:** server.js
+**Motivo:** Carlos ordenó que el acceso humano a estos servicios pase por zya-auth (solo su usuario, controlado desde ahí).
+**Cambio:** login contra zya-auth con el módulo común `_zya-gate` (cookie `zya_gate`; solo `carlosantonio.zo@gmail.com`, ajustable con `ZYA_GATE_EMAILS`); un usuario desactivado ve «Tu usuario está desactivado. Contacta al administrador de sistemas.»; las llamadas internas de la PC sin Cloudflare pasan sin login. Solo `/api/health` queda público.
+**Impacto:** Antes eran públicos pendientes, tareas e historial y `POST /api/toggle` no pedía clave. La clave `DASHBOARD_KEY` se conserva como segunda capa.
+
 ## [2026-10-06] — feat: registrar zya-pdf
 **Archivos:** `server.js` (alta de zya-pdf, pdf.zyaeti.mx, puerto 5474)
 **Motivo:** nuevo servicio zya-pdf (S1611).
