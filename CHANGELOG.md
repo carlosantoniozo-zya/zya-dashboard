@@ -1,5 +1,11 @@
 # CHANGELOG — dashboard
 
+## [2026-10-13] — docs: stack de zya-pdf actualizado
+**Archivos:** server.js
+**Motivo:** zya-pdf ahora usa SQLite y nodemailer (solicitudes de firma, S1653); lo marcó la auditoría AAP.
+**Cambio:** campo stack de zya-pdf en PROYECTOS_DEF.
+**Impacto:** Solo texto mostrado en el dashboard.
+
 ## [2026-10-11] — feat: acceso al dashboard por zya-auth (S1640)
 **Archivos:** server.js
 **Motivo:** Carlos ordenó que el acceso humano a estos servicios pase por zya-auth (solo su usuario, controlado desde ahí).
