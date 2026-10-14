@@ -471,3 +471,6 @@ estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
 **Motivo:** Dashboard de estadísticas del ecosistema ZYA. Estadísticas reales, estado de sincronización git, pendientes verificados.
 **Archivos:** server.js, public/index.html, CLAUDE.md, ESTADO.md, package.json
 **Impacto:** Nuevo servicio. Puerto 4600. dashboard.zyaeti.mx
+
+## 2026-10-14
+- server.js: agrega `client` (client.zyaeti.mx, 5476) a PROYECTOS_DEF. Motivo: publicación de client (T359).

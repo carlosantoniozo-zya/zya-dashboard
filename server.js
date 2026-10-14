@@ -76,6 +76,7 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-radar',        dir: 'C:/Proyectos/zya-radar',         dominio: 'radar.zyaeti.mx',                puerto: 5464,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
   { nombre: 'yosoy',            dir: 'C:/Proyectos/yosoy',             dominio: 'yosoy.zyaeti.mx',                puerto: 5467,  tipo: 'local',      stack: 'Express+cookie-parser' },
   { nombre: 'facfs',            dir: 'C:/Proyectos/facfs',             dominio: 'facfs.zyaeti.mx',                puerto: 5470,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
+  { nombre: 'client',           dir: 'C:/Proyectos/client',            dominio: 'client.zyaeti.mx',               puerto: 5476,  tipo: 'local',      stack: 'Express+PG' },
 ];
 
 function contarArchivosPorExt(dir) {
