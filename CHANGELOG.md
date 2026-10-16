@@ -1,5 +1,17 @@
 # CHANGELOG — dashboard
 
+## [2026-10-16] — security: cabecera anti-clickjacking (S1683)
+**Archivos:** el `server.js` del servicio
+**Motivo:** ASEG: sin `X-Frame-Options` (anti-clickjacking).
+**Cambio:** middleware `X-Frame-Options: SAMEORIGIN` al inicio (marcador `ZYA-ASEG-HEADERS`).
+**Impacto:** la página ya no puede incrustarse desde otros orígenes; sin cambio funcional.
+
+## [2026-10-16] — fix: contraseña de contacto@casagalindo.com.mx en la bandeja
+**Archivos:** correo-buzones.json, .env, ../ecosystem.config.js (INBOX_MAILBOXES), ../deseimp/credenciales.md
+**Motivo:** el dashboard tenía la contraseña anterior (reseteada en Mailcow el 2026-10-02, S1581); la bandeja daba "Authentication failed" cada 3 min.
+**Cambio:** contraseña actualizada a la documentada en credenciales.md; rutas@sanyos.mx documentada ahí (solo estaba en el JSON).
+**Impacto:** la bandeja vuelve a leer contacto@casagalindo.com.mx. Nota: INBOX_MAILBOXES en ecosystem.config.js manda sobre .env y tenía 7 de los 11 buzones; se agregaron los 4 faltantes el mismo día.
+
 ## [2026-10-13] — docs: stack de zya-pdf actualizado
 **Archivos:** server.js
 **Motivo:** zya-pdf ahora usa SQLite y nodemailer (solicitudes de firma, S1653); lo marcó la auditoría AAP.

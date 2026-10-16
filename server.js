@@ -5,6 +5,8 @@ const https = require('https');
 const { execSync } = require('child_process');
 
 const app = express();
+// ZYA-ASEG-HEADERS (S1683): anti-clickjacking
+app.use((req, res, next) => { res.setHeader('X-Frame-Options', 'SAMEORIGIN'); next(); });
 
 // Acceso humano solo con usuario de zya-auth (únicamente carlosantonio.zo@gmail.com). Las llamadas internas de la PC (sin Cloudflare) pasan.
 const { crearGate } = require('../_zya-gate/gate');
