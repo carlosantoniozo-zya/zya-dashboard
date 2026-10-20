@@ -491,3 +491,8 @@ estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
 **Motivo:** registro del proyecto nuevo (S1703).
 **Cambios:** server.js: entrada zya-empaque (empaque.zyaeti.mx, puerto 5477).
 **Impacto:** Retrocompatible.
+
+## [2026-10-20] — /health público, como exige el estándar (S1703)
+**Motivo:** el gate de zya-auth (S1640) devolvía 401 en /health; el estándar ZYA §2 pide /health. El monitor usaba /api/health y no se veía afectado.
+**Cambios:** server.js: el gate deja pasar /health además de /api/health (solo estado, sin datos).
+**Impacto:** Retrocompatible; el resto del panel sigue exigiendo acceso.

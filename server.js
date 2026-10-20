@@ -10,7 +10,7 @@ app.use((req, res, next) => { res.setHeader('X-Frame-Options', 'SAMEORIGIN'); ne
 
 // Acceso humano solo con usuario de zya-auth (únicamente carlosantonio.zo@gmail.com). Las llamadas internas de la PC (sin Cloudflare) pasan.
 const { crearGate } = require('../_zya-gate/gate');
-app.use(crearGate({ app: 'ZYA Dashboard', publico: req => req.path === '/api/health' }));
+app.use(crearGate({ app: 'ZYA Dashboard', publico: req => req.path === '/api/health' || req.path === '/health' }));
 const PORT = parseInt(process.env.PORT) || 4600;
 const START_TIME = Date.now();
 const DASHBOARD_KEY = process.env.DASHBOARD_KEY;
