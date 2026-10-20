@@ -496,3 +496,8 @@ estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
 **Motivo:** el gate de zya-auth (S1640) devolvía 401 en /health; el estándar ZYA §2 pide /health. El monitor usaba /api/health y no se veía afectado.
 **Cambios:** server.js: el gate deja pasar /health además de /api/health (solo estado, sin datos).
 **Impacto:** Retrocompatible; el resto del panel sigue exigiendo acceso.
+
+## [2026-10-20] — Sin segunda clave: basta el login de zya-auth (S1703)
+**Motivo:** Carlos abrió el panel y solo vio un cuadro pidiendo la «clave de acceso» (DASHBOARD_KEY), no la pantalla de login. Desde S1640 había dos capas: login de zya-auth y esa clave guardada en localStorage.
+**Cambios:** server.js: `requireKey` acepta la sesión de zya-auth (`req.gateUser`); la clave por cabecera sigue valiendo para scripts. public/index.html: se quita el `prompt()` de la clave; cualquier 401 de una llamada al servidor lleva a `/__zya-login` (sesión caducada, pestaña abierta de un día para otro).
+**Impacto:** Retrocompatible para scripts. Seguridad equivalente o mejor (un login individual en lugar de una clave compartida). Probado: lógica de requireKey y redirecciones; falta el primer acceso real con login.

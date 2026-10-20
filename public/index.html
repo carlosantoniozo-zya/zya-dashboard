@@ -1246,25 +1246,33 @@ let tasksState = { pendientes: {}, hilos: {} };
 let pendientesData = [];
 let hilosData = [];
 
+// Cualquier llamada al servidor que devuelva 401 (la sesión de zya-auth caducó, p. ej. con la pestaña abierta de un día para otro)
+// lleva a la pantalla de login en vez de dejar el panel vacío o con un mensaje suelto.
+(function () {
+  const _fetch = window.fetch.bind(window);
+  window.fetch = async function (...args) {
+    const res = await _fetch(...args);
+    const u = String(args[0] && args[0].url ? args[0].url : args[0]);
+    if (res.status === 401 && u.startsWith('/') && !u.startsWith('/__zya-login')) {
+      location.href = '/__zya-login?volver=' + encodeURIComponent(location.pathname || '/');
+    }
+    return res;
+  };
+})();
+
 // ── Auth interno dashboard ─────────────────────────────────────────────────────
+// Ya no se pide clave: el acceso lo da el login de zya-auth (cookie). Si hubiera una clave guardada de antes, se sigue enviando.
 function getDKey() {
-  let k = localStorage.getItem('dbk');
-  if (!k) {
-    k = prompt('Dashboard ZYA — clave de acceso:') || '';
-    if (k) localStorage.setItem('dbk', k);
-  }
-  return k;
+  return localStorage.getItem('dbk') || '';
 }
 function authHdr() { return { 'x-dashboard-key': getDKey() }; }
 
-// fetch autenticado que se autorrepara: si el backend dice 401 (clave guardada
-// vieja/incorrecta), la borra y vuelve a pedirla en vez de fallar en silencio.
+// fetch autenticado: si el backend dice 401 (la sesión de zya-auth caducó), manda a la pantalla de login
+// en vez de fallar en silencio o pedir una clave.
 async function apiFetch(url, opts = {}) {
-  const doFetch = () => fetch(url, { ...opts, headers: { ...(opts.headers || {}), ...authHdr() } });
-  let res = await doFetch();
+  const res = await fetch(url, { ...opts, headers: { ...(opts.headers || {}), ...authHdr() } });
   if (res.status === 401) {
-    localStorage.removeItem('dbk');
-    res = await doFetch();
+    location.href = '/__zya-login?volver=' + encodeURIComponent(location.pathname || '/');
   }
   return res;
 }

@@ -20,6 +20,9 @@ if (!DASHBOARD_KEY) {
 }
 
 function requireKey(req, res, next) {
+  // La sesión de zya-auth (gate, solo el correo permitido) ya identifica a la persona: no se pide además la clave.
+  // La clave por cabecera sigue valiendo para scripts y llamadas internas.
+  if (req.gateUser) return next();
   const k = req.headers['x-dashboard-key'];
   if (k !== DASHBOARD_KEY) return res.status(401).json({ error: 'Clave incorrecta' });
   next();
