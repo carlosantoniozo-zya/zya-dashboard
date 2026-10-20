@@ -486,3 +486,8 @@ estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
 
 ## 2026-10-14
 - server.js: agrega `client` (client.zyaeti.mx, 5476) a PROYECTOS_DEF. Motivo: publicación de client (T359).
+
+## [2026-10-20] — Alta de zya-empaque
+**Motivo:** registro del proyecto nuevo (S1703).
+**Cambios:** server.js: entrada zya-empaque (empaque.zyaeti.mx, puerto 5477).
+**Impacto:** Retrocompatible.
