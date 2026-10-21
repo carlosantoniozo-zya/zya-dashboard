@@ -1,3 +1,8 @@
+## [2026-10-21] — Dependencias sin vulnerabilidades críticas ni altas (S1703)
+**Motivo:** auditoría de dependencias de todo el ecosistema (la tienda avisó de una alta y la revisión completa halló decenas en los demás proyectos).
+**Cambios:** `npm audit fix` y `overrides.qs` ^6.16.1. Incluye también lo que aplicó antes `npm audit fix` sin `--force`. Respaldos de package.json y package-lock.json en C:\Proyectos\backups_zya\ronda2-20261021\ (deps y deps-forkB).
+**Impacto:** sin cambios de comportamiento. Verificado: Servicio reiniciado, /health 200.
+
 # CHANGELOG — dashboard
 
 ## [2026-10-21] — PressMagazzine en PROYECTOS_DEF (S1703)

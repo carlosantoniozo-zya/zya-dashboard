@@ -31,6 +31,7 @@ Dashboard operativo del ecosistema ZYA · Node.js + Express + HTML/CSS/JS vanill
 - Sin TypeScript — verificar manualmente (sin compilador de tipos)
 
 ## Deuda técnica ⚠️
+- **Riesgo aceptado (S1703):** `imap-simple` (5.1.0) trae `imap`, `utf7` y `semver` 5.x con avisos altos (ReDoS) sin versión corregida; el arreglo que sugiere npm es bajar a `imap-simple@1.6.3`, que es absurdo. Solo se usa para leer buzones propios en nuestro Mailcow, no para aceptar conexiones de terceros. Pendiente de largo plazo: migrar a `imapflow`.
 - Sin TypeScript — errores de tipo solo visibles en runtime
 - README.md ausente
 - `requireKey` middleware (server.js:16-20) es fail-closed: si `DASHBOARD_KEY` no está configurada, `process.exit(1)` al arrancar (server.js:10-13). `DASHBOARD_KEY` ya está documentada en `.env.example`.
