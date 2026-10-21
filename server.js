@@ -46,7 +46,7 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-monitor',        dir: 'C:/Proyectos/zya-monitor',       dominio: 'monitor.zyaeti.mx',              puerto: 3700,  tipo: 'local',      stack: 'Node' },
   { nombre: 'luminn',             dir: 'C:/Proyectos/luminn',            dominio: 'luminn.zyaeti.mx',               puerto: 4100,  tipo: 'local',      stack: 'React+Express+PG' },
   { nombre: 'anonimastudio',      dir: 'C:/Proyectos/anonimastudio',     dominio: 'anonima.zyaeti.mx',              puerto: 4200,  tipo: 'local',      stack: 'Node+Express+SQLite' },
-  { nombre: 'press',              dir: 'C:/Proyectos/press',             dominio: 'zyapress.zyaeti.mx',             puerto: 4300,  tipo: 'local',      stack: 'React+Express+PG' },
+  { nombre: 'press',              dir: 'C:/Proyectos/press',             dominio: 'pressmagazzine.zyaeti.mx',             puerto: 4300,  tipo: 'local',      stack: 'React+Express+PG' },
   { nombre: 'psicpatriciaoliver', dir: 'C:/Proyectos/psicpatriciaoliver',dominio: 'psicpatriciaoliver.zyaeti.mx',   puerto: 4005,  tipo: 'local',      stack: 'Node+Express' },
   { nombre: 'zya-quieromiweb',    dir: 'C:/Proyectos/zya-quieromiweb',   dominio: 'quieromiweb.zyaeti.mx',          puerto: 5438,  tipo: 'local',      stack: 'React+Express+SQLite' },
   { nombre: 'zya-ecommerce',      dir: 'C:/Proyectos/zya-ecommerce',     dominio: 'commerce.zyaeti.mx',             puerto: 4000,  tipo: 'local',      stack: 'React+Express+SQLite' },

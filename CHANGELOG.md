@@ -1,5 +1,10 @@
 # CHANGELOG — dashboard
 
+## [2026-10-21] — PressMagazzine en PROYECTOS_DEF (S1703)
+**Motivo:** Press cambia de dominio a pressmagazzine.zyaeti.mx.
+**Cambios:** `server.js`: dominio del proyecto `press`; PM2 `dashboard` reiniciado.
+**Impacto:** Retrocompatible.
+
 ## [2026-10-16] — security: cabecera anti-clickjacking (S1683)
 **Archivos:** el `server.js` del servicio
 **Motivo:** ASEG: sin `X-Frame-Options` (anti-clickjacking).
