@@ -501,3 +501,8 @@ estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
 **Motivo:** Carlos abrió el panel y solo vio un cuadro pidiendo la «clave de acceso» (DASHBOARD_KEY), no la pantalla de login. Desde S1640 había dos capas: login de zya-auth y esa clave guardada en localStorage.
 **Cambios:** server.js: `requireKey` acepta la sesión de zya-auth (`req.gateUser`); la clave por cabecera sigue valiendo para scripts. public/index.html: se quita el `prompt()` de la clave; cualquier 401 de una llamada al servidor lleva a `/__zya-login` (sesión caducada, pestaña abierta de un día para otro).
 **Impacto:** Retrocompatible para scripts. Seguridad equivalente o mejor (un login individual en lugar de una clave compartida). Probado: lógica de requireKey y redirecciones; falta el primer acceso real con login.
+
+## [2026-10-21] — Alta de zya-ecosistema (S1703)
+**Motivo:** registro del servicio nuevo (ecosistema.zyaeti.mx, puerto 5480).
+**Cambios:** server.js: entrada zya-ecosistema.
+**Impacto:** Retrocompatible.
