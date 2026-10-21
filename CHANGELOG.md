@@ -506,3 +506,8 @@ estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
 **Motivo:** registro del servicio nuevo (ecosistema.zyaeti.mx, puerto 5480).
 **Cambios:** server.js: entrada zya-ecosistema.
 **Impacto:** Retrocompatible.
+
+## [2026-10-21] — Dominio de Check → assistcheck.zyaeti.mx (S1703)
+**Motivo:** Carlos renombró el producto (nombre más propio, sin el prefijo ZYA) y su dominio; Check no tiene clientes reales todavía.
+**Cambios:** `server.js`: PROYECTOS_DEF, entrada `check` con el dominio nuevo (el nombre interno sigue siendo `check`).
+**Impacto:** Retrocompatible.
