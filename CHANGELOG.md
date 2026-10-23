@@ -1,3 +1,8 @@
+## [2026-10-23] — Registrar zya-reclutamiento (S1721)
+**Motivo:** alta del servicio reclutamiento.zyaeti.mx (puerto 5487).
+**Cambios:** server.js: una fila nueva en la lista de servicios.
+**Impacto:** retrocompatible.
+
 ## [2026-10-23] — Registro de Catálogo (S1717)
 **Motivo:** servicio nuevo de la Suite FS, checklist §15.
 **Cambios:** `server.js` (PROYECTOS_DEF: fila de `catalogo`).

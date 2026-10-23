@@ -77,6 +77,7 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-recv',         dir: 'C:/Proyectos/zya-recv',          dominio: 'upload.zyaeti.mx',               puerto: 5460,  tipo: 'local',      stack: 'Express+SQLite+JWT' },
   { nombre: 'zya-pdf',          dir: 'C:/Proyectos/zya-pdf',           dominio: 'pdf.zyaeti.mx',                  puerto: 5474,  tipo: 'local',      stack: 'Express+pdf-lib+sharp+SQLite+nodemailer' },
   { nombre: 'zya-empaque',     dir: 'C:/Proyectos/zya-empaque',       dominio: 'empaque.zyaeti.mx',              puerto: 5477,  tipo: 'local',      stack: 'Express+pdf-lib' },
+  { nombre: 'zya-reclutamiento', dir: 'C:/Proyectos/zya-reclutamiento', dominio: 'reclutamiento.zyaeti.mx', puerto: 5487,  tipo: 'local',      stack: 'Express+SQLite' },
   { nombre: 'zya-ecosistema',   dir: 'C:/Proyectos/zya-ecosistema',     dominio: 'ecosistema.zyaeti.mx',           puerto: 5480,  tipo: 'local',      stack: 'Express' },
   { nombre: 'checador-precios', dir: 'C:/Proyectos/checador-precios', dominio: 'checador.zyaeti.mx',            puerto: 5481,  tipo: 'local',      stack: 'Node+PG (kiosko)' },
   { nombre: 'fidelia',          dir: 'C:/Proyectos/fidelia',            dominio: 'fidelia.zyaeti.mx',              puerto: 5482,  tipo: 'local',      stack: 'Express+PostgreSQL' },
