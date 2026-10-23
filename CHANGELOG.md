@@ -526,3 +526,6 @@ estándar de alta de proyecto (ESTANDARES-ZYA.md §15).
 **Motivo:** Carlos renombró el producto (nombre más propio, sin el prefijo ZYA) y su dominio; Check no tiene clientes reales todavía.
 **Cambios:** `server.js`: PROYECTOS_DEF, entrada `check` con el dominio nuevo (el nombre interno sigue siendo `check`).
 **Impacto:** Retrocompatible.
+
+## 2026-10-23 (S1720) — alta checador-precios
+- server.js (PROYECTOS_DEF): alta de checador-precios.
