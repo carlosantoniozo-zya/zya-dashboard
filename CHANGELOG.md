@@ -1,3 +1,8 @@
+## [2026-10-22] — Registro de Fidelia (S1717)
+**Motivo:** servicio nuevo de la Suite FS (T393), checklist §15.
+**Cambios:** `server.js` (PROYECTOS_DEF: fila de `fidelia`).
+**Impacto:** Retrocompatible.
+
 ## [2026-10-21] — Dependencias sin vulnerabilidades críticas ni altas (S1703)
 **Motivo:** auditoría de dependencias de todo el ecosistema (la tienda avisó de una alta y la revisión completa halló decenas en los demás proyectos).
 **Cambios:** `npm audit fix` y `overrides.qs` ^6.16.1. Incluye también lo que aplicó antes `npm audit fix` sin `--force`. Respaldos de package.json y package-lock.json en C:\Proyectos\backups_zya\ronda2-20261021\ (deps y deps-forkB).
