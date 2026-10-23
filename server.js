@@ -80,6 +80,7 @@ const PROYECTOS_DEF = [
   { nombre: 'zya-ecosistema',   dir: 'C:/Proyectos/zya-ecosistema',     dominio: 'ecosistema.zyaeti.mx',           puerto: 5480,  tipo: 'local',      stack: 'Express' },
   { nombre: 'checador-precios', dir: 'C:/Proyectos/checador-precios', dominio: 'checador.zyaeti.mx',            puerto: 5481,  tipo: 'local',      stack: 'Node+PG (kiosko)' },
   { nombre: 'fidelia',          dir: 'C:/Proyectos/fidelia',            dominio: 'fidelia.zyaeti.mx',              puerto: 5482,  tipo: 'local',      stack: 'Express+PostgreSQL' },
+  { nombre: 'catalogo',         dir: 'C:/Proyectos/catalogo',           dominio: 'catalogo.zyaeti.mx',             puerto: 5485,  tipo: 'local',      stack: 'Express+PostgreSQL+sharp' },
   { nombre: 'comicio360',       dir: 'C:/Proyectos/comicio360',        dominio: 'comicio360.org',                 puerto: 5461,  tipo: 'local',      stack: 'React+Vite+Express+PG' },
   { nombre: 'jgy-landing',      dir: 'C:/Proyectos/josegalindoyamak-landing', dominio: 'josegalindoyamak.mx',      puerto: 5463,  tipo: 'local',      stack: 'Express (estático)' },
   { nombre: 'zya-radar',        dir: 'C:/Proyectos/zya-radar',         dominio: 'radar.zyaeti.mx',                puerto: 5464,  tipo: 'local',      stack: 'React+Vite+Express+PG' },

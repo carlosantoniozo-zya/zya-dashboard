@@ -1,3 +1,8 @@
+## [2026-10-23] — Registro de Catálogo (S1717)
+**Motivo:** servicio nuevo de la Suite FS, checklist §15.
+**Cambios:** `server.js` (PROYECTOS_DEF: fila de `catalogo`).
+**Impacto:** Retrocompatible.
+
 ## [2026-10-22] — Registro de Fidelia (S1717)
 **Motivo:** servicio nuevo de la Suite FS (T393), checklist §15.
 **Cambios:** `server.js` (PROYECTOS_DEF: fila de `fidelia`).
