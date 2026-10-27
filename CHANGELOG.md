@@ -1,3 +1,9 @@
+## [2026-10-27] — fix: parser del backlog reconoce IDs con sufijo y sesiones con acento (S1736, T424)
+**Archivos:** server.js (líneas 374, 433, 473)
+**Motivo:** tras renombrar IDs repetidos del backlog con sufijo b (T81b, T340b…), el regex de encabezados no los reconocía y el cuerpo se pegaba a la tarea anterior; además «Sesiones de hoy» marcaba 0 porque el regex buscaba «Sesion» sin acento y sin la S del número.
+**Cambio:** `([A-Za-z]+d+[a-z]?)` en los dos parsers de tareas y `Sesi[oó]n S?(d+)` en parseSesionesHoy. pm2 restart dashboard; /health 200 local y público.
+**Impacto:** solo lectura de backlog.md y conversaciones.md en el dashboard; retrocompatible.
+
 ## [2026-10-23] — Registrar zya-reclutamiento (S1721)
 **Motivo:** alta del servicio reclutamiento.zyaeti.mx (puerto 5487).
 **Cambios:** server.js: una fila nueva en la lista de servicios.

@@ -371,7 +371,7 @@ function parseTareas() {
   for (const line of content.split('\n')) {
     // Cualquier encabezado ## X123 — cierra el bloque anterior (evita que tareas
     // no-T como ## C19 — se lean como parte del cuerpo/estado de la última tarea T)
-    const encabezado = line.match(/^## ([A-Za-z]+\d+) — (.+)/);
+    const encabezado = line.match(/^## ([A-Za-z]+\d+[a-z]?) — (.+)/);
     if (encabezado) {
       if (tareaActual) { tareaActual.cuerpo = bodyLines.join('\n').trim(); tareas.push(tareaActual); }
       tareaActual = encabezado[1].startsWith('T')
@@ -430,7 +430,7 @@ app.put('/api/tareas/:id', requireKey, (req, res) => {
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].match(new RegExp(`^## ${id} — `))) {
       startIdx = i;
-    } else if (startIdx !== -1 && lines[i].match(/^## [A-Za-z]+\d+ — /) && i > startIdx) {
+    } else if (startIdx !== -1 && lines[i].match(/^## [A-Za-z]+\d+[a-z]? — /) && i > startIdx) {
       endIdx = i;
       break;
     }
@@ -470,7 +470,7 @@ function parseSesionesHoy() {
   let actual = null;
 
   for (const line of content.split('\n')) {
-    const m = line.match(/^## (\d{4}-\d{2}-\d{2}) — Sesion (\d+)/);
+    const m = line.match(/^## (\d{4}-\d{2}-\d{2}) — Sesi[oó]n S?(\d+)/);
     if (m) {
       if (actual) sesiones.push(actual);
       actual = { fecha: m[1], numero: parseInt(m[2]), tema: '', resumen: '', cambios: '' };
