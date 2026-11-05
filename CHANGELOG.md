@@ -1,3 +1,6 @@
+## [2026-11-05] — Hospitalia y Almacenes Galindo en PROYECTOS_DEF (S1784)
+**Archivos:** server.js (respaldo server.js.bak-20261105). **Cambio:** dominio de sanatorio-macias a hospitalia.zyaeti.mx; alta de almacenes-galindo (almacenes.zyaeti.mx, 5484). **Impacto:** solo metadatos; reiniciado, /api/health 200.
+
 ## [2026-10-27] — fix: parser del backlog reconoce IDs con sufijo y sesiones con acento (S1736, T424)
 **Archivos:** server.js (líneas 374, 433, 473)
 **Motivo:** tras renombrar IDs repetidos del backlog con sufijo b (T81b, T340b…), el regex de encabezados no los reconocía y el cuerpo se pegaba a la tarea anterior; además «Sesiones de hoy» marcaba 0 porque el regex buscaba «Sesion» sin acento y sin la S del número.

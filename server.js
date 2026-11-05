@@ -35,10 +35,11 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
 // Definición de proyectos (metadatos estables — sin stats)
 const PROYECTOS_DEF = [
+  { nombre: 'almacenes-galindo',   dir: 'C:/Proyectos/almacenes-galindo', dominio: 'almacenes.zyaeti.mx',            puerto: 5484,  tipo: 'local',      stack: 'Node' },
   { nombre: 'anza-planner',       dir: 'C:/Proyectos/anza-planner',      dominio: 'anzaplanner.zyaeti.mx',          puerto: 3900,  tipo: 'local',      stack: 'Next.js' },
   { nombre: 'byrsa',              dir: 'C:/Proyectos/byrsa',             dominio: 'byrsa.zyaeti.mx',                puerto: 3001,  tipo: 'NAS',        stack: 'React+Express+SQLite' },
   { nombre: 'pricechecker',       dir: 'C:/Proyectos/pricechecker',      dominio: 'pricechecker.zyaeti.mx',         puerto: 3300,  tipo: 'local',      stack: 'Node+Express+PG' },
-  { nombre: 'sanatorio-macias',   dir: 'C:/Proyectos/sanatorio-macias',  dominio: 'sanatorio.zyaeti.mx',            puerto: 3000,  tipo: 'local',      stack: 'Next.js' },
+  { nombre: 'sanatorio-macias',   dir: 'C:/Proyectos/sanatorio-macias',  dominio: 'hospitalia.zyaeti.mx',            puerto: 3000,  tipo: 'local',      stack: 'Next.js' },
   { nombre: 'sesiona',            dir: 'C:/Proyectos/sesiona',           dominio: 'sesiona.zyaeti.mx',              puerto: 3400,  tipo: 'local',      stack: 'Next.js+PG' },
   { nombre: 'stockfs',            dir: 'C:/Proyectos/stockfs',           dominio: 'stockfs.zyaeti.mx',              puerto: 3500,  tipo: 'local',      stack: 'Next.js+PG' },
   { nombre: 'zya-changelog',      dir: 'C:/Proyectos/zya-changelog',     dominio: 'cambios.zyaeti.mx',              puerto: 3600,  tipo: 'local',      stack: 'Node' },
