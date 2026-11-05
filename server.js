@@ -35,7 +35,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
 // Definición de proyectos (metadatos estables — sin stats)
 const PROYECTOS_DEF = [
-  { nombre: 'almacenes-galindo',   dir: 'C:/Proyectos/almacenes-galindo', dominio: 'almacenes.zyaeti.mx',            puerto: 5484,  tipo: 'local',      stack: 'Node' },
+  { nombre: 'almacenes-galindo',   dir: 'C:/Proyectos/almacenes-galindo', dominio: 'almacenesgalindo.com.mx',            puerto: 5484,  tipo: 'local',      stack: 'Node' },
   { nombre: 'zya-link',            dir: 'C:/Proyectos/zya-link',          dominio: 'l.zyaeti.mx',                    puerto: 5488,  tipo: 'local',      stack: 'Node' },
   { nombre: 'casa-galindo-redes',  dir: 'C:/Proyectos/casa-galindo/redes', dominio: 'cartelera.zyaeti.mx',            puerto: 5489,  tipo: 'local',      stack: 'Node' },
   { nombre: 'focus-group',         dir: 'C:/Proyectos/focus-group',       dominio: 'focus.zyaeti.mx',                puerto: 5490,  tipo: 'local',      stack: 'Node+Express' },

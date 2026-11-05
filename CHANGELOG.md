@@ -1,3 +1,6 @@
+## [2026-11-05] — Dominio real de almacenes-galindo (S1797)
+**Archivos:** server.js (respaldo server.js.bak-20261105b). **Cambio:** dominio de almacenes-galindo de almacenes.zyaeti.mx a almacenesgalindo.com.mx (política §16). **Impacto:** solo metadatos; reiniciado.
+
 ## [2026-11-05] — Altas de zya-link, Cartelera, focus-group y zya-focusgroup (S1784)
 **Archivos:** server.js. **Cambio:** 4 entradas nuevas en PROYECTOS_DEF (checklist ESTANDARES §15). **Impacto:** solo metadatos; reiniciado, /api/health 200.
 
