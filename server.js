@@ -36,6 +36,10 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 // Definición de proyectos (metadatos estables — sin stats)
 const PROYECTOS_DEF = [
   { nombre: 'almacenes-galindo',   dir: 'C:/Proyectos/almacenes-galindo', dominio: 'almacenes.zyaeti.mx',            puerto: 5484,  tipo: 'local',      stack: 'Node' },
+  { nombre: 'zya-link',            dir: 'C:/Proyectos/zya-link',          dominio: 'l.zyaeti.mx',                    puerto: 5488,  tipo: 'local',      stack: 'Node' },
+  { nombre: 'casa-galindo-redes',  dir: 'C:/Proyectos/casa-galindo/redes', dominio: 'cartelera.zyaeti.mx',            puerto: 5489,  tipo: 'local',      stack: 'Node' },
+  { nombre: 'focus-group',         dir: 'C:/Proyectos/focus-group',       dominio: 'focus.zyaeti.mx',                puerto: 5490,  tipo: 'local',      stack: 'Node+Express' },
+  { nombre: 'zya-focusgroup',      dir: 'C:/Proyectos/zya-focusgroup',    dominio: 'focusgroup.zyaeti.mx',           puerto: 5491,  tipo: 'local',      stack: 'Node+Express+SQLite' },
   { nombre: 'anza-planner',       dir: 'C:/Proyectos/anza-planner',      dominio: 'anzaplanner.zyaeti.mx',          puerto: 3900,  tipo: 'local',      stack: 'Next.js' },
   { nombre: 'byrsa',              dir: 'C:/Proyectos/byrsa',             dominio: 'byrsa.zyaeti.mx',                puerto: 3001,  tipo: 'NAS',        stack: 'React+Express+SQLite' },
   { nombre: 'pricechecker',       dir: 'C:/Proyectos/pricechecker',      dominio: 'pricechecker.zyaeti.mx',         puerto: 3300,  tipo: 'local',      stack: 'Node+Express+PG' },
